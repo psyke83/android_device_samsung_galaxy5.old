@@ -1,0 +1,12 @@
+#!/system/bin/sh
+# These are all temporary hacks until we can properly fix permissions
+chmod 777 -R /dev
+chmod +x -R /etc
+#chmod +x -R /bin
+#chmod 755 -R /data/misc
+#chmod 4755 /system/bin/su
+#chmod 4755 /system/xbin/su
+
+# Init the bluetooth device - this shouldn't be here, but I'm lazy :P
+#hciattach /dev/ttyHS0 any
+

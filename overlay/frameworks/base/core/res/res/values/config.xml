@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+** Copyright 2009, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License"); 
+** you may not use this file except in compliance with the License. 
+** You may obtain a copy of the License at 
+**
+**     http://www.apache.org/licenses/LICENSE-2.0 
+**
+** Unless required by applicable law or agreed to in writing, software 
+** distributed under the License is distributed on an "AS IS" BASIS, 
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+** See the License for the specific language governing permissions and 
+** limitations under the License.
+*/
+-->
+
+<!-- These resources are around just to allow their values to be customized
+     for different hardware and product builds. -->
+<resources>
+
+	<bool name="config_batterySdCardAccessibility">true</bool>
+
+    <!-- Use the new fancy screen off animation -->
+    <bool name="config_animateScreenLights">false</bool>
+
+    <string-array translatable="false" name="config_tether_usb_regexs">
+        <item>"usb0"</item>
+    </string-array>
+
+    <string-array translatable="false" name="config_tether_upstream_regexs">
+    	<item>"wlan0"</item>
+    	<item>"rmnet0"</item>
+    </string-array>
+
+    <string-array translatable="false" name="config_tether_wifi_regexs">
+        <item>"athap0"</item>
+    </string-array>
+
+
+    <!-- Allow the menu hard key to be disabled in LockScreen on some devices -->
+    <bool name="config_disableMenuKeyInLockScreen">true</bool>
+
+    <bool name="config_automatic_brightness_available">true</bool>
+
+    <integer name="config_lightSensorWarmupTime">250</integer>
+
+    <!-- Array of light sensor LUX values to define our levels for auto backlight brightness support.
+         The N entries of this array define N + 1 zones as follows:
+
+         Zone 0:        0 <= LUX < array[0]
+         Zone 1:        array[0] <= LUX < array[1]
+         ...
+         Zone N:        array[N - 1] <= LUX < array[N]
+         Zone N + 1:    array[N] <= LUX < infinity
+
+         Must be overridden in platform specific overlays -->
+    <integer-array name="config_autoBrightnessLevels">
+        <item>1</item>
+        <item>5</item>
+        <item>11</item>
+        <item>15</item>
+    </integer-array>
+    <!-- Array of output values for LCD backlight corresponding to the LUX values
+         in the config_autoBrightnessLevels array.  This array should have size one greater
+         than the size of the config_autoBrightnessLevels array.
+    -->
+    <integer-array name="config_autoBrightnessLcdBacklightValues">
+        <item>25</item>
+        <item>55</item>
+        <item>70</item>
+        <item>70</item>
+        <item>250</item>
+    </integer-array>
+
+    <!-- Array of output values for button backlight corresponding to the LUX values
+         in the config_autoBrightnessLevels array.  This array should have size one greater
+         than the size of the config_autoBrightnessLevels array.
+    -->
+    <integer-array name="config_autoBrightnessButtonBacklightValues">
+        <item>255</item>
+        <item>255</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+
+    <!-- Array of output values for keyboard backlight corresponding to the LUX values
+         in the config_autoBrightnessLevels array.  This array should have size one greater
+         than the size of the config_autoBrightnessLevels array.
+         This must be overridden in platform specific overlays -->
+
+    <integer-array name="config_autoBrightnessKeyboardBacklightValues">
+        <item>255</item>
+        <item>255</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+
+    <!-- Component name of the service providing network location support. -->
+    <string name="config_networkLocationProvider">com.google.android.location.NetworkLocationProvider</string>
+
+    <!-- Component name of the service providing geocoder API support. -->
+    <string name="config_geocodeProvider">com.google.android.location.GeocodeProvider</string>
+
+    <!-- Specifies the amount of time to disable virtual keys after the screen is touched
+         in order to filter out accidental virtual key presses due to swiping gestures
+         or taps near the edge of the display.  May be 0 to disable the feature.
+         It is recommended that this value be no more than 250 ms.
+         This feature should be disabled for most devices. -->
+    <integer name="config_virtualKeyQuietTimeMillis">200</integer>
+
+</resources>
