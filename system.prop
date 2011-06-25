@@ -1,7 +1,13 @@
-#
-# system.prop for z71
-#
 
+##
+## BEGIN: system.prop for galaxy5
+##
+
+# Change priority of home/music apps
+ro.HOME_APP_ADJ=1
+ro.PERCEPTIBLE_APP_ADJ=0
+
+# RIL
 rild.libpath=/system/lib/libsec-ril.so
 rild.libargs=-d /dev/smd0
 persist.rild.nitz_plmn=
@@ -13,13 +19,58 @@ persist.rild.nitz_short_ons_0=
 persist.rild.nitz_short_ons_1=
 persist.rild.nitz_short_ons_2=
 persist.rild.nitz_short_ons_3=
-ro.sf.lcd_density=120
-DEVICE_PROVISIONED=1
-ro.opengles.version = 131072
 
-# Wifi interface
+# WiFi
 wifi.interface=wlan0
+wifi.supplicant_scan_interval=120
 
-## QC RIL doesn't replay call rings
-#ro.telephony.call_ring.multiple=false
-#ro.telephony.call_ring.delay=5000
+# Google
+DEVICE_PROVISIONED=1
+ro.com.android.dataroaming=false
+ro.com.google.locationfeatures=1
+ro.com.google.networklocation=1
+ro.setupwizard.enable_bypass=1
+
+# Cyanogen
+ro.compcache.default=0
+
+# Graphics
+ro.sf.lcd_density=120
+ro.opengles.version=131072
+
+# Network
+mobiledata.interfaces=rmnet0,gprs,wimax0,pdp0,ppp0
+ro.ril.hsxpa=2
+ro.ril.gprsclass=10
+
+# Key layouts
+hw.keyboards.0.devname=europa_keypad0
+hw.keyboards.65538.devname=europa_headset
+android.keylayout.europa_keypad0=/system/usr/keylayout/europa_keypad0.kl
+android.keylayout.europa_headset=/system/usr/keylayout/europa_headset.kl
+android.keychar.europa_keypad0=/system/usr/keychars/europa_keypad0.kcm.bin
+
+# Performance settings
+dalvik.vm.dexopt-flags=m=y
+dalvik.vm.execution-mode=int:jit
+dalvik.vm.heapsize=24m
+persist.sys.purgeable_assets=1
+persist.sys.use_dithering=0
+
+# JNI debugging
+ro.kernel.android.checkjni=0
+dalvik.vm.checkjni=false
+
+# Touchscreen
+windowsmsg.max_events_per_sec=60
+
+# View configuration for QVGA.
+#view.fading_edge_length=8
+#view.touch_slop=15
+#view.minimum_fling_velocity=25
+#view.scroll_friction=0.008
+
+##
+## END: system.prop for galaxy5
+##
+

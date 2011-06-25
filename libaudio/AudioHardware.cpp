@@ -74,6 +74,8 @@ static struct tx_agc tx_agc_cfg[9];
 static uint32_t SND_DEVICE_CURRENT=-1;
 static uint32_t SND_DEVICE_HANDSET=-1;
 static uint32_t SND_DEVICE_SPEAKER=-1;
+static uint32_t SND_DEVICE_FORCE_SPEAKER=-1;
+static uint32_t SND_DEVICE_MEDIA_SPEAKER=-1;
 static uint32_t SND_DEVICE_BT=-1;
 static uint32_t SND_DEVICE_BT_EC_OFF=-1;
 static uint32_t SND_DEVICE_HEADSET=-1;
@@ -91,7 +93,7 @@ static uint32_t SND_DEVICE_NO_MIC_HEADSET=-1;
 
 AudioHardware::AudioHardware() :
     mInit(false), mMicMute(true), mBluetoothNrec(true), mBluetoothId(0),
-    mOutput(0), mSndEndpoints(NULL), mCurSndDevice(-1), mDualMicEnabled(false)
+    mOutput(0), mSndEndpoints(NULL), mCurSndDevice(-1), mDualMicEnabled(false), mBuiltinMicSelected(false)
 {
    if (get_audpp_filter() == 0) {
            audpp_filter_inited = true;
@@ -103,6 +105,7 @@ AudioHardware::AudioHardware() :
         if (rc >= 0) {
             mSndEndpoints = new msm_snd_endpoint[mNumSndEndpoints];
             mInit = true;
+            ioctl(m7xsnddriverfd, SND_SET_MAIN_MIC);
             LOGV("constructed (%d SND endpoints)", rc);
             struct msm_snd_endpoint *ept = mSndEndpoints;
             for (int cnt = 0; cnt < mNumSndEndpoints; cnt++, ept++) {
@@ -113,6 +116,8 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(CURRENT);
                 CHECK_FOR(HANDSET);
                 CHECK_FOR(SPEAKER);
+                CHECK_FOR(FORCE_SPEAKER);
+                CHECK_FOR(MEDIA_SPEAKER);
                 CHECK_FOR(BT);
                 CHECK_FOR(BT_EC_OFF);
                 CHECK_FOR(HEADSET);
@@ -395,7 +400,7 @@ status_t AudioHardware::setParameters(const String8& keyValuePairs)
             mTtyMode = TTY_OFF;
         }
     } else {
-        mTtyMode = TTY_OFF;
+	mTtyMode = TTY_OFF;
     }
     doRouting(NULL);
 
@@ -1121,9 +1126,20 @@ status_t AudioHardware::doAudioRouteOrMute(uint32_t device)
         }
     }
 #endif
-    LOGV("doAudioRouteOrMute() device %x, mMode %d, mMicMute %d", device, mMode, mMicMute);
-    return do_route_audio_rpc(device,
-                              mMode != AudioSystem::MODE_IN_CALL, mMicMute, m7xsnddriverfd);
+    /* QCOM caveat: Audio will be routed to speaker if device=handset and mute=true */
+    /* Also, the audio circuit causes battery drain unless mute=true */
+    /* Android < 2.0 uses MODE_IN_CALL for routing audio to earpiece */
+    /* Android >= 2.0 advises to use STREAM_VOICE_CALL streams and setSpeakerphoneOn() */
+    /* Android >= 2.3 uses MODE_IN_COMMUNICATION for SIP calls */
+    bool mute = !isInCall();
+    if(mute && (device == SND_DEVICE_HANDSET)) {
+        /* workaround to emulate Android >= 2.0 behaviour */
+        /* enable routing to earpiece (unmute) if mic is selected as input */
+        mute = !mBuiltinMicSelected;
+    }
+    LOGD("doAudioRouteOrMute() device %x, mMode %d, mMicMute %d, mBuiltinMicSelected %d, %s",
+        device, mMode, mMicMute, mBuiltinMicSelected, mute ? "muted" : "audio circuit active");
+    return do_route_audio_rpc(device, mute, mMicMute, m7xsnddriverfd);
 }
 
 status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
@@ -1141,6 +1157,7 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
     if (input != NULL) {
         uint32_t inputDevice = input->devices();
         LOGI("do input routing device %x\n", inputDevice);
+        mBuiltinMicSelected = (inputDevice == AudioSystem::DEVICE_IN_BUILTIN_MIC);
         // ignore routing device information when we start a recording in voice
         // call
         // Recording will happen through currently active tx device
@@ -1216,7 +1233,7 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
             audProcess = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE );
         } else if (outputDevices & AudioSystem::DEVICE_OUT_SPEAKER) {
             LOGI("Routing audio to Speakerphone\n");
-            sndDevice = SND_DEVICE_SPEAKER;
+            sndDevice = SND_DEVICE_MEDIA_SPEAKER;
             audProcess = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE );
         } else {
             LOGI("Routing audio to Handset\n");
@@ -1493,7 +1510,7 @@ status_t AudioHardware::AudioStreamOutMSM72xx::setParameters(const String8& keyV
     if (param.getInt(key, device) == NO_ERROR) {
         mDevices = device;
         LOGV("set output routing %x", mDevices);
-        status = mHardware->setParameters(keyValuePairs);
+	status = mHardware->setParameters(keyValuePairs);
         status = mHardware->doRouting(NULL);
         param.remove(key);
     }

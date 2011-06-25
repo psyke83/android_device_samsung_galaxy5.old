@@ -1,0 +1,315 @@
+#!/system/bin/sh
+# MAD Team App2SD (Cyanogen 7)
+# by subpsyke
+
+LOG="/dev/null"
+MOUNTOPTIONS="-t ext4 -o nodev,nosuid,noauto_da_alloc"
+TWEAKS="-o journal_data_writeback"
+DRIVES="
+stl13
+stl14
+mmcblk0p2"
+PHONEFOLDERS="
+data
+log
+misc
+"
+
+stopframework() {
+count=1
+while [ $count -lt 30 ]; do 
+	count = $(($count+1))
+	sleep 1
+	stop
+done
+}
+
+checkdisks() {
+unset needscheck
+
+for DRIVE in $DRIVES; do
+	if tune2fs -l $DRIVE | grep "needs check"; then
+	needscheck=1
+	fi
+done
+
+if [ "$needscheck" = "1" ]; then
+	stopframework&
+	for DRIVE in $DRIVES; do
+		umount $DRIVE
+		sleep 5
+		e2fsck $DRIVE
+	done
+	reboot
+fi
+}
+
+checkapp2sd() {
+unset sdcard
+if mount | grep /dev/block/mmcblk0p2 | grep /system/sd; then
+	sdcard="/system/sd"
+fi
+
+if mount | grep /dev/block/mmcblk0p2 | grep /mnt/mmcblk0p2; then
+	sdcard="/mnt/mmcblk0p2"
+fi
+
+if [ "$sdcard" = "" ]; then
+	sdcard="/system/sd"
+	mount $MOUNTOPTIONS /dev/block/mmcblk0p2 $sdcard
+	sleep 3
+fi
+
+if [ -f $sdcard/.mad2sd ]; then
+	result="app2sd"
+else
+	result="normal"
+fi
+
+if ! mount | grep /dev/block/mmcblk0p2 | grep $sdcard; then
+	result="error"
+fi
+}
+
+checkspace() {
+if mount | grep /dev/block/mmcblk0p2 | grep /data; then
+	mmcblk0p2="/data"
+	stl13="/cache"
+else
+	mmcblk0p2="/system/sd"
+	stl13="/data"
+fi
+
+sdused=`du -c $mmcblk0p2 | tail -n1 | awk ' { print $1 } '`
+sdfree=`df $mmcblk0p2 | tail -n1 | awk ' { print $4 } '`
+phoneused=`du -c $stl13 | tail -n1 | awk ' { print $1 } '`
+phonefree=`df $stl13 | tail -n1 | awk ' { print $4 } '`
+
+}
+
+dotweak() {
+echo "Tweaking default partition options for speed."
+echo ""
+for DRIVE in $DRIVES; do
+	if ! tune2fs -l /dev/block/$DRIVE | grep journal_data_writeback; then
+		tune2fs $TWEAKS /dev/block/$DRIVE
+	fi
+done
+echo "Operation complete. You need to reboot for filesystem tweaks to take effect."
+}
+
+# Deactivate app2sd
+convert_app2sd() {
+rm /mnt/stl13/.mad2sd_convert
+rm -r /mnt/stl13/cache
+mv /mnt/stl13/data /mnt/stl13/mad2sd-temp
+for PHONEFOLDER in $PHONEFOLDERS; do
+	rm /mnt/bmmcblk0p2/$PHONEFOLDER
+	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/
+done
+mv /mnt/mmcblk0p2/* /mnt/stl13/
+mv /mnt/mmcblk0p2/.nvmac* /mnt/stl13/
+mv /mnt/mmcblk0p2/.swap /mnt/stl13/
+rm -r /mnt/mmcblk0p2 /mnt/stl13/mad2sd-temp
+}
+
+# Activate app2sd
+convert_normal() {
+rm -r /mnt/stl13/.mad2sd_convert /mnt/mmcblk0p2
+mkdir /mnt/stl13/mad2sd-temp
+mv /mnt/stl13/* /mnt/stl13/mad2sd-temp/
+mv /mnt/stl13/.nvmac* /mnt/stl13/mad2sd-temp/
+mv /mnt/stl13/.swap /mnt/stl13/mad2sd-temp/
+mkdir /mnt/stl13/mad2sd-data
+mkdir /mnt/stl13/cache
+for PHONEFOLDER in $PHONEFOLDERS; do
+	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/mad2sd-data/$PHONEFOLDER
+done
+mv /mnt/stl13/mad2sd-temp/* /mnt/mmcblk0p2/
+mv /mnt/stl13/mad2sd-temp/.nvmac* /mnt/mmcblk0p2/
+mv /mnt/stl13/mad2sd-temp/.swap /mnt/mmcblk0p2/
+mv /mnt/stl13/mad2sd-data /mnt/stl13/data
+rm -r /mnt/stl13/mad2sd-temp
+for PHONEFOLDER in $PHONEFOLDERS; do
+	ln -s /mnt/stl13/data/$PHONEFOLDER /mnt/mmcblk0p2/
+done
+touch /mnt/mmcblk0p2/.mad2sd
+}
+
+mount_normal() {
+mount -o move /mnt/stl13 /data
+mount -o move /mnt/stl14 /cache
+umount /dev/block/mmcblk0p2
+rm -r /cache/download
+ln -s /data/download /cache
+}
+
+mount_app2sd() {
+mount -o move /mnt/mmcblk0p2 /data
+mount -o bind /mnt/stl13/cache /cache
+umount /dev/block/stl14
+rm -r /cache/download
+mkdir /cache/download
+chown system:cache /cache/download
+}
+
+doboot() {
+# Run checks
+checkdisks
+checkapp2sd
+if mount | grep data=ordered; then
+	dotweak&
+fi
+if [ "$result" = "error" ]; then
+	mount_normal
+fi
+if [ -f /mnt/stl13/.mad2sd_convert ]; then
+	stopframework&
+	sleep 5
+	convert_$result
+	sync
+	sleep 10
+	reboot
+	exit
+fi
+mount_$result
+if [ -f /data/.swap ]; then
+	swapon /dev/block/mmcblk0p3
+fi
+}
+
+if [ "$1" = "" ]; then
+	checkapp2sd
+	checkspace
+	echo ""
+	echo "Usage: mad2sd [option]"
+	echo "Options:"
+	echo ""
+	echo " * on      - enable App2SD"
+	echo " * off     - disable App2SD"
+	echo " * swapon  - enable swap"
+	echo " * swapoff - disable swap"
+	echo " * tweak   - optimize default filesystem attributes"
+	echo ""
+	echo "MAD Team App2SD status:"
+	echo ""
+	if [ "$result" = "app2sd" ]; then
+		echo "App2SD:       activated"
+		echo "SD card used: $sdused""KB"
+		echo "SD card free: $sdfree""KB"
+	else
+		echo "App2SD:       deactivated"
+		echo "Phone used:   $phoneused""KB"
+		echo "Phone free:   $phonefree""KB"
+	fi
+	echo "Swap size:   " `free | grep Swap | awk ' { print ($2) } '`"KB"
+	echo ""
+fi
+
+
+mkdir /system/sd 1>>$LOG 2>>$LOG
+
+if [ "$1" = "doboot" ]; then
+	doboot
+fi
+
+if [ "$(id)" != "uid=0(root) gid=0(root)" ]; then
+	echo "You must run this script as superuser (su)!"
+	echo "Aborting."
+	echo ""
+	exit
+fi
+
+if [ "$1" = "swapon" ]; then
+	touch /data/.swap
+	swapon /dev/block/mmcblk0p3
+	echo "Swap enabled! Setting will be kept on reboot."
+fi
+
+if [ "$1" = "swapoff" ]; then
+	rm /data/.swap
+	swapoff /dev/block/mmcblk0p3
+	echo "Swap disabled! Setting will be kept on reboot."
+fi
+
+if [ "$1" = "on" ]; then
+	checkapp2sd
+	if [ "$result" = "error" ]; then
+		echo "Error! App2SD partition not found."
+		echo ""
+		echo "Please partition your SD card."
+		exit
+	fi
+	checkspace
+	if [ "$result" = "app2sd" ]; then
+		echo "Current App2SD status: activated"
+		echo ""
+		echo "SD card used: $sdused""KB"
+		echo "Phone free:   $phonefree""KB"
+		echo ""
+		echo "Warning: app2sd already active. Nothing to be done."
+	fi
+	if [ "$result" = "normal" ]; then
+		echo "Current App2SD status: deactivated"
+		echo ""
+		echo "Phone used:   $phoneused""KB"
+		echo "SD card free: $sdfree""KB"
+		echo ""
+		if [ $(($phoneused)) -gt $(($sdfree)) ]; then
+			echo "Not enough space on SD card partition to complete operation!"
+			echo "Please free " $(($phoneused-$sdfree)) "KB from Phone to continue."
+			echo "Aborting!"
+		else
+			echo "Please reboot to activate App2SD."
+			echo "NOTE: Your phone will reboot twice - the first boot will stay on the ANDROID"
+			echo "      logo (conversion process), and the second boot will proceed normally."
+			echo "TIP:  Unplug your USB cable during the conversion process so you don't need"
+			echo "      to manually press the power button after each reboot."
+			touch /data/.mad2sd_convert
+		fi
+	fi			
+fi
+
+if [ "$1" = "off" ]; then
+	checkapp2sd
+	if [ "$result" = "error" ]; then
+		echo "Error! App2SD partition not found"
+		echo ""
+		echo "Please partition your SD card."
+		exit
+	fi
+	checkspace
+	if [ "$result" = "app2sd" ]; then
+		echo "Current App2SD status: activated"
+		echo ""
+		echo "SD card used: $sdused""KB"
+		echo "Phone free:   $phonefree""KB"
+		echo ""
+		if [ $(($sdused)) -gt $(($phonefree)) ]; then
+			echo "Not enough space in phone memory to complete operation!"
+			echo "Please free " $(($sdused-$phonefree)) "KB from SD card's App2SD partition to continue."
+			echo "Aborting!"
+		else
+			echo "Please reboot to deactivate App2SD."
+			echo "NOTE: Your phone will reboot twice - the first boot will stay on the ANDROID"
+			echo "      logo (conversion process), and the second boot will proceed normally."
+			echo "TIP:  Unplug your USB cable during the conversion process so you don't need"
+			echo "      to manually press the power button after each reboot."
+			touch /mnt/stl13/.mad2sd_convert
+		fi
+	fi
+	if [ "$result" = "normal" ]; then
+		echo "Current App2SD status: deactivated"
+		echo ""
+		echo "Phone used:   $phoneused""KB"
+		echo "SD card free: $sdfree""KB"
+		echo ""
+		echo "Warning: app2sd not active. Nothing to be done."
+	fi
+fi
+
+if [ "$1" = "tweak" ]; then
+	dotweak
+fi
+
+exit

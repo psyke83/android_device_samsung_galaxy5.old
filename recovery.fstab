@@ -1,0 +1,8 @@
+# mount point	fstype		device      device2 (redundant)             options
+
+/sdcard		vfat	/dev/block/mmcblk0p1
+/system		ext4	/dev/block/stl12
+/cache		ext4	/dev/block/stl14
+/data		ext4	/dev/block/stl13
+/boot		bml		boot
+/recovery	bml		recovery

@@ -25,7 +25,7 @@
 
     <!-- Enable the onscreen touch UI for all states of the in-call UI. -->
     <bool name="allow_incoming_call_touch_ui">true</bool>
-    <bool name="allow_in_call_touch_ui">true</bool>
+    <bool name="allow_in_call_touch_ui">false</bool>
 
     <bool name="send_mic_mute_to_AudioManager">true</bool>
 

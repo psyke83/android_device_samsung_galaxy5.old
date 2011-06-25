@@ -1,21 +1,24 @@
 #!/bin/sh
 
-mkdir -p ../../../vendor/samsung/galaxy5/proprietary
+mkdir -p ../../../vendor/commtiva/z71/proprietary
 
 DIRS="
 bin
 etc/firmware
 lib/egl
 lib/hw
-wifi/ath6k/AR6003/hw2.0
 "
 
 for DIR in $DIRS; do
-	mkdir -p ../../../vendor/samsung/galaxy5/proprietary/$DIR
+	mkdir -p ../../../vendor/commtiva/z71/proprietary/$DIR
 done
 
 FILES="
+bin/hci_qcomm_init
 bin/qmuxd
+bin/sensorserver_yamaha
+bin/updateSensorNV
+bin/gsensorcalibration
 
 etc/firmware/yamato_pfp.fw
 etc/firmware/yamato_pm4.fw
@@ -29,7 +32,7 @@ lib/egl/libq3dtools_adreno200.so
 lib/hw/gralloc.default.so
 lib/hw/gralloc.msm7k.so
 
-lib/hw/sensors.default.so
+lib/hw/sensors.qcom.so
 
 lib/liba2dp.so
 lib/libaudioeq.so
@@ -50,17 +53,11 @@ lib/liboncrpc.so
 lib/libpbmlib.so
 lib/libqmi.so
 lib/libqueue.so
+lib/libril-qc-1.so
+lib/libril-qcril-hook-oem.so
 lib/libril.so
 lib/libwms.so
-
-bin/hostapd
-bin/memsicd
-bin/rild
-lib/libreference-ril.so
-lib/libseccamera.so
-lib/libseccameraadaptor.so
-lib/libsecgps.so
-lib/libsecril-client.so
+lib/libwmsts.so
 
 lib/libmmipl.so
 lib/libmmjpeg.so
@@ -83,9 +80,12 @@ lib/libOmxQcelpDec.so
 lib/libOmxVidEnc.so
 lib/libOmxWmaDec.so
 lib/libOmxWmvDec.so
+
+lib/libms3c_yamaha.so
+lib/libsensor_yamaha.so
 "
 
 for FILE in $FILES; do
-	cp  ~/Desktop/system.jpl/$FILE ../../../vendor/samsung/galaxy5/proprietary/$FILE
+	adb pull system/$FILE ../../../vendor/commtiva/z71/proprietary/$FILE
 done
 

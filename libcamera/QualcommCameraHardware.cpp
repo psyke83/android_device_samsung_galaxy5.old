@@ -207,16 +207,16 @@ board_property boardProperties[] = {
  */
 //sorted on column basis
 static const camera_size_type picture_sizes[] = {
-    { 2592, 1944 }, // 5MP
-    { 2560, 1920 }, // 5MP (slightly reduced)
+//    { 2592, 1944 }, // 5MP
+//    { 2560, 1920 }, // 5MP (slightly reduced)
     { 2048, 1536 }, // 3MP QXGA
-    //{ 1920, 1080 }, //HD1080
+//    { 1920, 1080 }, //HD1080
     { 1600, 1200 }, // 2MP UXGA
-    { 1280, 768 }, //WXGA
-    { 1280, 720 }, //HD720
+//    { 1280, 768 }, //WXGA
+//    { 1280, 720 }, //HD720
     { 1024, 768}, // 1MP XGA
-    { 800, 600 }, //SVGA
-    { 800, 480 }, // WVGA
+//    { 800, 600 }, //SVGA
+//    { 800, 480 }, // WVGA
     { 640, 480 }, // VGA
     { 352, 288 }, //CIF
     { 320, 240 }, // QVGA
@@ -1108,8 +1108,8 @@ void QualcommCameraHardware::initDefaultParameters()
             CAMERA_EXPOSURE_COMPENSATION_STEP);
 
     mParameters.set("luma-adaptation", "3");
-    mParameters.set("zoom-supported", "true");
-    mParameters.set("zoom-ratios", "100,200,300,400,500,600");
+    mParameters.set("zoom-supported", "false");
+    mParameters.set("zoom-ratios", "10,20,30,40,50");
     mParameters.set("max-zoom", MAX_ZOOM_LEVEL);
     mParameters.set("zoom", 0);
     mParameters.set(CameraParameters::KEY_PICTURE_FORMAT,
@@ -1363,6 +1363,9 @@ status_t QualcommCameraHardware::dump(int fd,
     }
     if (mJpegHeap != 0) {
         mJpegHeap->dump(fd, args);
+    }
+    if(mRawSnapshotAshmemHeap != 0 ){
+        mRawSnapshotAshmemHeap->dump(fd, args);
     }
     mParameters.dump(fd, args);
     return NO_ERROR;
@@ -2454,6 +2457,7 @@ void QualcommCameraHardware::deinitRawSnapshot()
 {
     LOGV("deinitRawSnapshot E");
     mRawSnapShotPmemHeap.clear();
+    mRawSnapshotAshmemHeap.clear();
     LOGV("deinitRawSnapshot X");
 }
 
@@ -3632,8 +3636,29 @@ void QualcommCameraHardware::receiveRawSnapshot(){
          */
         notifyShutter(&mCrop);
 
+        //Create a Ashmem heap to copy data from PMem heap for application layer
+        if(mRawSnapshotAshmemHeap != NULL){
+            LOGV("receiveRawSnapshot: clearing old mRawSnapShotAshmemHeap.");
+            mRawSnapshotAshmemHeap.clear();
+        }
+        mRawSnapshotAshmemHeap = new AshmemPool(
+                                        mRawSnapShotPmemHeap->mBufferSize,
+                                        mRawSnapShotPmemHeap->mNumBuffers,
+                                        mRawSnapShotPmemHeap->mFrameSize,
+                                        "raw ashmem snapshot camera"
+                                        );
+
+        if(!mRawSnapshotAshmemHeap->initialized()){
+            LOGE("receiveRawSnapshot X: error initializing mRawSnapshotHeap");
+            deinitRawSnapshot();
+            return;
+        }
+
+        memcpy(mRawSnapshotAshmemHeap->mHeap->base(),
+                mRawSnapShotPmemHeap->mHeap->base(),
+                mRawSnapShotPmemHeap->mHeap->getSize());
        if (mDataCallback && (mMsgEnabled & CAMERA_MSG_COMPRESSED_IMAGE))
-           mDataCallback(CAMERA_MSG_COMPRESSED_IMAGE, mRawSnapShotPmemHeap->mBuffers[0],
+           mDataCallback(CAMERA_MSG_COMPRESSED_IMAGE, mRawSnapshotAshmemHeap->mBuffers[0],
                 mCallbackCookie);
 
     }

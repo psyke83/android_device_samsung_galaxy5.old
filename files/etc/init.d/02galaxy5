@@ -1,0 +1,36 @@
+#!/system/bin/sh
+
+chown 0:0 /system/xbin/su
+chmod 6755 /system/xbin/su
+
+# Fix VPN
+rm -r /data/misc/vpn
+ln -s /data/data/misc/vpn /data/misc/
+
+# Tweak drives for better speed
+
+READ_AHEAD_KB="1024";
+NR_REQUESTS="1024";
+DRIVES="
+stl12
+stl13
+stl14"
+for DRIVE in $DRIVES;
+do
+	echo $NR_REQUESTS > /sys/block/$DRIVE/queue/nr_requests;
+	echo $READ_AHEAD_KB > /sys/block/$DRIVE/queue/read_ahead_kb;
+	echo 0 > /sys/block/$DRIVE/queue/rotational;
+done;
+
+READ_AHEAD_KB="2048";
+NR_REQUESTS="4";
+DRIVES="mmcblk0"
+for DRIVE in $DRIVES;
+do
+	echo deadline > /sys/block/$DRIVE/queue/scheduler;
+	echo $NR_REQUESTS > /sys/block/$DRIVE/queue/nr_requests;
+	echo $READ_AHEAD_KB > /sys/block/$DRIVE/queue/read_ahead_kb;
+	echo 0 > /sys/block/$DRIVE/queue/rotational;
+	echo 1 > /sys/block/$DRIVE/queue/iosched/fifo_batch;
+done;
+

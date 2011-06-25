@@ -1,0 +1,64 @@
+#!/system/bin/sh
+# galaxy5_defaults
+# by subpsyke
+#
+# This will insert some recommended system defaults into the system.
+
+DATABASE="/data/data/com.android.providers.settings/databases/settings.db"
+
+addprefs() {
+sleep 5
+stop
+sleep 5
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('lockscreen_style_pref', '2');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('wifi_sleep_policy', '2');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('electron_beam_animation_on', '1');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('electron_beam_animation_off', '1');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('expanded_widget_buttons', 'toggleWifi|toggleMobileData|toggleBluetooth|toggleBrightness|toggleSound|toggleAutoRotate');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO system (name, value) VALUES ('accelerometer_rotate_180', '1');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO secure (name, value) VALUES ('install_non_market_apps', '1');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO secure (name, value) VALUES ('bluetooth_on', '0');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO secure (name, value) VALUES ('wifi_on', '0');"
+/system/xbin/sqlite3 $DATABASE "INSERT INTO secure (name, value) VALUES ('wifi_networks_available_notification_on', '0');"
+rm -r /data/data/com.android.vending/cache/*
+rm -r /data/dalvik-cache/*
+sleep 3
+start
+exit
+}
+
+echo "Galaxy5 - Default Settings Updater"
+echo "----------------------------------"
+echo ""
+
+# Wait for /data to mount and/or database to be created
+while [ ! -f $DATABASE ]; do
+	sleep 1
+done
+
+sleep 2
+
+if [ "$1" = "force" ]; then
+	echo "User requests settings to be forced. Applying settings..."
+	cat /system/build.prop | grep ro.build.date= >/data/.savedbuild
+	addprefs
+fi
+
+if [ ! -f /data/.savedbuild ]; then
+	echo "New build detected. Adding default settings..."
+	cat /system/build.prop | grep ro.build.date= >/data/.savedbuild
+	sleep 20
+	addprefs
+fi
+
+CURRENTBUILD=`cat /system/build.prop | grep ro.build.date=`
+SAVEDBUILD=`cat /data/.savedbuild`
+
+if [ "$CURRENTBUILD" != "$SAVEDBUILD" ]; then
+	echo "Old build detected. Updating default settings..."
+	cat /system/build.prop | grep ro.build.date= >/data/.savedbuild
+	sleep 20
+	addprefs
+fi
+
+exit

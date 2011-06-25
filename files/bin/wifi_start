@@ -1,0 +1,7 @@
+#!/system/bin/sh
+sleep 1
+rmmod ar6000
+sleep 1
+insmod /system/wifi/ar6000.ko
+sleep 3
+setprop "wlan.driver.status" "ok"
