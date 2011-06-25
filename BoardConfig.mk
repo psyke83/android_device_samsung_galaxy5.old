@@ -47,7 +47,7 @@ BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := galaxy5
 BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
 
 # USB
-#BOARD_USE_USB_MASS_STORAGE_SWITCH := true
+BOARD_USE_USB_MASS_STORAGE_SWITCH := true
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
 #BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 
