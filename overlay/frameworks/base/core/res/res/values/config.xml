@@ -38,7 +38,7 @@
          USB interfaces.  If the device doesn't want to support tething over USB this should
          be empty.  An example would be "usb.*" -->
     <string-array translatable="false" name="config_tether_usb_regexs">
-        <item>"usb0"</item>
+        <item>"usb\\d"</item>
     </string-array>
 
     <!-- Regex array of allowable upstream ifaces for tethering - for example if you want

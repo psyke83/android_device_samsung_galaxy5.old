@@ -8,6 +8,9 @@ ro.HOME_APP_ADJ=1
 ro.PERCEPTIBLE_APP_ADJ=0
 
 # RIL
+ro.telephony.call_ring.multiple=false
+ro.telephony.sends_barcount=1
+ro.telephony.ril_class=samsung
 rild.libpath=/system/lib/libsec-ril.so
 rild.libargs=-d /dev/smd0
 persist.rild.nitz_plmn=
@@ -22,7 +25,7 @@ persist.rild.nitz_short_ons_3=
 
 # WiFi
 wifi.interface=wlan0
-wifi.supplicant_scan_interval=120
+wifi.supplicant_scan_interval=45
 
 # Google
 DEVICE_PROVISIONED=1
@@ -32,14 +35,14 @@ ro.com.google.networklocation=1
 ro.setupwizard.enable_bypass=1
 
 # Cyanogen
-ro.compcache.default=0
+ro.compcache.default=18
 
 # Graphics
 ro.sf.lcd_density=120
 ro.opengles.version=131072
 
 # Network
-mobiledata.interfaces=rmnet0,gprs,wimax0,pdp0,ppp0
+mobiledata.interfaces=pdp0,wlan0,gprs,ppp0
 ro.ril.hsxpa=2
 ro.ril.gprsclass=10
 
@@ -53,22 +56,13 @@ android.keychar.europa_keypad0=/system/usr/keychars/europa_keypad0.kcm.bin
 # Performance settings
 dalvik.vm.dexopt-flags=m=y
 dalvik.vm.execution-mode=int:jit
-dalvik.vm.heapsize=24m
+dalvik.vm.heapsize=16m
 persist.sys.purgeable_assets=1
 persist.sys.use_dithering=0
 
 # JNI debugging
 ro.kernel.android.checkjni=0
 dalvik.vm.checkjni=false
-
-# Touchscreen
-windowsmsg.max_events_per_sec=60
-
-# View configuration for QVGA.
-#view.fading_edge_length=8
-#view.touch_slop=15
-#view.minimum_fling_velocity=25
-#view.scroll_friction=0.008
 
 ##
 ## END: system.prop for galaxy5

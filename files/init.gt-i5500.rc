@@ -3,6 +3,12 @@ on init
 # Put download cache on /data partition due to size limitations
 	export DOWNLOAD_CACHE /data/download
 
+# Create Mad2SD mountpoints
+	mkdir /mnt/mmcblk0p2
+	mkdir /mnt/stl12
+	mkdir /mnt/stl13
+	mkdir /mnt/stl14
+
 # Insert modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
@@ -10,6 +16,7 @@ on init
 	insmod /lib/modules/rfs_fat.ko
 	insmod /lib/modules/sec_param.ko
 	insmod /lib/modules/acc_cal_param.ko
+	insmod /lib/modules/ramzswap.ko
 	#insmod /lib/modules/cifs.ko
 
 on fs
@@ -28,17 +35,15 @@ on fs
 	mount ext4 /dev/block/stl14 /mnt/stl14 nosuid nodev barrier=0 noauto_da_alloc
 
 	start mad2sd
-	wait 8
+	wait 6
 
 on boot
 
 # Crazy tweak that makes the phone work perfectly
-	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,4096,10240,12800,15360
+	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,6144,8192,12288,15360
 
 # Set up WiFi and Bluetooth as soon as possible
 	#insmod /system/wifi/ar6000.ko
-	#exec /system/bin/wmiconfig -i wlan0 --bt off
-	#exec /system/bin/wmiconfig -i wlan0 --wlan disable
 	#setprop wlan.driver.status "ok"
 	#setprop wlan.apmode "unloaded"
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
@@ -47,11 +52,12 @@ on boot
 	mkdir /data/download 0771 system cache
 
 # Set CPU frequency preferences
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
+#        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/down_differential 3
-        write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 200000
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 245760
+        write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 50000
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 122880
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 604800
 
 # For VPN (workaround)
 	mkdir /data/data/misc 0777 system system
@@ -265,7 +271,7 @@ service wpa_supplicant /system/bin/wpa_supplicant -Dawext -iwlan0 -c/data/misc/w
 	disabled
 	oneshot
 
-service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL wlan0
+service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL
 	disabled
 	oneshot
 

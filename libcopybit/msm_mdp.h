@@ -88,6 +88,9 @@ enum {
 #define MDP_BLIT_WITH_DMA_BARRIERS	0x000
 #define MDP_BLIT_WITH_NO_DMA_BARRIERS    \
 	(MDP_NO_DMA_BARRIER_START | MDP_NO_DMA_BARRIER_END)
+#define MDP_BLIT_SRC_GEM                0x04000000
+#define MDP_BLIT_DST_GEM                0x02000000
+#define MDP_BLIT_NON_CACHED		0x01000000
 #define MDP_TRANSP_NOP 0xffffffff
 #define MDP_ALPHA_NOP 0xff
 
@@ -191,5 +194,12 @@ struct mdp_histogram {
 struct mdp_page_protection {
 	uint32_t page_protection;
 };
+
+#ifdef __KERNEL__
+
+/* get the framebuffer physical address information */
+int get_fb_phys_info(unsigned long *start, unsigned long *len, int fb_num);
+
+#endif
 
 #endif /*_MSM_MDP_H_*/

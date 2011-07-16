@@ -33,10 +33,6 @@
 /dev/system_bus_freq        0666   root        root
 /dev/cpu_dma_latency        0666   root        root
 
-/dev/ttyCSD0                0660   radio       radio
-/dev/ttyGPS0                0660   radio       radio
-/dev/ttyXTRA0               0660   radio       radio
-
 # CDMA radio interface MUX
 /dev/ppp                    0660   radio       vpn
 /dev/tun                    0640   vpn         vpn
@@ -62,6 +58,9 @@
 /dev/dpramerr		    0660   radio       radio
 /dev/multipdp		    0660   radio       radio
 /dev/ttySMD0		    0660   radio       radio
+/dev/ttyCSD0                0660   radio       radio
+/dev/ttyGPS0                0660   radio       radio
+/dev/ttyXTRA0               0660   radio       radio
 
 # Sensors
 /dev/mmc31xx		    0666   root        system

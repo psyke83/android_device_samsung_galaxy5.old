@@ -83,6 +83,10 @@
 #define AUDIO_SET_AGC        _IOW(AUDIO_IOCTL_MAGIC, 90, unsigned)
 #define AUDIO_SET_NS         _IOW(AUDIO_IOCTL_MAGIC, 91, unsigned)
 #define AUDIO_SET_TX_IIR     _IOW(AUDIO_IOCTL_MAGIC, 92, unsigned)
+#define AUDIO_GET_BUF_CFG    _IOW(AUDIO_IOCTL_MAGIC, 93, \
+					struct msm_audio_buf_cfg)
+#define AUDIO_SET_BUF_CFG    _IOW(AUDIO_IOCTL_MAGIC, 94, \
+					struct msm_audio_buf_cfg)
 
 #define	AUDIO_MAX_COMMON_IOCTL_NUM	100
 
@@ -146,6 +150,11 @@ struct msm_audio_config {
 struct msm_audio_stream_config {
 	uint32_t buffer_size;
 	uint32_t buffer_count;
+};
+
+struct msm_audio_buf_cfg{
+	uint32_t meta_info_enable;
+	uint32_t frames_per_buf;
 };
 
 struct msm_audio_stats {

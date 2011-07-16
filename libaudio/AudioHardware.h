@@ -26,8 +26,8 @@
 #include <hardware_legacy/AudioHardwareBase.h>
 
 extern "C" {
-#include <msm_audio.h>
-#include <msm_audio_voicememo.h>
+#include "msm_audio.h"
+#include "msm_audio_voicememo.h"
 }
 
 namespace android {
@@ -165,7 +165,6 @@ public:
 
     virtual status_t    setVoiceVolume(float volume);
     virtual status_t    setMasterVolume(float volume);
-
     virtual status_t    setMode(int mode);
 
     // mic mute

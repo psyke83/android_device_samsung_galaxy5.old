@@ -11,7 +11,6 @@ stl14
 mmcblk0p2"
 PHONEFOLDERS="
 data
-log
 misc
 "
 
@@ -101,10 +100,10 @@ echo "Operation complete. You need to reboot for filesystem tweaks to take effec
 # Deactivate app2sd
 convert_app2sd() {
 rm /mnt/stl13/.mad2sd_convert
-rm -r /mnt/stl13/cache
-mv /mnt/stl13/data /mnt/stl13/mad2sd-temp
+rm -r /mnt/stl13/mad2sd-cache
+mv /mnt/stl13/mad2sd-data /mnt/stl13/mad2sd-temp
 for PHONEFOLDER in $PHONEFOLDERS; do
-	rm /mnt/bmmcblk0p2/$PHONEFOLDER
+	rm /mnt/mmcblk0p2/$PHONEFOLDER
 	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/
 done
 mv /mnt/mmcblk0p2/* /mnt/stl13/
@@ -116,22 +115,24 @@ rm -r /mnt/mmcblk0p2 /mnt/stl13/mad2sd-temp
 # Activate app2sd
 convert_normal() {
 rm -r /mnt/stl13/.mad2sd_convert /mnt/mmcblk0p2
-mkdir /mnt/stl13/mad2sd-temp
+mkdir -m 771 /mnt/stl13/mad2sd-temp
+chown system:system /mnt/stl13/mad2sd-temp
 mv /mnt/stl13/* /mnt/stl13/mad2sd-temp/
 mv /mnt/stl13/.nvmac* /mnt/stl13/mad2sd-temp/
 mv /mnt/stl13/.swap /mnt/stl13/mad2sd-temp/
-mkdir /mnt/stl13/mad2sd-data
-mkdir /mnt/stl13/cache
+mkdir -m 771 /mnt/stl13/mad2sd-data
+mkdir -m 771 /mnt/stl13/mad2sd-cache
+chown system:system /mnt/stl13/mad2sd-data
+chown system:cache /mnt/stl13/mad2sd-cache
 for PHONEFOLDER in $PHONEFOLDERS; do
 	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/mad2sd-data/$PHONEFOLDER
 done
 mv /mnt/stl13/mad2sd-temp/* /mnt/mmcblk0p2/
 mv /mnt/stl13/mad2sd-temp/.nvmac* /mnt/mmcblk0p2/
 mv /mnt/stl13/mad2sd-temp/.swap /mnt/mmcblk0p2/
-mv /mnt/stl13/mad2sd-data /mnt/stl13/data
 rm -r /mnt/stl13/mad2sd-temp
 for PHONEFOLDER in $PHONEFOLDERS; do
-	ln -s /mnt/stl13/data/$PHONEFOLDER /mnt/mmcblk0p2/
+	ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER /mnt/mmcblk0p2/
 done
 touch /mnt/mmcblk0p2/.mad2sd
 }
@@ -144,12 +145,25 @@ rm -r /cache/download
 ln -s /data/download /cache
 }
 
+# Temporary feature to migrate mad2sd folder names
+fix_foldernames() {
+if [ -d /mnt/stl13/data ]; then
+	mv /mnt/stl13/data /mnt/stl13/mad2sd-data
+	mv /mnt/stl13/cache /mnt/stl13/mad2sd-cache
+	for PHONEFOLDER in $PHONEFOLDERS; do
+		rm /mnt/mmcblk0p2/$PHONEFOLDER
+		ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER /mnt/mmcblk0p2/
+	done
+fi
+}
+
 mount_app2sd() {
+fix_foldernames
 mount -o move /mnt/mmcblk0p2 /data
-mount -o bind /mnt/stl13/cache /cache
+mount -o bind /mnt/stl13/mad2sd-cache /cache
 umount /dev/block/stl14
 rm -r /cache/download
-mkdir /cache/download
+mkdir -m 771 /cache/download
 chown system:cache /cache/download
 }
 

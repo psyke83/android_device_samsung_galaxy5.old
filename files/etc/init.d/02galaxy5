@@ -9,10 +9,9 @@ ln -s /data/data/misc/vpn /data/misc/
 
 # Tweak drives for better speed
 
-READ_AHEAD_KB="1024";
-NR_REQUESTS="1024";
-DRIVES="
-stl12
+READ_AHEAD_KB="256";
+NR_REQUESTS="256";
+DRIVES="stl12
 stl13
 stl14"
 for DRIVE in $DRIVES;
@@ -22,12 +21,12 @@ do
 	echo 0 > /sys/block/$DRIVE/queue/rotational;
 done;
 
-READ_AHEAD_KB="2048";
-NR_REQUESTS="4";
+READ_AHEAD_KB="256";
+NR_REQUESTS="256";
 DRIVES="mmcblk0"
 for DRIVE in $DRIVES;
 do
-	echo deadline > /sys/block/$DRIVE/queue/scheduler;
+	#echo deadline > /sys/block/$DRIVE/queue/scheduler;
 	echo $NR_REQUESTS > /sys/block/$DRIVE/queue/nr_requests;
 	echo $READ_AHEAD_KB > /sys/block/$DRIVE/queue/read_ahead_kb;
 	echo 0 > /sys/block/$DRIVE/queue/rotational;
