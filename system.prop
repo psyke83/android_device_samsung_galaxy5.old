@@ -34,10 +34,8 @@ ro.com.google.locationfeatures=1
 ro.com.google.networklocation=1
 ro.setupwizard.enable_bypass=1
 
-# Cyanogen
-ro.compcache.default=18
-
 # Graphics
+ro.media.dec.jpeg.memcap=20000000
 ro.sf.lcd_density=120
 ro.opengles.version=131072
 
@@ -54,11 +52,12 @@ android.keylayout.europa_headset=/system/usr/keylayout/europa_headset.kl
 android.keychar.europa_keypad0=/system/usr/keychars/europa_keypad0.kcm.bin
 
 # Performance settings
+ro.compcache.default=0
 dalvik.vm.dexopt-flags=m=y
 dalvik.vm.execution-mode=int:jit
-dalvik.vm.heapsize=16m
+dalvik.vm.heapsize=24m
 persist.sys.purgeable_assets=1
-persist.sys.use_dithering=0
+persist.sys.use_dithering=1
 
 # JNI debugging
 ro.kernel.android.checkjni=0

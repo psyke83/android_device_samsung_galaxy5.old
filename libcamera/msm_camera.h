@@ -125,6 +125,18 @@
 #define MSM_CAM_CTRL_CMD_DONE  0
 #define MSM_CAM_SENSOR_VFE_CMD 1
 
+#if 1//PCAM
+typedef struct{
+	unsigned short mode;
+	unsigned short address;
+	unsigned short value_1;
+	unsigned short value_2;
+	unsigned short value_3;
+} ioctl_pcam_info_8bit;
+
+#define MSM_CAM_IOCTL_PCAM_CTRL_8BIT   _IOWR(MSM_CAM_IOCTL_MAGIC, 40, ioctl_pcam_info_8bit)
+#endif//PCAM
+
 /*****************************************************
  *  structure
  *****************************************************/
@@ -315,6 +327,32 @@ struct outputCfg {
 #define OUTPUT_TYPE_S		3
 #define OUTPUT_TYPE_V		4
 
+/* have to sync with values in HAL layer*/
+#define CAMERA_BRIGTHNESS_0		0
+#define CAMERA_BRIGTHNESS_1		1
+#define CAMERA_BRIGTHNESS_2		2
+#define CAMERA_BRIGTHNESS_3		3
+#define CAMERA_BRIGTHNESS_4		4
+#define CAMERA_BRIGTHNESS_5		5
+#define CAMERA_BRIGTHNESS_6		6
+
+#define CAMERA_WB_AUTO				1
+#define CAMERA_WB_INCANDESCENT		3
+#define CAMERA_WB_FLUORESCENT		4
+#define CAMERA_WB_DAYLIGHT			5
+#define CAMERA_WB_CLOUDY_DAYLIGHT	6
+
+#define CAMERA_ISOValue_AUTO		0
+#define CAMERA_ISOValue_100		3
+#define CAMERA_ISOValue_200		4
+#define CAMERA_ISOValue_400		5
+
+#define CAMERA_AEC_FRAME_AVERAGE		0
+#define CAMERA_AEC_CENTER_WEIGHTED		1
+#define CAMERA_AEC_SPOT_METERING		2
+
+ 
+
 struct msm_frame {
 	struct timespec ts;
 	int path;
@@ -391,23 +429,9 @@ struct msm_snapshot_pp_status {
 #define CFG_GET_AF_MAX_STEPS		26
 #define CFG_GET_PICT_MAX_EXP_LC		27
 #define CFG_SEND_WB_INFO    28
-#define CFG_MAX 			29
-
-/* LGE_CHANGE_S [junyeong.han@lge.com] Add CFG values for auto focus */
-/* 2010-05-02: Add auto-focus values */
-/* 2010-05-05: Add setting iso values */
-/* 2010-05-14: Add setting scene values */
-#if defined (CONFIG_ISX005)
-#define CFG_START_AF_FOCUS	101
-#define CFG_CHECK_AF_DONE	102
-#define CFG_CHECK_AF_CANCEL	103
-#define CFG_AF_LOCKED		104
-#define CFG_AF_UNLOCKED		105
-
-#define CFG_SET_ISO			201
-#define CFG_SET_SCENE		202
-#endif
-/* LGE_CHANGE_E [junyeong.han@lge.com] */
+// Features for EUROPA
+#define CFG_SET_ISO			29
+#define CFG_MAX 30
 
 #define MOVE_NEAR	0
 #define MOVE_FAR	1
@@ -429,18 +453,9 @@ struct msm_snapshot_pp_status {
 #define CAMERA_EFFECT_WHITEBOARD	6
 #define CAMERA_EFFECT_BLACKBOARD	7
 #define CAMERA_EFFECT_AQUA		8
-
-/* LGE_CHANGE_S [junyeong.han@lge.com] Add CAMERA_EFFECT values */
-/* 2010-05-13: Add CAMERA_EFFECT values */
-#if defined (CONFIG_ISX005)
-#define CAMERA_EFFECT_NEGATIVE_SEPIA	9
-#define CAMERA_EFFECT_BLUE				10
-#define CAMERA_EFFECT_PASTEL			11
-#define CAMERA_EFFECT_MAX				12
-#else	/* 5330 origin */
 #define CAMERA_EFFECT_MAX		9
-#endif
-/* LGE_CHANGE_E [junyeong.han@lge.com] */
+
+
 
 struct sensor_pict_fps {
 	uint16_t prevfps;
@@ -475,6 +490,13 @@ struct sensor_cfg_data {
 
 	union {
 		int8_t effect;
+		
+#if defined(CONFIG_MACH_EUROPA)
+		int8_t brightness;
+		int8_t whitebalance;
+		int8_t iso;
+		int8_t metering;
+#endif
 		uint8_t lens_shading;
 		uint16_t prevl_pf;
 		uint16_t prevp_pl;
@@ -489,26 +511,6 @@ struct sensor_cfg_data {
 		struct wb_info_cfg wb_info;
 	} cfg;
 };
-// LGE ejoon.kim@lge.com mode add
-#define CAMERA_YUV_WB_AUTO						1
-#define CAMERA_YUV_WB_INCANDESCENT			2
-#define CAMERA_YUV_WB_DAYLIGHT				3
-#define CAMERA_YUV_WB_FLUORESCENT			4
-#define CAMERA_YUV_WB_CLOUDY_DAYLIGHT		5
-
-#define CAMERA_YUV_ISO_AUTO		1
-#define CAMERA_YUV_ISO_800			2
-#define CAMERA_YUV_ISO_400			3
-#define CAMERA_YUV_ISO_200			4
-#define CAMERA_YUV_ISO_100			5
-
-#define CAMERA_SCENEMODE_AUTO 				1
-#define CAMERA_SCENEMODES_PORTRAIT 			2
-#define CAMERA_SCENEMODES_LANDSCAPE 		3
-#define CAMERA_SCENEMODES_SPORTS 			4
-#define CAMERA_SCENEMODES_NIGHT 				5
-#define CAMERA_SCENEMODES_SUNSET 			6
-// LGE End
 
 #define GET_NAME			0
 #define GET_PREVIEW_LINE_PER_FRAME	1

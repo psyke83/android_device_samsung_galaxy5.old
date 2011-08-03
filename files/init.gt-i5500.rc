@@ -1,5 +1,19 @@
 on init
 
+# Tweak memory thresholds
+	setprop ro.FOREGROUND_APP_MEM 1536
+	setprop ro.VISIBLE_APP_MEM 2048
+	setprop ro.PERCEPTIBLE_APP_MEM 6144
+	setprop ro.HEAVY_WEIGHT_APP_MEM 6144
+	setprop ro.SECONDARY_SERVER_MEM 8192
+	setprop ro.BACKUP_APP_MEM 8192
+	setprop ro.HOME_APP_MEM 8192
+	setprop ro.HIDDEN_APP_MEM 12288
+	setprop ro.EMPTY_APP_MEM 15360
+
+# Tweak lowmemorykiller thresholds
+	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,6144,8192,12288,15360
+
 # Put download cache on /data partition due to size limitations
 	export DOWNLOAD_CACHE /data/download
 
@@ -9,43 +23,27 @@ on init
 	mkdir /mnt/stl13
 	mkdir /mnt/stl14
 
-# Insert modules
+# Insert FSR modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
-	insmod /lib/modules/rfs_glue.ko
-	insmod /lib/modules/rfs_fat.ko
-	insmod /lib/modules/sec_param.ko
-	insmod /lib/modules/acc_cal_param.ko
-	insmod /lib/modules/ramzswap.ko
-	#insmod /lib/modules/cifs.ko
 
 on fs
 
 # Mount partitions
-	# System
-	mount ext4 /dev/block/stl12 /system barrier=0 noauto_da_alloc
-
-	# SD Card
-	mount ext4 /dev/block/mmcblk0p2 /mnt/mmcblk0p2 nosuid nodev barrier=0 noauto_da_alloc
-
-	# Data
-	mount ext4 /dev/block/stl13 /mnt/stl13 nosuid nodev barrier=0 noauto_da_alloc
-
-	# Cache
-	mount ext4 /dev/block/stl14 /mnt/stl14 nosuid nodev barrier=0 noauto_da_alloc
-
+	mount ext4 /dev/block/stl12 /system wait noatime nodiratime noauto_da_alloc
+	mount ext4 /dev/block/mmcblk0p2 /mnt/mmcblk0p2 wait nosuid nodev noatime nodiratime noauto_da_alloc
+	mount ext4 /dev/block/stl13 /mnt/stl13 wait nosuid nodev noatime nodiratime noauto_da_alloc
+	mount ext4 /dev/block/stl14 /mnt/stl14 wait nosuid nodev noatime nodiratime noauto_da_alloc
 	start mad2sd
-	wait 6
+	wait 1
 
 on boot
 
-# Crazy tweak that makes the phone work perfectly
-	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,6144,8192,12288,15360
+# Insert sensor modules
+	insmod /system/lib/modules/sec_param.ko
+	insmod /system/lib/modules/acc_cal_param.ko
 
 # Set up WiFi and Bluetooth as soon as possible
-	#insmod /system/wifi/ar6000.ko
-	#setprop wlan.driver.status "ok"
-	#setprop wlan.apmode "unloaded"
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
 # Put download cache on /data partition due to size limitations
@@ -56,7 +54,7 @@ on boot
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/down_differential 3
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 50000
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 122880
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 245760
         write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 604800
 
 # For VPN (workaround)
@@ -79,8 +77,6 @@ on boot
 	chmod 0666 /sys/module/bluetooth_power/parameters/power
 	chmod 0666 /sys/class/rfkill/rfkill0/state
 	chmod 0666 /proc/bluetooth/sleep/proto
-	chown bluetooth bluetooth /dev/ttyHS0
-	chmod 0666 /dev/ttyHS0
 	chown bluetooth bluetooth /sys/devices/platform/msm_serial_hs.0/clock
 	chmod 0666 /sys/devices/platform/msm_serial_hs.0/clock
 
@@ -96,16 +92,6 @@ on boot
 
 # Permission for ril
 	mkdir /data/misc/radio 0774 radio radio
-	chown radio system /dev/pm_monitor
-	chmod 0770 /dev/pm_monitor
-  	chown radio system /dev/oncrpc/30000016:9c95bb4d
-	chown radio system /dev/oncrpc/30000000:dd7fe79a
-	chown radio system /dev/oncrpc/30000019:821a1945
-	chown radio system /dev/oncrpc/3000003c:beb78360
-	chown radio system /dev/oncrpc/30000003:d03123cc
-	chown radio system /dev/oncrpc/3000000e:00060000
-	chown radio system /dev/oncrpc/30000012:00010000
-	chmod 0777 /dev/oncrpc/3000000e:00060000
 	mkdir /data/local
 	chmod 0777 /data/local
 	chown radio shell /data/local
@@ -116,36 +102,16 @@ on boot
 # For qmuxd socket
 	mkdir /data/radio 0770 radio radio
 	chown radio radio 0770 /data/radio
-	chown radio system /dev/pm_monitor
 
 # SD card polling
 	chown system system /sys/module/g_android/parameters/product_id
 	chown system system /sys/devices/platform/msm_sdcc.1/polling
 	chown system system /sys/devices/platform/msm_sdcc.2/polling
-	chown system system /sys/devices/platform/msm_sdcc.3/polling
-	chown system system /sys/devices/platform/msm_sdcc.4/polling
 	chown system system /sys/devices/platform/android_usb/composition
-	chown system system /sys/devices/platform/android_usb/remote_wakeup
-
-# Enable MASS storage on SDCARD
-	write /sys/devices/platform/mass_storage/lun0/file /dev/block/mmcblk0p1
-	write /sys/bus/platform/drivers/msm_sdcc/msm_sdcc.1/polling 1
 
 # anr mode chage
 	mkdir /data/anr 0777 system system 
 	chmod 0777 /data/anr
-
-	chmod 0662 /dev/log/system
-	chmod 0662 /dev/log/radio
-	chmod 0662 /dev/log/events
-	chmod 0662 /dev/log/main
-    
-# ihryu 2010.07.19
-	setprop ro.rfkilldisabled 0
-
-# for datarouter
-	chown system system /dev/ttygs0
-	chown system system /dev/dun    
 
 # MAX8899 headset detect 
 	chown radio system /sys/class/switch/h2w/state
@@ -153,6 +119,9 @@ on boot
 # for silent reset
 	chown system system /proc/dump_enable
 	chown system system /proc/silent
+
+# for Dump On/Off
+	chmod 0777 /data/dump_enable
 
 # for multi csc
 	chown radio radio /proc/LinuStoreIII/efs_info 
@@ -171,75 +140,6 @@ on boot
 	chmod 0777 /data/stream_headset.txt
 	chmod 0777 /data/stream_speaker.txt
 
-# for Dump On/Off
-	chmod 0777 /data/dump_enable
-
-## USB
-	chmod 0666 /sys/devices/platform/msm_hsusb_periphera/composition
-	chmod 0666 /dev/oncrpc/3000008c:00050000
-
-# Memory card
-	chown system system /sys/devices/platform/msm_sdcc.1/detect_change
-	chown system system /sys/devices/platform/msm_sdcc.2/detect_change
-	chown system system /sys/devices/platform/msm_sdcc.3/detect_change
-	chown system system /sys/devices/platform/msm_sdcc.4/detect_change
-
-	chown root root /dev/hw3d
-	chmod 0666 /dev/hw3d
-	chown root root /dev/kgsl-3d0
-	chmod 0666 /dev/kgsl-3d0
-	chmod 0666 /dev/pmem
-	chown system graphics /dev/pmem_gpu
-	chmod 0666 /dev/pmem_gpu
-	chown system graphics /dev/pmem_gpu1
-	chmod 0666 /dev/pmem_gpu1
-	chown system audio /dev/msm_aac
-	chmod 0660 /dev/msm_aac
-	chown system audio /dev/msm_amrnb_in
-	chmod 0660 /dev/msm_amrnb_in
-	chown system audio /dev/msm_amrnb
-	chmod 0660 /dev/msm_amrnb
-	chown system audio /dev/msm_qcelp
-	chmod 0660 /dev/msm_qcelp
-	chown system audio /dev/msm_evrc
-	chmod 0660 /dev/msm_evrc
-	chown system audio /dev/msm_voicememo
-	chmod 0660 /dev/msm_voicememo
-	chown system graphics /dev/msm_rotator
-	chmod 0660 /dev/msm_rotator
-	chown system audio /dev/msm_preproc_ctl
-	chmod 0660 /dev/msm_preproc_ctl
-
-## AUDIO - SBA52101007
-	chown system audio /dev/pmem_smipool
-	chmod 0660 /dev/pmem_smipool
-	chown system audio /dev/pmem_audio
-	chmod 0660 /dev/pmem_audio
-
-## QCT5320
-	chown system audio /dev/msm_amr_in
-	chmod 0660 /dev/msm_amr_in
-	chown system audio /dev/msm_amrwb
-	chmod 0660 /dev/msm_amrwb
-	chown system audio /dev/msm_vidc_reg
-	chmod 0660 /dev/msm_vidc_reg
-	chown system audio /dev/msm_vidc_dec
-	chmod 0660 /dev/msm_vidc_dec
-	chown system audio /dev/msm_vidc_enc
-	chmod 0660 /dev/msm_vidc_enc
-
-	chmod 0666 /dev/graphics/fb0
-	chmod 0666 /sys/class/leds/lcd-backlight/alc
-
-	chown system system /dev/system_bus_freq
-	chmod 0660 /dev/system_bus_freq
-	chown system system /dev/cpu_dma_latency
-	chmod 0660 /dev/cpu_dma_latency
-
-	mkdir /data/radio 0770 radio radio
-	chown system radio /dev/rtc1
-	chmod 0660 radio /dev/rtc1
-
 # WIFI
 	mkdir /data/misc/wifi/sockets 0770 wifi wifi
 	mkdir /data/misc/wifi/hostapd 0770 wifi wifi
@@ -249,17 +149,11 @@ on boot
 	mkdir /data/misc/dhcp 0777 system system
 	chmod 0666 /data/bdaddr
 
-# Permissions for qmuxd
-	chown radio radio /dev/smdcntl0
-	chown radio radio /dev/smdcntl1
-	chown radio radio /dev/smdcntl2
-
-#service qmuxd /system/bin/qmuxd
-#	user radio
-#	group system radio inet
+service qmuxd /system/bin/qmuxd
+	user radio
+	group system radio inet
 
 service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 --patchram /system/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd /dev/ttyHS0
-#service hciattach /system/bin/hciattach /dev/ttyHS0 any
 	user bluetooth
 	group bluetooth net_bt_admin
 	disabled
@@ -285,9 +179,6 @@ service hostapd /system/bin/hostapd /data/misc/wifi/hostapd.conf
 	oneshot
 	disabled
 
-service flash_recovery /system/etc/install-recovery.sh
-	oneshot
-
 service get_macaddrs /system/bin/get_macaddrs
 	user root
 	oneshot
@@ -297,11 +188,15 @@ service memsicd /system/bin/memsicd
 	user system
 	group system
 	oneshot
+	disabled
 
-service mad2sd /sbin/mad2sd doboot
+service mad2sd /system/bin/mad2sd doboot
 	user root
 	oneshot
 	disabled
 
 on property:init.svc.ril-daemon=running
 	start get_macaddrs
+
+on property:dev.bootcomplete=1
+	start memsicd

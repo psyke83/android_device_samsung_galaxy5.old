@@ -77,7 +77,7 @@ struct board_property{
 #define CAMERA_MAX_SATURATION 4
 #define CAMERA_MAX_EXPOSURE_COMPENSATION 8
 #define CAMERA_DEF_SHARPNESS 2
-#define CAMERA_DEF_CONTRAST 3
+#define CAMERA_DEF_CONTRAST 2
 #define CAMERA_DEF_SATURATION 2
 #define CAMERA_DEF_EXPOSURE_COMPENSATION "2.0"
 #define CAMERA_EXPOSURE_COMPENSATION_STEP 2
@@ -135,12 +135,12 @@ typedef uint8_t jpeg_event_t;
 
 typedef enum {
 	CAMERA_WB_MIN_MINUS_1,
-	CAMERA_WB_AUTO = 1,  /* This list must match aeecamera.h */
+	//CAMERA_WB_AUTO = 1,  /* This list must match aeecamera.h */
 	CAMERA_WB_CUSTOM,
-	CAMERA_WB_INCANDESCENT,
-	CAMERA_WB_FLUORESCENT,
-	CAMERA_WB_DAYLIGHT,
-	CAMERA_WB_CLOUDY_DAYLIGHT,
+	//CAMERA_WB_INCANDESCENT,
+	//CAMERA_WB_FLUORESCENT,
+	//CAMERA_WB_DAYLIGHT,
+	//CAMERA_WB_CLOUDY_DAYLIGHT,
 	CAMERA_WB_TWILIGHT,
 	CAMERA_WB_SHADE,
 	CAMERA_WB_MAX_PLUS_1
@@ -161,9 +161,9 @@ typedef enum {
 } isp3a_af_mode_t;
 
 enum {
-	CAMERA_AEC_FRAME_AVERAGE,
-	CAMERA_AEC_CENTER_WEIGHTED,
-	CAMERA_AEC_SPOT_METERING,
+	//CAMERA_AEC_FRAME_AVERAGE,
+	//CAMERA_AEC_CENTER_WEIGHTED,
+	//CAMERA_AEC_SPOT_METERING,
 };
 
 enum {
@@ -490,7 +490,6 @@ private:
     sp<PmemPool> mDisplayHeap;
     sp<AshmemPool> mJpegHeap;
     sp<PmemPool> mRawSnapShotPmemHeap;
-    sp<AshmemPool> mRawSnapshotAshmemHeap;
     sp<PmemPool> mPostViewHeap;
 
 

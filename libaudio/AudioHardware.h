@@ -165,6 +165,8 @@ public:
 
     virtual status_t    setVoiceVolume(float volume);
     virtual status_t    setMasterVolume(float volume);
+    //virtual status_t    setFmVolume(float volume);
+
     virtual status_t    setMode(int mode);
 
     // mic mute
@@ -209,6 +211,7 @@ private:
     uint32_t    getInputSampleRate(uint32_t sampleRate);
     bool        checkOutputStandby();
     status_t    doRouting(AudioStreamInMSM72xx *input);
+    status_t    setFmOnOff(bool onoff);
     AudioStreamInMSM72xx*   getActiveInput_l();
 
     class AudioStreamOutMSM72xx : public AudioStreamOut {
@@ -300,6 +303,7 @@ private:
             msm_snd_endpoint *mSndEndpoints;
             int mNumSndEndpoints;
             int mCurSndDevice;
+            int mFmRadioEnabled;
             int m7xsnddriverfd;
             bool        mDualMicEnabled;
             int         mTtyMode;

@@ -1,7 +1,3 @@
-#$(call inherit-product, build/target/product/full.mk)
-
-DEVICE_PACKAGE_OVERLAYS += device/samsung/galaxy5/overlay
-
 ifeq ($(TARGET_PREBUILT_KERNEL),)
 	LOCAL_KERNEL := device/samsung/galaxy5/kernel
 else
@@ -12,11 +8,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel
 
 PRODUCT_PACKAGES += \
-    rzscontrol \
-    librs_jni \
     libOmxCore \
     libOmxVidEnc \
-    libmm-omxcore \
     brcm_patchram_plus \
     gps.galaxy5 \
     gralloc.galaxy5 \
@@ -32,43 +25,61 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     e2fsck
 
+# Boot screen
+#PRODUCT_COPY_FILES += \
+#    device/samsung/galaxy5/files/root/EUROPA.rle:root/EUROPA.rle \
+#    device/samsung/galaxy5/files/root/EUROPA.rle:recovery/root/EUROPA.rle
+
 # Live wallpaper packages
 PRODUCT_PACKAGES += \
     LiveWallpapers \
     LiveWallpapersPicker \
     MagicSmokeWallpapers \
     VisualizationWallpapers \
+    librs_jni
+
+# Hardware properties
+PRODUCT_COPY_FILES += \
+    frameworks/base/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
+    frameworks/base/data/etc/android.hardware.camera.xml:system/etc/permissions/android.hardware.camera.xml \
+    frameworks/base/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
+    frameworks/base/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
+    frameworks/base/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
+    frameworks/base/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
+    frameworks/base/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
+    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/android.hardware.touchscreen.xml
 
 # Publish that we support the live wallpaper feature.
 PRODUCT_COPY_FILES += \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:/system/etc/permissions/android.software.live_wallpaper.xml
 
-# Kernel modules
+# Kernel modules - normal
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/fsr.ko:root/lib/modules/fsr.ko \
     device/samsung/galaxy5/files/root/lib/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
-    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:root/lib/modules/rfs_fat.ko \
-    device/samsung/galaxy5/files/root/lib/modules/rfs_glue.ko:root/lib/modules/rfs_glue.ko \
-    device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
-    device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
-    device/samsung/galaxy5/files/root/lib/modules/cifs.ko:system/lib/modules/cifs.ko
+    device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:system/lib/modules/acc_cal_param.ko \
+    device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:system/lib/modules/sec_param.ko \
+    device/samsung/galaxy5/files/root/lib/modules/zram.ko:system/lib/modules/zram.ko
+
+# Kernel modules - recovery
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/files/root/lib/modules/rfs_glue.ko:recovery/root/lib/modules/rfs_glue.ko \
+    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:recovery/root/lib/modules/rfs_fat.ko
 
 # Device-specific keymaps
 PRODUCT_COPY_FILES += \
-    vendor/samsung/galaxy5/proprietary/usr/keylayout/AVRCP.kl:system/usr/keylayout/AVRCP.kl \
     vendor/samsung/galaxy5/proprietary/usr/keylayout/europa_headset.kl:system/usr/keylayout/europa_headset.kl \
     vendor/samsung/galaxy5/proprietary/usr/keylayout/europa_keypad0.kl:system/usr/keylayout/europa_keypad0.kl \
     vendor/samsung/galaxy5/proprietary/usr/keylayout/qwerty.kl:system/usr/keylayout/qwerty.kl \
-    vendor/samsung/galaxy5/proprietary/usr/keychars/europa_keypad0.kcm.bin:system/usr/keychars/europa_keypad0.kcm.bin \
-    vendor/samsung/galaxy5/proprietary/usr/keychars/qwerty.kcm.bin:system/usr/keychars/qwerty.kcm.bin \
-    vendor/samsung/galaxy5/proprietary/usr/keychars/qwerty2.kcm.bin:system/usr/keychars/qwerty2.kcm.bin
+    vendor/samsung/galaxy5/proprietary/usr/keychars/europa_keypad0.kcm.bin:system/usr/keychars/europa_keypad0.kcm.bin
 
 # Board-specific init
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/ueventd.gt-i5500.rc:root/ueventd.gt-i5500.rc \
     device/samsung/galaxy5/files/init.gt-i5500.rc:root/init.gt-i5500.rc \
     device/samsung/galaxy5/files/bin/get_macaddrs:system/bin/get_macaddrs \
-    device/samsung/galaxy5/files/bin/mad2sd:root/sbin/mad2sd \
+    device/samsung/galaxy5/files/bin/mad2sd:system/bin/mad2sd \
+    device/samsung/galaxy5/files/etc/sysctl.conf:system/etc/sysctl.conf \
     device/samsung/galaxy5/files/etc/init.d/02galaxy5:system/etc/init.d/02galaxy5
 
 # Sensors
@@ -100,6 +111,7 @@ PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/wifi/ath6k/AR6003/hw2.0/data.patch.bin:system/wifi/ath6k/AR6003/hw2.0/data.patch.bin \
     vendor/samsung/galaxy5/proprietary/wifi/ath6k/AR6003/hw2.0/otp.bin.z77:system/wifi/ath6k/AR6003/hw2.0/otp.bin.z77 \
     device/samsung/galaxy5/files/wifi/ar6000.ko:system/wifi/ar6000.ko \
+    device/samsung/galaxy5/files/bin/dhcpcd:system/bin/dhcpcd \
     vendor/samsung/galaxy5/proprietary/bin/wlan_tool:system/bin/wlan_tool \
     vendor/samsung/galaxy5/proprietary/bin/wmiconfig:system/bin/wmiconfig \
     vendor/samsung/galaxy5/proprietary/bin/hostapd:system/bin/hostapd \
@@ -124,39 +136,18 @@ PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/lib/libaudioeq.so:system/lib/libaudioeq.so \
     device/samsung/galaxy5/files/etc/AutoVolumeControl.txt:system/etc/AutoVolumeControl.txt
 
-# Device permissions
-PRODUCT_COPY_FILES += \
-    frameworks/base/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
-    frameworks/base/data/etc/android.hardware.camera.xml:system/etc/permissions/android.hardware.camera.xml \
-    frameworks/base/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
-    frameworks/base/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
-    frameworks/base/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
-    frameworks/base/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
-    frameworks/base/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
-    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml
-
-# Move dalvik-cache to /data
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dexopt-data-only=1
-
-# Samsung RIL
-#PRODUCT_COPY_FILES += \
-#    vendor/samsung/galaxy5/proprietary/lib/libsec-ril.so:system/lib/libsec-ril.so
-
 # Samsung RIL
 PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/bin/rild:system/bin/rild \
+    vendor/samsung/galaxy5/proprietary/bin/qmuxd:system/bin/qmuxd \
     vendor/samsung/galaxy5/proprietary/lib/libril.so:system/lib/libril.so \
     vendor/samsung/galaxy5/proprietary/lib/libsec-ril.so:system/lib/libsec-ril.so \
     vendor/samsung/galaxy5/proprietary/lib/libsecril-client.so:system/lib/libsecril-client.so \
-    vendor/samsung/galaxy5/proprietary/lib/libseccamera.so:system/lib/libseccamera.so \
-    vendor/samsung/galaxy5/proprietary/lib/libsecgps.so:system/lib/libsecgps.so
+    vendor/samsung/galaxy5/proprietary/lib/libdiag.so:system/lib/libdiag.so
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd:system/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd
-
-#vendor/samsung/galaxy5/proprietary/bin/BCM2049C0_BCM20780C0_003.001.031.0063.0067.hcd:system/bin/BCM2049C0_BCM20780C0_003.001.031.0063.0067.hcd
 
 # OMX libraries
 PRODUCT_COPY_FILES += \
@@ -185,14 +176,35 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/lib/libomx_aacdec_sharedlibrary.so:system/lib/libomx_aacdec_sharedlibrary.so \
     device/samsung/galaxy5/files/lib/libomx_avcdec_sharedlibrary.so:system/lib/libomx_avcdec_sharedlibrary.so
 
-$(call inherit-product, device/common/gps/gps_us_supl.mk)
-
 $(call inherit-product, build/target/product/full_base.mk)
 
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
-PRODUCT_NAME := galaxy5
-PRODUCT_BRAND := Samsung
+# Inherit some common cyanogenmod stuff.
+$(call inherit-product, vendor/cyanogen/products/common_full.mk)
+
+# The gps config appropriate for this device
+$(call inherit-product, device/common/gps/gps_us_supl.mk)
+
+# Include GSM stuff
+$(call inherit-product, vendor/cyanogen/products/gsm.mk)
+
+# Broadcom FM radio
+$(call inherit-product, vendor/cyanogen/products/bcm_fm_radio.mk)
+
+$(call inherit-product-if-exists, vendor/samsung/galaxy5/galaxy5-vendor.mk)
+
+DEVICE_PACKAGE_OVERLAYS += device/samsung/galaxy5/overlay
+
+# LDPI assets
+PRODUCT_LOCALES += ldpi mdpi
+PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/ldpi
+PRODUCT_COPY_FILES += \
+    vendor/cyanogen/prebuilt/ldpi/media/bootanimation.zip:system/media/bootanimation.zip
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.modversion=CyanogenMod-7.1.0-RC1-MADTEAM
+
+PRODUCT_NAME := full_galaxy5
+PRODUCT_BRAND := samsung
 PRODUCT_DEVICE := galaxy5
-PRODUCT_MODEL := Samsung Galaxy5
-PRODUCT_MANUFACTURER := Samsung
-PRODUCT_BUILD_PROP_OVERRIDES += PRODUCT_NAME=galaxy5
+PRODUCT_MODEL := GT-I5500
+PRODUCT_MANUFACTURER := samsung

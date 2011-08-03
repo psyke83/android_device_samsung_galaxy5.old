@@ -30,6 +30,11 @@
 
 #include <linux/fb.h>
 
+#if defined(__cplusplus) && defined(HDMI_DUAL_DISPLAY)
+#include "overlayLib.h"
+using namespace overlay;
+#endif
+
 enum {
     /* gralloc usage bit indicating a pmem_adsp allocation should be used */
     GRALLOC_USAGE_PRIVATE_PMEM_ADSP = GRALLOC_USAGE_PRIVATE_0,
@@ -37,7 +42,7 @@ enum {
 };
 
 #define NUM_BUFFERS 2
-#undef NO_SURFACEFLINGER_SWAPINTERVAL
+#define NO_SURFACEFLINGER_SWAPINTERVAL
 #define INTERLACE_MASK 0x80
 /*****************************************************************************/
 #ifdef __cplusplus
@@ -144,9 +149,9 @@ enum {
     HAL_3D_IN_LR_SIDE  = 0x10000,
     HAL_3D_IN_LR_TOP   = 0x20000,
     HAL_3D_IN_LR_INTERLEAVE = 0x40000,
-    HAL_3D_OUT_LR_SIDE  = 0x1,
-    HAL_3D_OUT_LR_TOP   = 0x2,
-    HAL_3D_OUT_LR_INTERLEAVE = 0x4
+    HAL_3D_OUT_LR_SIDE  = 0x1000,
+    HAL_3D_OUT_LR_TOP   = 0x2000,
+    HAL_3D_OUT_LR_INTERLEAVE = 0x4000
 };
 
 /*****************************************************************************/
@@ -199,6 +204,18 @@ struct private_module_t {
         PRIV_MIN_SWAP_INTERVAL = 0,
         PRIV_MAX_SWAP_INTERVAL = 1,
     };
+#if defined(__cplusplus) && defined(HDMI_DUAL_DISPLAY)
+    Overlay* pobjOverlay;
+    int orientation;
+    bool videoOverlay;
+    uint32_t currentOffset;
+    bool enableHDMIOutput;
+    bool exitHDMIUILoop;
+    float actionsafeWidthRatio;
+    float actionsafeHeightRatio;
+    pthread_mutex_t overlayLock;
+    pthread_cond_t overlayPost;
+#endif
 };
 
 /*****************************************************************************/

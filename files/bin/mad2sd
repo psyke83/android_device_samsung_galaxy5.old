@@ -14,36 +14,7 @@ data
 misc
 "
 
-stopframework() {
-count=1
-while [ $count -lt 30 ]; do 
-	count = $(($count+1))
-	sleep 1
-	stop
-done
-}
-
-checkdisks() {
-unset needscheck
-
-for DRIVE in $DRIVES; do
-	if tune2fs -l $DRIVE | grep "needs check"; then
-	needscheck=1
-	fi
-done
-
-if [ "$needscheck" = "1" ]; then
-	stopframework&
-	for DRIVE in $DRIVES; do
-		umount $DRIVE
-		sleep 5
-		e2fsck $DRIVE
-	done
-	reboot
-fi
-}
-
-checkapp2sd() {
+mountsd() {
 unset sdcard
 if mount | grep /dev/block/mmcblk0p2 | grep /system/sd; then
 	sdcard="/system/sd"
@@ -53,12 +24,19 @@ if mount | grep /dev/block/mmcblk0p2 | grep /mnt/mmcblk0p2; then
 	sdcard="/mnt/mmcblk0p2"
 fi
 
+if mount | grep /dev/block/mmcblk0p2 | grep /data; then
+	sdcard="/data"
+fi
+
 if [ "$sdcard" = "" ]; then
 	sdcard="/system/sd"
 	mount $MOUNTOPTIONS /dev/block/mmcblk0p2 $sdcard
 	sleep 3
 fi
+}
 
+checkapp2sd() {
+unset result
 if [ -f $sdcard/.mad2sd ]; then
 	result="app2sd"
 else
@@ -71,19 +49,11 @@ fi
 }
 
 checkspace() {
-if mount | grep /dev/block/mmcblk0p2 | grep /data; then
-	mmcblk0p2="/data"
-	stl13="/cache"
-else
-	mmcblk0p2="/system/sd"
-	stl13="/data"
-fi
-
-sdused=`du -c $mmcblk0p2 | tail -n1 | awk ' { print $1 } '`
-sdfree=`df $mmcblk0p2 | tail -n1 | awk ' { print $4 } '`
-phoneused=`du -c $stl13 | tail -n1 | awk ' { print $1 } '`
-phonefree=`df $stl13 | tail -n1 | awk ' { print $4 } '`
-
+sdused=`df /dev/block/mmcblk0p2 | tail -n1 | awk ' { print $3 } '`
+sdfree=`df /dev/block/mmcblk0p2 | tail -n1 | awk ' { print $4 } '`
+phoneused=`df /dev/block/stl13 | tail -n1 | awk ' { print $3 } '`
+phonefree=`df /dev/block/stl13 | tail -n1 | awk ' { print $4 } '`
+#echo sdused=$sdused sdfree=$sdfree phoneused=$phoneused phonefree=$phonefree
 }
 
 dotweak() {
@@ -100,21 +70,23 @@ echo "Operation complete. You need to reboot for filesystem tweaks to take effec
 # Deactivate app2sd
 convert_app2sd() {
 rm /mnt/stl13/.mad2sd_convert
-rm -r /mnt/stl13/mad2sd-cache
+rm -rf /mnt/stl13/mad2sd-cache
 mv /mnt/stl13/mad2sd-data /mnt/stl13/mad2sd-temp
 for PHONEFOLDER in $PHONEFOLDERS; do
-	rm /mnt/mmcblk0p2/$PHONEFOLDER
+	rm $sdcard/$PHONEFOLDER
 	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/
 done
-mv /mnt/mmcblk0p2/* /mnt/stl13/
-mv /mnt/mmcblk0p2/.nvmac* /mnt/stl13/
-mv /mnt/mmcblk0p2/.swap /mnt/stl13/
-rm -r /mnt/mmcblk0p2 /mnt/stl13/mad2sd-temp
+mv $sdcard/* /mnt/stl13/
+mv $sdcard/.nvmac* /mnt/stl13/
+mv $sdcard/.swap /mnt/stl13/
+rm -r `find $sdcard ! -name lost+found`
+rm -rf /mnt/stl13/mad2sd-temp
 }
 
 # Activate app2sd
 convert_normal() {
-rm -r /mnt/stl13/.mad2sd_convert /mnt/mmcblk0p2
+rm /mnt/stl13/.mad2sd_convert
+rm -r `find $sdcard ! -name lost+found`
 mkdir -m 771 /mnt/stl13/mad2sd-temp
 chown system:system /mnt/stl13/mad2sd-temp
 mv /mnt/stl13/* /mnt/stl13/mad2sd-temp/
@@ -127,21 +99,21 @@ chown system:cache /mnt/stl13/mad2sd-cache
 for PHONEFOLDER in $PHONEFOLDERS; do
 	mv /mnt/stl13/mad2sd-temp/$PHONEFOLDER /mnt/stl13/mad2sd-data/$PHONEFOLDER
 done
-mv /mnt/stl13/mad2sd-temp/* /mnt/mmcblk0p2/
-mv /mnt/stl13/mad2sd-temp/.nvmac* /mnt/mmcblk0p2/
-mv /mnt/stl13/mad2sd-temp/.swap /mnt/mmcblk0p2/
-rm -r /mnt/stl13/mad2sd-temp
+mv /mnt/stl13/mad2sd-temp/* $sdcard/
+mv /mnt/stl13/mad2sd-temp/.nvmac* $sdcard/
+mv /mnt/stl13/mad2sd-temp/.swap $sdcard/
+rm -rf /mnt/stl13/mad2sd-temp
 for PHONEFOLDER in $PHONEFOLDERS; do
-	ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER /mnt/mmcblk0p2/
+	ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER $sdcard/
 done
-touch /mnt/mmcblk0p2/.mad2sd
+touch $sdcard/.mad2sd
 }
 
 mount_normal() {
 mount -o move /mnt/stl13 /data
 mount -o move /mnt/stl14 /cache
 umount /dev/block/mmcblk0p2
-rm -r /cache/download
+rm -rf /cache/download
 ln -s /data/download /cache
 }
 
@@ -151,48 +123,36 @@ if [ -d /mnt/stl13/data ]; then
 	mv /mnt/stl13/data /mnt/stl13/mad2sd-data
 	mv /mnt/stl13/cache /mnt/stl13/mad2sd-cache
 	for PHONEFOLDER in $PHONEFOLDERS; do
-		rm /mnt/mmcblk0p2/$PHONEFOLDER
-		ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER /mnt/mmcblk0p2/
+		rm $sdcard/$PHONEFOLDER
+		ln -s /mnt/stl13/mad2sd-data/$PHONEFOLDER $sdcard/
 	done
 fi
 }
 
 mount_app2sd() {
 fix_foldernames
-mount -o move /mnt/mmcblk0p2 /data
+mount -o move $sdcard /data
 mount -o bind /mnt/stl13/mad2sd-cache /cache
 umount /dev/block/stl14
-rm -r /cache/download
+rm -rf /cache/download
 mkdir -m 771 /cache/download
 chown system:cache /cache/download
 }
 
 doboot() {
-# Run checks
-checkdisks
 checkapp2sd
-if mount | grep data=ordered; then
-	dotweak&
-fi
 if [ "$result" = "error" ]; then
-	mount_normal
+	result="normal"
 fi
 if [ -f /mnt/stl13/.mad2sd_convert ]; then
-	stopframework&
-	sleep 5
-	convert_$result
-	sync
-	sleep 10
-	reboot
-	exit
+	result="error"
 fi
 mount_$result
-if [ -f /data/.swap ]; then
-	swapon /dev/block/mmcblk0p3
-fi
+exit
 }
 
 if [ "$1" = "" ]; then
+	mountsd
 	checkapp2sd
 	checkspace
 	echo ""
@@ -203,7 +163,6 @@ if [ "$1" = "" ]; then
 	echo " * off     - disable App2SD"
 	echo " * swapon  - enable swap"
 	echo " * swapoff - disable swap"
-	echo " * tweak   - optimize default filesystem attributes"
 	echo ""
 	echo "MAD Team App2SD status:"
 	echo ""
@@ -220,11 +179,17 @@ if [ "$1" = "" ]; then
 	echo ""
 fi
 
-
-mkdir /system/sd 1>>$LOG 2>>$LOG
+if [ ! -d /system/sd ]; then
+	mkdir /system/sd
+fi
 
 if [ "$1" = "doboot" ]; then
+	sdcard="/mnt/mmcblk0p2"
 	doboot
+fi
+
+if [ "$1" = "tweak" ]; then
+	dotweak
 fi
 
 if [ "$(id)" != "uid=0(root) gid=0(root)" ]; then
@@ -247,6 +212,7 @@ if [ "$1" = "swapoff" ]; then
 fi
 
 if [ "$1" = "on" ]; then
+	mountsd
 	checkapp2sd
 	if [ "$result" = "error" ]; then
 		echo "Error! App2SD partition not found."
@@ -285,6 +251,7 @@ if [ "$1" = "on" ]; then
 fi
 
 if [ "$1" = "off" ]; then
+	mountsd
 	checkapp2sd
 	if [ "$result" = "error" ]; then
 		echo "Error! App2SD partition not found"
@@ -322,8 +289,13 @@ if [ "$1" = "off" ]; then
 	fi
 fi
 
-if [ "$1" = "tweak" ]; then
-	dotweak
+if [ "$1" = "convert" ]; then
+	sdcard="/mnt/mmcblk0p2"
+	checkapp2sd
+	convert_$result
+	sync
+	sleep 5
+	reboot
 fi
 
 exit

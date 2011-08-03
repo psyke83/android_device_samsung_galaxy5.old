@@ -1,10 +1,9 @@
-USE_CAMERA_STUB := false
-
-# Fake building with froyo cam, as old libcam is not here yet
-BOARD_USE_FROYO_LIBCAMERA := true
-
 # inherit from the proprietary version
 -include vendor/samsung/galaxy5/BoardConfigVendor.mk
+
+# Camera
+USE_CAMERA_STUB := false
+#BOARD_USE_FROYO_LIBCAMERA := true
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
@@ -12,25 +11,23 @@ TARGET_BOARD_PLATFORM := msm7k
 TARGET_ARCH_VARIANT := armv6-vfp
 TARGET_CPU_ABI := armeabi-v6l
 TARGET_CPU_ABI2 := armeabi
-TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
-TARGET_BOOTLOADER_BOARD_NAME := galaxy5
 
+# Kernel
+#TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/galaxy5/recovery_kernel
+TARGET_PREBUILT_KERNEL := device/samsung/galaxy5/kernel
 BOARD_NAND_PAGE_SIZE := 4096 -s 128
 BOARD_KERNEL_CMDLINE := 
 BOARD_KERNEL_BASE := 0x00200000
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_PAGE_SIZE := 0x00001000
 
-TARGET_OTA_ASSERT_DEVICE := galaxy5
-BOARD_HAS_DOWNLOAD_MODE := true
-BOARD_LDPI_RECOVERY := true
-#BOARD_HAS_JANKY_BACKBUFFER := true
-#BOARD_USE_GR_FLIP_32 := true
+# Graphics
+BOARD_EGL_CFG := device/samsung/galaxy5/files/lib/egl/egl.cfg
+TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true
-#GRALLOC_MODULE_PERFORM_DECIDE_PUSH_BUFFER_HANDLING := true
+BOARD_USE_SCREENCAP := true
 #BOARD_NO_RGBX_8888 := true
 #TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
-BOARD_EGL_CFG := device/samsung/galaxy5/files/lib/egl/egl.cfg
 
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
@@ -50,39 +47,35 @@ BOARD_EGL_CFG := device/samsung/galaxy5/files/lib/egl/egl.cfg
 #   13: 0x11a40000-0x1dc00000 0x0c1c0000    775       22
 #   14: 0x1dc00000-0x1f500000 0x01900000    100       24
 
+# Recovery
+BOARD_BML_BOOT := /dev/block/bml9
+BOARD_BML_RECOVERY := /dev/block/bml10
+TARGET_BOOTLOADER_BOARD_NAME := galaxy5
+TARGET_OTA_ASSERT_DEVICE := galaxy5
+BOARD_HAS_DOWNLOAD_MODE := true
+BOARD_LDPI_RECOVERY := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 10485760
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 10485760
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 186122240
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 203161600
 BOARD_FLASH_BLOCK_SIZE := 4096
-
-TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/galaxy5/recovery_kernel
-TARGET_PREBUILT_KERNEL := device/samsung/galaxy5/kernel
-
-BOARD_BML_BOOT := /dev/block/bml9
-BOARD_BML_RECOVERY := /dev/block/bml10
-
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_PROVIDES_INIT := true
-TARGET_PROVIDES_INIT_TARGET_RC := true
 TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery.rc
+BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
 BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
+TARGET_RECOVERY_PRE_COMMAND := "sync; sleep 5;"
+TARGET_USERIMAGES_USE_EXT4 := true
 
-# Use screencap to capture frame buffer for ddms
-BOARD_USE_SCREENCAP := true
-
+# Audio
 TARGET_PROVIDES_LIBAUDIO := true 
-
-# Enabled For HW Video Decoding
-#TARGET_DONT_SET_AUDIO_AAC_FORMAT := true
-#TARGET_OVERLAY_ALWAYS_DETERMINES_FORMAT := true
-#TARGET_USE_SOFTWARE_AUDIO_AAC := true
 
 # Sensors
 TARGET_USES_OLD_LIBSENSORS_HAL:=true
 
+# QCOM
 BOARD_USES_QCOM_HARDWARE := true
 BOARD_USES_QCOM_LIBS := true
+
+# Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
 
@@ -104,7 +97,6 @@ WPA_SUPPLICANT_VERSION      := VER_0_5_X
 BOARD_WPA_SUPPLICANT_DRIVER := AWEXT
 BOARD_WLAN_DEVICE           := ar6000
 WIFI_DRIVER_MODULE_PATH     := "/system/wifi/ar6000.ko"
-#WIFI_DRIVER_MODULE_PATH     := rfkill
 WIFI_DRIVER_MODULE_ARG      := ""
 WIFI_DRIVER_MODULE_NAME     := ar6000
 
@@ -118,8 +110,6 @@ JS_ENGINE := v8
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
 BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
-# Should be bcm2049 but hardware is not yet supported
+# Should be bcm2049, but hardware is not yet supported
 BOARD_FM_DEVICE := bcm4325
 #BOARD_USE_BROADCOM_FM_VOLUME_HACK := true
-
-

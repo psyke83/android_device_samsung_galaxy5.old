@@ -47,6 +47,32 @@
 #include <cutils/properties.h>
 #endif
 
+#if defined(HDMI_DUAL_DISPLAY)
+#define AS_1080_RATIO_H (4.25/100)  // Default Action Safe vertical limit for 1080p
+#define AS_1080_RATIO_W (4.25/100)  // Default Action Safe horizontal limit for 1080p
+#define AS_720_RATIO_H (6.0/100)  // Default Action Safe vertical limit for 720p
+#define AS_720_RATIO_W (4.25/100)  // Default Action Safe horizontal limit for 720p
+#define AS_480_RATIO_H (8.0/100)  // Default Action Safe vertical limit for 480p
+#define AS_480_RATIO_W (5.0/100)  // Default Action Safe horizontal limit for 480p
+#define HEIGHT_1080P 1080
+#define HEIGHT_720P 720
+#define HEIGHT_480P 480
+#define EVEN_OUT(x) if (x & 0x0001) {x--;}
+using overlay::Overlay;
+/** min of int a, b */
+static inline int min(int a, int b) {
+    return (a<b) ? a : b;
+}
+/** max of int a, b */
+static inline int max(int a, int b) {
+    return (a>b) ? a : b;
+}
+/** align */
+static inline size_t ALIGN(size_t x, size_t align) {
+    return (x + align-1) & ~(align-1);
+}
+#endif
+
 /*****************************************************************************/
 
 enum {
@@ -128,6 +154,13 @@ static void *disp_loop(void *ptr)
         m->info.activate = FB_ACTIVATE_VBL;
         m->info.yoffset = offset / m->finfo.line_length;
 
+#if defined(HDMI_DUAL_DISPLAY)
+        pthread_mutex_lock(&m->overlayLock);
+        m->orientation = neworientation;
+        m->currentOffset = offset;
+        pthread_cond_signal(&(m->overlayPost));
+        pthread_mutex_unlock(&m->overlayLock);
+#endif
         if (ioctl(m->framebuffer->fd, FBIOPUT_VSCREENINFO, &m->info) == -1) {
             LOGE("ERROR FBIOPUT_VSCREENINFO failed; frame not displayed");
         }
@@ -148,6 +181,196 @@ static void *disp_loop(void *ptr)
     }
     return NULL;
 }
+
+#if defined(HDMI_DUAL_DISPLAY)
+static void *hdmi_ui_loop(void *ptr)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            ptr);
+    while (1) {
+        pthread_mutex_lock(&m->overlayLock);
+        pthread_cond_wait(&(m->overlayPost), &(m->overlayLock));
+        if (m->exitHDMIUILoop) {
+            pthread_mutex_unlock(&m->overlayLock);
+            return NULL;
+        }
+        float asWidthRatio = m->actionsafeWidthRatio/100.0f;
+        float asHeightRatio = m->actionsafeHeightRatio/100.0f;
+
+        if (m->pobjOverlay) {
+            Overlay* pTemp = m->pobjOverlay;
+            if (!m->enableHDMIOutput)
+                pTemp->closeChannel();
+            else if (m->enableHDMIOutput && !m->videoOverlay) {
+                if (!pTemp->isChannelUP()) {
+                   int alignedW = ALIGN(m->info.xres, 32); 
+                   if (pTemp->startChannel(alignedW, m->info.yres,
+                                 m->fbFormat, 1, false, true)) {
+                        pTemp->setFd(m->framebuffer->fd);
+                        pTemp->setCrop(0, 0, m->info.xres, m->info.yres);
+                   } else
+                       pTemp->closeChannel();
+                }
+
+                if (pTemp->isChannelUP()) {
+                    int width = pTemp->getFBWidth();
+                    int height = pTemp->getFBHeight();
+                    int aswidth = width, asheight = height;
+                    int asX = 0, asY = 0; // Action safe x, y co-ordinates
+                    int fbwidth = m->info.xres, fbheight = m->info.yres;
+                    float defaultASWidthRatio = 0.0f, defaultASHeightRatio = 0.0f;
+                    if(HEIGHT_1080P == height) {
+                        defaultASHeightRatio = AS_1080_RATIO_H;
+                        defaultASWidthRatio = AS_1080_RATIO_W;
+                    } else if(HEIGHT_720P == height) {
+                        defaultASHeightRatio = AS_720_RATIO_H;
+                        defaultASWidthRatio = AS_720_RATIO_W;
+                    } else if(HEIGHT_480P == height) {
+                        defaultASHeightRatio = AS_480_RATIO_H;
+                        defaultASWidthRatio = AS_480_RATIO_W;
+                    }
+                    if(asWidthRatio <= 0.0f)
+                        asWidthRatio = defaultASWidthRatio;
+                    if(asHeightRatio <= 0.0f)
+                        asHeightRatio = defaultASHeightRatio;
+
+                    aswidth = (int)((float)width  - (float)(width * asWidthRatio));
+                    asheight = (int)((float)height  - (float)(height * asHeightRatio));
+                    asX = (width - aswidth) / 2;
+                    asY = (height - asheight) / 2;
+                    int rot = m->orientation;
+                    if (fbwidth < fbheight) {
+                         switch(rot) {
+                         // ROT_0
+                         case 0:
+                         // ROT_180
+                         case HAL_TRANSFORM_ROT_180: {
+                                aswidth = (asheight * fbwidth) / fbheight;
+                                asX = (width - aswidth) / 2;
+                                if(rot ==  HAL_TRANSFORM_ROT_180)
+                                  rot = OVERLAY_TRANSFORM_ROT_180;
+                                else
+                                  rot = 0;
+                            }
+                            break;
+                         // ROT_90
+                         case HAL_TRANSFORM_ROT_90:
+                            rot = OVERLAY_TRANSFORM_ROT_270;
+                            break;
+                         // ROT_270
+                         case HAL_TRANSFORM_ROT_270:
+                            rot = OVERLAY_TRANSFORM_ROT_90;
+                            break;
+                        }
+                    }
+                    else if (fbwidth > fbheight) {
+                         switch(rot) {
+                         // ROT_0
+                         case 0:
+                            rot = 0;
+                            break;
+                         // ROT_180
+                         case HAL_TRANSFORM_ROT_180:
+                            rot = OVERLAY_TRANSFORM_ROT_180;
+                            break;
+                         // ROT_90
+                         case HAL_TRANSFORM_ROT_90:
+                         // ROT_270
+                         case HAL_TRANSFORM_ROT_270: {
+                                //Swap width and height
+                                int t = fbwidth;
+                                fbwidth = fbheight;
+                                fbheight = t;
+                                aswidth = (asheight * fbwidth) / fbheight;
+                                asX = (width - aswidth) / 2;
+                                if(rot == HAL_TRANSFORM_ROT_90)
+                                    rot = OVERLAY_TRANSFORM_ROT_270;
+                                else
+                                    rot = OVERLAY_TRANSFORM_ROT_90;
+                            }
+                            break;
+                        }
+                    }
+                    pTemp->setParameter(OVERLAY_TRANSFORM,
+                                          rot);
+                    EVEN_OUT(asX);
+                    EVEN_OUT(asY);
+                    EVEN_OUT(aswidth);
+                    EVEN_OUT(asheight);
+                    pTemp->setPosition(asX, asY, aswidth, asheight);
+                    pTemp->queueBuffer(m->currentOffset);
+                }
+            }
+            else
+                pTemp->closeChannel();
+        }
+        pthread_mutex_unlock(&m->overlayLock);
+    }
+    return NULL;
+}
+
+static int fb_videoOverlayStarted(struct framebuffer_device_t* dev, int started)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            dev->common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    Overlay* pTemp = m->pobjOverlay;
+    if (started && pTemp) {
+        pTemp->closeChannel();
+        m->videoOverlay = true;
+        pthread_cond_signal(&(m->overlayPost));
+    }
+    else {
+        m->videoOverlay = false;
+        pthread_cond_signal(&(m->overlayPost));
+    }
+    pthread_mutex_unlock(&m->overlayLock);
+    return 0;
+}
+
+static int fb_enableHDMIOutput(struct framebuffer_device_t* dev, int enable)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            dev->common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    Overlay* pTemp = m->pobjOverlay;
+    if (!enable && pTemp)
+        pTemp->closeChannel();
+    m->enableHDMIOutput = enable;
+    pthread_cond_signal(&(m->overlayPost));
+    pthread_mutex_unlock(&m->overlayLock);
+    return 0;
+}
+
+static int fb_setActionSafeWidthRatio(struct framebuffer_device_t* dev, float asWidthRatio)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            dev->common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    m->actionsafeWidthRatio = asWidthRatio;
+    pthread_mutex_unlock(&m->overlayLock);
+    return 0;
+}
+
+static int fb_setActionSafeHeightRatio(struct framebuffer_device_t* dev, float asHeightRatio)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            dev->common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    m->actionsafeHeightRatio = asHeightRatio;
+    pthread_mutex_unlock(&m->overlayLock);
+    return 0;
+}
+static int fb_orientationChanged(struct framebuffer_device_t* dev, int orientation)
+{
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            dev->common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    neworientation = orientation;
+    pthread_mutex_unlock(&m->overlayLock);
+    return 0;
+}
+#endif
 
 static int fb_post(struct framebuffer_device_t* dev, buffer_handle_t buffer)
 {
@@ -491,6 +714,17 @@ int mapFrameBufferLocked(struct private_module_t* module)
     module->framebuffer->base = intptr_t(vaddr);
     memset(vaddr, 0, fbSize);
 
+#if defined(HDMI_DUAL_DISPLAY)
+    /* Overlay for HDMI*/
+    pthread_mutex_init(&(module->overlayLock), NULL);
+    pthread_cond_init(&(module->overlayPost), NULL);
+    module->pobjOverlay = new Overlay();
+    module->currentOffset = 0;
+    module->exitHDMIUILoop = false;
+    pthread_t hdmiUIThread;
+    pthread_create(&hdmiUIThread, NULL, &hdmi_ui_loop, (void *) module);
+#endif
+
     return 0;
 }
 
@@ -507,6 +741,14 @@ static int mapFrameBuffer(struct private_module_t* module)
 static int fb_close(struct hw_device_t *dev)
 {
     fb_context_t* ctx = (fb_context_t*)dev;
+#if defined(HDMI_DUAL_DISPLAY)
+    private_module_t* m = reinterpret_cast<private_module_t*>(
+            ctx->device.common.module);
+    pthread_mutex_lock(&m->overlayLock);
+    m->exitHDMIUILoop = true;
+    pthread_cond_signal(&(m->overlayPost));
+    pthread_mutex_unlock(&m->overlayLock);
+#endif
     if (ctx) {
         free(ctx);
     }
@@ -536,6 +778,13 @@ int fb_device_open(hw_module_t const* module, const char* name,
         dev->device.post            = fb_post;
         dev->device.setUpdateRect = 0;
         dev->device.compositionComplete = fb_compositionComplete;
+#if defined(HDMI_DUAL_DISPLAY)
+        dev->device.orientationChanged = fb_orientationChanged;
+        dev->device.videoOverlayStarted = fb_videoOverlayStarted;
+        dev->device.enableHDMIOutput = fb_enableHDMIOutput;
+        dev->device.setActionSafeWidthRatio = fb_setActionSafeWidthRatio;
+        dev->device.setActionSafeHeightRatio = fb_setActionSafeHeightRatio;
+#endif
 
         private_module_t* m = (private_module_t*)module;
         status = mapFrameBuffer(m);

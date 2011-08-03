@@ -80,29 +80,30 @@
     <CamcorderProfiles>
 
         <EncoderProfile quality="high" fileFormat="mp4" duration="60">
-            <Video codec="h263"
-                   bitRate="360000"
-                   width="352"
-                   height="288"
-                   frameRate="24" />
+            <Video codec="m4v"
+                   bitRate="2000000"
+                   width="320"
+                   height="240"
+                   frameRate="15" />
 
-            <Audio codec="aac"
-                   bitRate="96000"
-                   sampleRate="16000"
+            <Audio codec="amrnb"
+                   bitRate="23450"
+                   sampleRate="8000"
                    channels="1" />
         </EncoderProfile>
 
-        <EncoderProfile quality="low" fileFormat="3gp" duration="60">
-            <Video codec="h263"
-                   bitRate="192000"
+        <EncoderProfile quality="low" fileFormat="3gp" duration="30">
+            <Video codec="m4v"
+                   bitRate="161000"
                    width="176"
                    height="144"
-                   frameRate="20" />
+                   frameRate="15" />
 
             <Audio codec="amrnb"
-                   bitRate="12200"
+                   bitRate="23450"
                    sampleRate="8000"
                    channels="1" />
+
         </EncoderProfile>
 
         <ImageEncoding quality="90" />
@@ -123,28 +124,34 @@
          In other words, the applications won't be able to use the codec
          or query the capabilities of the codec at all if it is disabled
     -->
+    <VideoEncoderCap name="h264" enabled="true"
+        minBitRate="96100" maxBitRate="12000000"
+        minFrameWidth="176" maxFrameWidth="320"
+        minFrameHeight="144" maxFrameHeight="240"
+        minFrameRate="1" maxFrameRate="30" />
+
     <VideoEncoderCap name="h263" enabled="true"
-        minBitRate="192000" maxBitRate="420000"
-        minFrameWidth="176" maxFrameWidth="352"
-        minFrameHeight="144" maxFrameHeight="288"
+        minBitRate="96100" maxBitRate="12000000"
+        minFrameWidth="176" maxFrameWidth="320"
+        minFrameHeight="144" maxFrameHeight="240"
         minFrameRate="1" maxFrameRate="30" />
 
     <VideoEncoderCap name="m4v" enabled="true"
-        minBitRate="192000" maxBitRate="420000"
-        minFrameWidth="176" maxFrameWidth="352"
-        minFrameHeight="144" maxFrameHeight="288"
+        minBitRate="96100" maxBitRate="2000000"
+        minFrameWidth="176" maxFrameWidth="640"
+        minFrameHeight="144" maxFrameHeight="480"
         minFrameRate="1" maxFrameRate="30" />
 
-    <AudioEncoderCap name="aac" enabled="true"
-        minBitRate="8192" maxBitRate="96000"
-        minSampleRate="8000" maxSampleRate="16000"
-        minChannels="1" maxChannels="1" />
-
     <AudioEncoderCap name="amrnb" enabled="true"
-        minBitRate="5525" maxBitRate="12200"
+        minBitRate="5525" maxBitRate="23450"
         minSampleRate="8000" maxSampleRate="8000"
         minChannels="1" maxChannels="1" />
 
+    <AudioEncoderCap name="aac" enabled="true"
+        minBitRate="5525" maxBitRate="62900"
+        minSampleRate="8000" maxSampleRate="48000"
+        minChannels="1" maxChannels="1" />
+        
     <!--
         FIXME:
         We do not check decoder capabilities at present
