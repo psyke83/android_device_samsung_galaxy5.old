@@ -1159,7 +1159,7 @@ status_t AudioHardware::setMasterVolume(float v)
     return -1;
 }
 
-/*status_t AudioHardware::setFmVolume(float v)
+status_t AudioHardware::setFmVolume(float v)
 {
     float ratio = 5;
     int volume = (unsigned int)(AudioSystem::logToLinear(v * ratio)/127.0 * 20.0);
@@ -1172,7 +1172,7 @@ status_t AudioHardware::setMasterVolume(float v)
          return -EIO;
      }
     return NO_ERROR;
-}*/
+}
 
 static status_t do_route_audio_rpc(uint32_t device,
                                    bool ear_mute, bool mic_mute, int m7xsnddriverfd)
