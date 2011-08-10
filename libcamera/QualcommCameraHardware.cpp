@@ -163,8 +163,8 @@ union zoomimage
 } zoomImage;
 
 //Default to VGA
-#define DEFAULT_PREVIEW_WIDTH 480
-#define DEFAULT_PREVIEW_HEIGHT 320
+#define DEFAULT_PREVIEW_WIDTH 320
+#define DEFAULT_PREVIEW_HEIGHT 240
 
 /*
  * Modifying preview size requires modification
@@ -209,8 +209,8 @@ board_property boardProperties[] = {
 static const camera_size_type picture_sizes[] = {
 //    { 2592, 1944 }, // 5MP
 //    { 2560, 1920 }, // 5MP (slightly reduced)
-    { 2048, 1536 }, // 3MP QXGA
-    { 1920, 1080 }, //HD1080
+//    { 2048, 1536 }, // 3MP QXGA
+//    { 1920, 1080 }, //HD1080
     { 1600, 1200 }, // 2MP UXGA
     { 1280, 768 }, //WXGA
     { 1280, 720 }, //HD720
@@ -614,10 +614,8 @@ struct SensorType {
 
 static SensorType sensorTypes[] = {
         { "5mp", 2608, 1960, false,  2592, 1944,0x00000fff },
-        { "5mp", 5184, 1944, false,  2592, 1944,0x00000fff }, // actual 5MP blade
-        { "5mp", 2560, 1920, false,  2560, 1920,0x00000fff }, //should be 5MP blade
+        { "5mp", 5184, 1944, false,  2592, 1944,0x00000fff },
         { "3mp", 2064, 1544, false, 2048, 1536,0x000007ff },
-        { "3mp", 4096, 1536, false, 2048, 1536,0x000007ff }, // 3MP blade
         { "2mp", 3200, 1200, true, 1600, 1200,0x000007ff } };
 
 
@@ -3055,7 +3053,7 @@ status_t QualcommCameraHardware::setParameters(const CameraParameters& params)
     if ((rc = setPictureSize(params)))  final_rc = rc;
     if ((rc = setJpegQuality(params)))  final_rc = rc;
     if ((rc = setAntibanding(params)))  final_rc = rc;
-    //if ((rc = setAutoExposure(params))) final_rc = rc;
+    if ((rc = setAutoExposure(params))) final_rc = rc;
     if ((rc = setWhiteBalance(params))) final_rc = rc;
     if ((rc = setEffect(params)))       final_rc = rc;
     if ((rc = setFlash(params)))        final_rc = rc;

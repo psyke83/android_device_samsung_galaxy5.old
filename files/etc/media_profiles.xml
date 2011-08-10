@@ -80,38 +80,39 @@
     <CamcorderProfiles>
 
         <EncoderProfile quality="high" fileFormat="mp4" duration="60">
-            <Video codec="m4v"
-                   bitRate="2000000"
+            <Video codec="h264"
+                   bitRate="1500000"
                    width="320"
                    height="240"
                    frameRate="15" />
 
-            <Audio codec="amrnb"
-                   bitRate="23450"
-                   sampleRate="8000"
+            <Audio codec="aac"
+                   bitRate="96000"
+                   sampleRate="16000"
                    channels="1" />
+
         </EncoderProfile>
 
         <EncoderProfile quality="low" fileFormat="3gp" duration="30">
             <Video codec="m4v"
-                   bitRate="161000"
+                   bitRate="256000"
                    width="176"
                    height="144"
                    frameRate="15" />
 
             <Audio codec="amrnb"
-                   bitRate="23450"
+                   bitRate="12200"
                    sampleRate="8000"
                    channels="1" />
 
         </EncoderProfile>
 
+        <ImageEncoding quality="100" />
         <ImageEncoding quality="90" />
         <ImageEncoding quality="80" />
-        <ImageEncoding quality="70" />
         <ImageDecoding memCap="20000000" />
 
-        <Camera previewFrameRate="0" />
+        <Camera previewFrameRate="15" />
 
     </CamcorderProfiles>
 
@@ -124,41 +125,32 @@
          In other words, the applications won't be able to use the codec
          or query the capabilities of the codec at all if it is disabled
     -->
-    <VideoEncoderCap name="h264" enabled="true"
-        minBitRate="96100" maxBitRate="12000000"
-        minFrameWidth="176" maxFrameWidth="320"
-        minFrameHeight="144" maxFrameHeight="240"
-        minFrameRate="1" maxFrameRate="30" />
-
     <VideoEncoderCap name="h263" enabled="true"
-        minBitRate="96100" maxBitRate="12000000"
-        minFrameWidth="176" maxFrameWidth="320"
-        minFrameHeight="144" maxFrameHeight="240"
-        minFrameRate="1" maxFrameRate="30" />
-
-    <VideoEncoderCap name="m4v" enabled="true"
-        minBitRate="96100" maxBitRate="2000000"
+        minBitRate="64000" maxBitRate="1500000"
         minFrameWidth="176" maxFrameWidth="640"
         minFrameHeight="144" maxFrameHeight="480"
-        minFrameRate="1" maxFrameRate="30" />
+        minFrameRate="1" maxFrameRate="24" />
+
+    <VideoEncoderCap name="m4v" enabled="true"
+        minBitRate="64000" maxBitRate="1500000"
+        minFrameWidth="176" maxFrameWidth="640"
+        minFrameHeight="144" maxFrameHeight="480"
+        minFrameRate="1" maxFrameRate="24" />
+        
+    <VideoEncoderCap name="h264" enabled="true"
+        minBitRate="64000" maxBitRate="1500000"
+        minFrameWidth="176" maxFrameWidth="640"
+        minFrameHeight="144" maxFrameHeight="480"
+        minFrameRate="1" maxFrameRate="15" />        
 
     <AudioEncoderCap name="amrnb" enabled="true"
-        minBitRate="5525" maxBitRate="23450"
+        minBitRate="5525" maxBitRate="12200"
         minSampleRate="8000" maxSampleRate="8000"
         minChannels="1" maxChannels="1" />
 
     <AudioEncoderCap name="aac" enabled="true"
-        minBitRate="5525" maxBitRate="62900"
-        minSampleRate="8000" maxSampleRate="48000"
+        minBitRate="8192" maxBitRate="96000"
+        minSampleRate="16000" maxSampleRate="16000"
         minChannels="1" maxChannels="1" />
-        
-    <!--
-        FIXME:
-        We do not check decoder capabilities at present
-        At present, we only check whether windows media is visible
-        for TEST applications. For other applications, we do
-        not perform any checks at all.
-    -->
-    <VideoDecoderCap name="wmv" enabled="false"/>
-    <AudioDecoderCap name="wma" enabled="false"/>
+
 </MediaSettings>

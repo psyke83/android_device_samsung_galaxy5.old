@@ -5,8 +5,8 @@ chmod 6755 /system/xbin/su
 
 # Tweak drives for better speed
 
-READ_AHEAD_KB="512";
-NR_REQUESTS="256";
+READ_AHEAD_KB="256";
+NR_REQUESTS="128";
 DRIVES="stl12
 stl13
 stl14"
@@ -17,8 +17,8 @@ do
 	echo 0 > /sys/block/$DRIVE/queue/rotational;
 done;
 
-READ_AHEAD_KB="1024";
-NR_REQUESTS="256";
+READ_AHEAD_KB="256";
+NR_REQUESTS="128";
 DRIVES="mmcblk0"
 for DRIVE in $DRIVES;
 do

@@ -165,8 +165,7 @@ public:
 
     virtual status_t    setVoiceVolume(float volume);
     virtual status_t    setMasterVolume(float volume);
-    virtual status_t    setFmVolume(float volume);
-
+    //virtual status_t    setFmVolume(float volume);
     virtual status_t    setMode(int mode);
 
     // mic mute
@@ -303,7 +302,7 @@ private:
             msm_snd_endpoint *mSndEndpoints;
             int mNumSndEndpoints;
             int mCurSndDevice;
-            int mFmRadioEnabled;
+            bool mFmRadioEnabled;
             int m7xsnddriverfd;
             bool        mDualMicEnabled;
             int         mTtyMode;

@@ -54,7 +54,7 @@ on boot
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/down_differential 3
         write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 50000
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 245760
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 122800
         write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 604800
 
 # For VPN (workaround)

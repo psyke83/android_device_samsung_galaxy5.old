@@ -141,7 +141,7 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(TTY_HEADSET);
                 CHECK_FOR(TTY_HCO);
                 CHECK_FOR(TTY_VCO);
-                CHECK_FOR(FM_SPEAKER);
+				CHECK_FOR(FM_SPEAKER);
 #undef CHECK_FOR
             }
         }
@@ -1159,7 +1159,7 @@ status_t AudioHardware::setMasterVolume(float v)
     return -1;
 }
 
-status_t AudioHardware::setFmVolume(float v)
+/*status_t AudioHardware::setFmVolume(float v)
 {
     float ratio = 5;
     int volume = (unsigned int)(AudioSystem::logToLinear(v * ratio)/127.0 * 20.0);
@@ -1172,7 +1172,7 @@ status_t AudioHardware::setFmVolume(float v)
          return -EIO;
      }
     return NO_ERROR;
-}
+}*/
 
 static status_t do_route_audio_rpc(uint32_t device,
                                    bool ear_mute, bool mic_mute, int m7xsnddriverfd)
@@ -1200,7 +1200,17 @@ static status_t do_route_audio_rpc(uint32_t device,
      */
     struct msm_snd_device_config args;
     args.device = device;
+#if 1
+    if(args.device == SND_DEVICE_FM_HEADSET){
+	    args.ear_mute = SND_MUTE_UNMUTED;
+    }else if(args.device == SND_DEVICE_FM_SPEAKER){
+           args.ear_mute = SND_MUTE_UNMUTED;
+    }else{
+	    args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
+    }
+#else
     args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
+#endif
     if((device != SND_DEVICE_CURRENT) && (!mic_mute)) {
         //Explicitly mute the mic to release DSP resources
         args.mic_mute = SND_MUTE_MUTED;
@@ -1326,7 +1336,7 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
             LOGI("Routing audio to Bluetooth PCM\n");
             new_snd_device = SND_DEVICE_BT;
         } else if (outputDevices & AudioSystem::DEVICE_OUT_BLUETOOTH_SCO_CARKIT) {
-            LOGI("Routing audio to Bluetooth Carkit\n");
+            LOGI("Routing audio to Bluetooth PCM\n");
             new_snd_device = SND_DEVICE_CARKIT;
 #ifdef COMBO_DEVICE_SUPPORTED
         } else if ((outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) &&
