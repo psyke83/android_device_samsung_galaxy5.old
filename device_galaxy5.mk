@@ -11,6 +11,7 @@ PRODUCT_PACKAGES += \
     libOmxCore \
     libOmxVidEnc \
     brcm_patchram_plus \
+    abtfilt \
     gps.galaxy5 \
     gralloc.galaxy5 \
     copybit.galaxy5 \

@@ -61,7 +61,7 @@ int UsbController::enableRNDIS(bool enable) {
 	write(fd, value, count);
 	close(fd);
 	return 0;
-	}
+}
 
 bool UsbController::isRNDISStarted() {
     char value[5];
