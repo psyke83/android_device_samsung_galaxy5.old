@@ -52,10 +52,10 @@ android.keylayout.europa_headset=/system/usr/keylayout/europa_headset.kl
 android.keychar.europa_keypad0=/system/usr/keychars/europa_keypad0.kcm.bin
 
 # Performance settings
-ro.compcache.default=0
+ro.compcache.default=18
 dalvik.vm.dexopt-flags=m=y
 dalvik.vm.execution-mode=int:jit
-dalvik.vm.heapsize=24m
+dalvik.vm.heapsize=48m
 persist.sys.purgeable_assets=1
 persist.sys.use_dithering=1
 

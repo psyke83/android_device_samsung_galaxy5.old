@@ -17,31 +17,21 @@ on init
 # Put download cache on /data partition due to size limitations
 	export DOWNLOAD_CACHE /data/download
 
-# Create Mad2SD mountpoints
-	mkdir /mnt/mmcblk0p2
-	mkdir /mnt/stl12
-	mkdir /mnt/stl13
-	mkdir /mnt/stl14
-
-# Insert FSR modules
+# Insert modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
+	insmod /lib/modules/sec_param.ko
+	insmod /lib/modules/acc_cal_param.ko
 
 on fs
 
 # Mount partitions
-	mount ext4 /dev/block/stl12 /system wait noatime nodiratime noauto_da_alloc
-	mount ext4 /dev/block/mmcblk0p2 /mnt/mmcblk0p2 wait nosuid nodev noatime nodiratime noauto_da_alloc
-	mount ext4 /dev/block/stl13 /mnt/stl13 wait nosuid nodev noatime nodiratime noauto_da_alloc
-	mount ext4 /dev/block/stl14 /mnt/stl14 wait nosuid nodev noatime nodiratime noauto_da_alloc
-	start mad2sd
-	wait 1
+	mount ext4 /dev/block/stl12 /system wait noatime nodiratime noauto_da_alloc ro
+	mount ext4 /dev/block/stl13 /data wait nosuid nodev noatime nodiratime noauto_da_alloc
+	mount ext4 /dev/block/stl14 /cache wait nosuid nodev noatime nodiratime noauto_da_alloc
 
 on boot
 
-# Insert sensor modules
-	insmod /system/lib/modules/sec_param.ko
-	insmod /system/lib/modules/acc_cal_param.ko
 
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
@@ -50,12 +40,12 @@ on boot
 	mkdir /data/download 0771 system cache
 
 # Set CPU frequency preferences
-#        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
-        write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
-        write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/down_differential 3
-        write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 50000
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 122800
-        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 604800
+	#write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
+	write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
+	write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/down_differential 3
+	write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/sampling_rate 50000
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 245760
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 604800
 
 # For VPN (workaround)
 	mkdir /data/data/misc 0777 system system
@@ -153,15 +143,13 @@ service qmuxd /system/bin/qmuxd
 	user radio
 	group system radio inet
 
-service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 --patchram /system/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd /dev/ttyHS0
+service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 \
+	--patchram /system/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd \
+	--pcm_role slave -d /dev/ttyHS0 
 	user bluetooth
 	group bluetooth net_bt_admin
 	disabled
 	oneshot
-
-service abtfilt /system/bin/abtfilt -c -d -z -n
-    disabled
-    oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dawext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
 	group wifi inet
@@ -192,22 +180,6 @@ service memsicd /system/bin/memsicd
 	user system
 	group system
 	oneshot
-	disabled
-
-service mad2sd /system/bin/mad2sd doboot
-	user root
-	oneshot
-	disabled
 
 on property:init.svc.ril-daemon=running
 	start get_macaddrs
-
-on property:dev.bootcomplete=1
-	start memsicd
-
-on property:init.svc.bluetoothd=running
-    write /sys/devices/virtual/bluetooth/hci0/idle_timeout 7000
-    start abtfilt
-
-on property:init.svc.bluetoothd=stopped
-    stop abtfilt

@@ -51,7 +51,8 @@ BOARD_USE_SCREENCAP := true
 BOARD_BML_BOOT := /dev/block/bml9
 BOARD_BML_RECOVERY := /dev/block/bml10
 TARGET_BOOTLOADER_BOARD_NAME := galaxy5
-TARGET_OTA_ASSERT_DEVICE := galaxy5
+TARGET_OTA_ASSERT_DEVICE := galaxy5,GI-I5500
+BOARD_RECOVERY_HANDLES_MOUNT := true
 BOARD_HAS_DOWNLOAD_MODE := true
 BOARD_LDPI_RECOVERY := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 10485760
@@ -62,7 +63,7 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery.rc
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
 BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
-TARGET_RECOVERY_PRE_COMMAND := "sync; sleep 5;"
+TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; sync"
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # Audio
@@ -99,6 +100,10 @@ BOARD_WLAN_DEVICE           := ar6000
 WIFI_DRIVER_MODULE_PATH     := "/system/wifi/ar6000.ko"
 WIFI_DRIVER_MODULE_ARG      := ""
 WIFI_DRIVER_MODULE_NAME     := ar6000
+
+#BOARD_WEXT_NO_COMBO_SCAN    := true
+#CONFIG_DRIVER_WEXT          := true
+#WIFI_DRIVER_MODULE_PATH     := rfkill
 
 # 3G
 BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"

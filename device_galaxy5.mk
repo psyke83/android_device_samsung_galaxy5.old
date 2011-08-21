@@ -54,18 +54,20 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:/system/etc/permissions/android.software.live_wallpaper.xml
 
-# Kernel modules - normal
+# Kernel modules
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/fsr.ko:root/lib/modules/fsr.ko \
     device/samsung/galaxy5/files/root/lib/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
-    device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:system/lib/modules/acc_cal_param.ko \
-    device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:system/lib/modules/sec_param.ko \
+    device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
+    device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
     device/samsung/galaxy5/files/root/lib/modules/zram.ko:system/lib/modules/zram.ko
 
-# Kernel modules - recovery
+# Recovery kernel modules / files
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/rfs_glue.ko:recovery/root/lib/modules/rfs_glue.ko \
-    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:recovery/root/lib/modules/rfs_fat.ko
+    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:recovery/root/lib/modules/rfs_fat.ko \
+    device/samsung/galaxy5/recovery.fstab_full:recovery/root/etc/recovery.fstab \
+    device/samsung/galaxy5/files/bin/fat.format:recovery/root/sbin/fat.format
 
 # Device-specific keymaps
 PRODUCT_COPY_FILES += \
@@ -81,7 +83,8 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/bin/get_macaddrs:system/bin/get_macaddrs \
     device/samsung/galaxy5/files/bin/mad2sd:system/bin/mad2sd \
     device/samsung/galaxy5/files/etc/sysctl.conf:system/etc/sysctl.conf \
-    device/samsung/galaxy5/files/etc/init.d/02galaxy5:system/etc/init.d/02galaxy5
+    device/samsung/galaxy5/files/etc/init.d/02galaxy5:system/etc/init.d/02galaxy5 \
+    device/samsung/galaxy5/files/etc/init.d/05mountsd:system/etc/init.d/05mountsd
 
 # Sensors
 PRODUCT_COPY_FILES += \

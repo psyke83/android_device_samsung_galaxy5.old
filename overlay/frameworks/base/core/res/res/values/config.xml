@@ -44,9 +44,13 @@
     <!-- Regex array of allowable upstream ifaces for tethering - for example if you want
          tethering on a new interface called "foo2" add <item>"foo\\d"</item> to the array -->
     <string-array translatable="false" name="config_tether_upstream_regexs">
-        <item>"ppp\\d"</item>
+        <item>"pdp\\d"</item>
+        <item>"rmnet\\d"</item>
         <item>"wlan\\d"</item>
     </string-array>
+
+    <!-- The default iface on which to monitor data use -->
+    <string name="config_datause_iface">pdp0</string>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          Wifi interfaces.  If the device doesn't want to support tethering over Wifi this

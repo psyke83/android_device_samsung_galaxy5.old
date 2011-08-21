@@ -29,16 +29,6 @@ do
 	echo 1 > /sys/block/$DRIVE/queue/iosched/fifo_batch;
 done;
 
-# Convert mad2sd if needed
-if [ -f /mnt/stl13/.mad2sd_convert ]; then
-	/system/bin/mad2sd convert
-fi
-
-# Activate swap
-if [ -f /data/.swap ]; then
-	swapon /dev/block/mmcblk0p3
-fi
-
 # Activate compcache (using new sysctl method; not supported officially by CyanogenMod?)
 if getprop | grep persist.service.compcache; then
 	COMPCACHE=`getprop persist.service.compcache`
