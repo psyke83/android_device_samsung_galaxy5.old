@@ -83,8 +83,7 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/bin/get_macaddrs:system/bin/get_macaddrs \
     device/samsung/galaxy5/files/bin/mad2sd:system/bin/mad2sd \
     device/samsung/galaxy5/files/etc/sysctl.conf:system/etc/sysctl.conf \
-    device/samsung/galaxy5/files/etc/init.d/02galaxy5:system/etc/init.d/02galaxy5 \
-    device/samsung/galaxy5/files/etc/init.d/05mountsd:system/etc/init.d/05mountsd
+    device/samsung/galaxy5/files/etc/init.d/02galaxy5:system/etc/init.d/02galaxy5
 
 # Sensors
 PRODUCT_COPY_FILES += \

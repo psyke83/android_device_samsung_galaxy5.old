@@ -165,9 +165,6 @@ public:
 
     virtual status_t    setVoiceVolume(float volume);
     virtual status_t    setMasterVolume(float volume);
-#ifdef HAVE_FM_RADIO
-    virtual status_t    setFmVolume(float volume);
-#endif
     virtual status_t    setMode(int mode);
 
     // mic mute

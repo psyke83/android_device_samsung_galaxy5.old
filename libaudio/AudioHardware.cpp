@@ -87,7 +87,6 @@ static uint32_t SND_DEVICE_CURRENT=-1;
 static uint32_t SND_DEVICE_HANDSET=-1;
 static uint32_t SND_DEVICE_SPEAKER=-1;
 static uint32_t SND_DEVICE_MEDIA_SPEAKER=-1;
-static uint32_t SND_DEVICE_FORCE_SPEAKER=-1;
 static uint32_t SND_DEVICE_BT=-1;
 static uint32_t SND_DEVICE_BT_NSEC_OFF=-1;
 static uint32_t SND_DEVICE_HEADSET=-1;
@@ -133,7 +132,6 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(HANDSET);
                 CHECK_FOR(SPEAKER);
                 CHECK_FOR(MEDIA_SPEAKER);
-                CHECK_FOR(FORCE_SPEAKER);
                 CHECK_FOR(BT);
                 CHECK_FOR(BT_NSEC_OFF);
                 CHECK_FOR(HEADSET);
@@ -421,7 +419,7 @@ status_t AudioHardware::setParameters(const String8& keyValuePairs)
             mTtyMode = TTY_OFF;
         }
     } else {
-	mTtyMode = TTY_OFF;
+        mTtyMode = TTY_OFF;
     }
     doRouting(NULL);
 
@@ -1167,51 +1165,12 @@ status_t AudioHardware::setMasterVolume(float v)
 #ifdef HAVE_FM_RADIO
     set_volume_rpc(SND_DEVICE_FM_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);;
     set_volume_rpc(SND_DEVICE_FM_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
-    //setFmVolume(1);
 #endif
     // We return an error code here to let the audioflinger do in-software
     // volume on top of the maximum volume that we set through the SND API.
     // return error - software mixer will handle it
     return -1;
 }
-
-#ifdef HAVE_FM_RADIO
-status_t AudioHardware::setFmVolume(float v)
-{
-    /*float ratio = 5;
-    int volume = (unsigned int)(AudioSystem::logToLinear(v * ratio)/127.0 * 20.0);
-    
-     struct msm_snd_set_fm_radio_vol_param args;
-     args.volume = volume;
-
-     if (ioctl(m7xsnddriverfd, SND_SET_FM_RADIO_VOLUME, &args) < 0) {
-         LOGE("set_volume_fm error.");
-         return -EIO;
-     }*/
-
-    struct msm_snd_extamp_config args2;
-    args2.device = 17;
-    args2.speaker_volume = 0;
-    args2.headset_volume = 21;
-
-
-     if (ioctl(m7xsnddriverfd, SND_SET_EXTAMP, &args2) < 0) {
-         LOGE("SND_SET_EXTAMP error.");
-         return -EIO;
-     }
-
-     struct msm_snd_volume_config args3;
-     args3.device = 34;
-     args3.method = 0;
-     args3.volume = 6;
-
-     if (ioctl(m7xsnddriverfd, SND_SET_VOLUME, &args3) < 0) {
-         LOGE("snd_set_volume error.");
-         return -EIO;
-     }
-     return NO_ERROR;
-}
-#endif
 
 static status_t do_route_audio_rpc(uint32_t device,
                                    bool ear_mute, bool mic_mute, int m7xsnddriverfd)
@@ -1390,7 +1349,7 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
             LOGI("Routing audio to Bluetooth PCM\n");
             new_snd_device = SND_DEVICE_BT;
         } else if (outputDevices & AudioSystem::DEVICE_OUT_BLUETOOTH_SCO_CARKIT) {
-            LOGI("Routing audio to Bluetooth Carkit\n");
+            LOGI("Routing audio to Bluetooth PCM\n");
             new_snd_device = SND_DEVICE_CARKIT;
 #ifdef COMBO_DEVICE_SUPPORTED
         } else if ((outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) &&

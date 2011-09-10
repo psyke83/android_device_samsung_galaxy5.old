@@ -28,18 +28,11 @@
 /dev/msm_wmapro			0660	system		audio
 /dev/msm_vidc_reg		0660	system		graphics
 /dev/msm_voicememo		0660	system		audio
+/dev/pmem_audio			0660	system		audio
 
 /dev/system_bus_freq		0666	root		root
 /dev/cpu_dma_latency		0666	root		root
 
-# CDMA radio interface MUX
-/dev/ppp			0660	radio		vpn
-/dev/tun			0640	vpn		vpn
-
-/dev/log/system			0662	radio		radio
-/dev/log/radio			0662	radio		radio
-/dev/log/events			0662	radio		radio
-/dev/log/main			0662	radio		radio
 /dev/msm_camera			0660	system		system
 /dev/smdcntl0			0640	radio		radio
 /dev/smdcntl1			0640	radio		radio

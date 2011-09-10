@@ -42,6 +42,11 @@ if [ "$(id)" != "uid=0(root) gid=0(root)" ]; then
 	exit
 fi
 
+if [ ! -d /data/local/userinit.d ]; then
+	mkdir -m 777 /data/local/userinit.d
+	chown system:system /data/local/userinit.d
+fi 
+
 if [ "$1" = "tweak" ]; then
 	dotweak
 fi
