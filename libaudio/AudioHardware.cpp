@@ -143,7 +143,10 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(TTY_HEADSET);
                 CHECK_FOR(TTY_HCO);
                 CHECK_FOR(TTY_VCO);
+#ifdef HAVE_FM_RADIO
                 CHECK_FOR(FM_SPEAKER);
+                CHECK_FOR(FM_HEADSET);
+#endif
 #undef CHECK_FOR
             }
         }
@@ -1162,15 +1165,30 @@ status_t AudioHardware::setMasterVolume(float v)
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_HANDSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE, SND_METHOD_VOICE, vol, m7xsnddriverfd);
-#ifdef HAVE_FM_RADIO
-    set_volume_rpc(SND_DEVICE_FM_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);;
-    set_volume_rpc(SND_DEVICE_FM_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
-#endif
     // We return an error code here to let the audioflinger do in-software
     // volume on top of the maximum volume that we set through the SND API.
     // return error - software mixer will handle it
     return -1;
 }
+
+#ifdef HAVE_FM_RADIO
+status_t AudioHardware::setFmVolume(float v)
+{
+    float ratio = 1.2;
+    int volume = (unsigned int)(AudioSystem::logToLinear(v) * ratio);
+
+    char volhex[10] = "";
+    sprintf(volhex, "0x%x ", volume);
+    char volreg[100] = "hcitool cmd 0x3f 0x15 0xf8 0x0 ";
+
+    strcat(volreg, volhex);
+    strcat(volreg, "0");
+
+    system(volreg);
+
+    return NO_ERROR;
+}
+#endif
 
 static status_t do_route_audio_rpc(uint32_t device,
                                    bool ear_mute, bool mic_mute, int m7xsnddriverfd)
@@ -1199,9 +1217,7 @@ static status_t do_route_audio_rpc(uint32_t device,
     struct msm_snd_device_config args;
     args.device = device;
 #ifdef HAVE_FM_RADIO
-    if(args.device == SND_DEVICE_FM_HEADSET){
-	    args.ear_mute = SND_MUTE_UNMUTED;
-    }else if(args.device == SND_DEVICE_FM_SPEAKER){
+    if(args.device == SND_DEVICE_FM_SPEAKER){
            args.ear_mute = SND_MUTE_UNMUTED;
     }else{
 	    args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
