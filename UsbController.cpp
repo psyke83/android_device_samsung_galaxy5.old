@@ -46,7 +46,6 @@ int UsbController::stopRNDIS() {
 	return enableRNDIS(false);
 }
 
-
 int UsbController::enableRNDIS(bool enable) {
 	char ums;
 	int fdums = open("/sys/devices/platform/msm_hsusb/gadget/lun0/file", O_RDWR);
