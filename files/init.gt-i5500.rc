@@ -1,19 +1,5 @@
 on init
 
-# Tweak memory thresholds
-	setprop ro.FOREGROUND_APP_MEM 1536
-	setprop ro.VISIBLE_APP_MEM 2048
-	setprop ro.PERCEPTIBLE_APP_MEM 6144
-	setprop ro.HEAVY_WEIGHT_APP_MEM 6144
-	setprop ro.SECONDARY_SERVER_MEM 8192
-	setprop ro.BACKUP_APP_MEM 8192
-	setprop ro.HOME_APP_MEM 8192
-	setprop ro.HIDDEN_APP_MEM 12288
-	setprop ro.EMPTY_APP_MEM 15360
-
-# Tweak lowmemorykiller thresholds
-	write /sys/module/lowmemorykiller/parameters/minfree 1536,2048,6144,8192,12288,15360
-
 # Put download cache on /data partition due to size limitations
 	export DOWNLOAD_CACHE /data/download
 
