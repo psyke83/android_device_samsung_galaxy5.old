@@ -106,7 +106,7 @@ BOARD_WEXT_NO_COMBO_SCAN    := true
 BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"
 
 # JIT / Optimizations
-WITH_DEXPREOPT := true
+#WITH_DEXPREOPT := true
 JS_ENGINE := v8
 
 # FM Radio
