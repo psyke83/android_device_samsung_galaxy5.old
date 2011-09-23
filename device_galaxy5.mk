@@ -114,7 +114,6 @@ PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/wifi/ath6k/AR6003/hw2.0/data.patch.bin:system/wifi/ath6k/AR6003/hw2.0/data.patch.bin \
     vendor/samsung/galaxy5/proprietary/wifi/ath6k/AR6003/hw2.0/otp.bin.z77:system/wifi/ath6k/AR6003/hw2.0/otp.bin.z77 \
     device/samsung/galaxy5/files/wifi/ar6000.ko:system/wifi/ar6000.ko \
-    device/samsung/galaxy5/files/bin/dhcpcd:system/bin/dhcpcd \
     vendor/samsung/galaxy5/proprietary/bin/wlan_tool:system/bin/wlan_tool \
     vendor/samsung/galaxy5/proprietary/bin/wmiconfig:system/bin/wmiconfig \
     vendor/samsung/galaxy5/proprietary/bin/hostapd:system/bin/hostapd \
