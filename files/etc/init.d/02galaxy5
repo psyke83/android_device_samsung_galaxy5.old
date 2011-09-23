@@ -1,10 +1,6 @@
 #!/system/bin/sh
 
-chown 0:0 /system/xbin/su
-chmod 6755 /system/xbin/su
-
 # Tweak drives for better speed
-
 READ_AHEAD_KB="256";
 NR_REQUESTS="128";
 DRIVES="stl12
@@ -45,7 +41,11 @@ if [ "$COMPCACHE" -ne "0" ]; then
 	swapon /dev/block/zram0
 fi
 
-# Tweak filesystem if needed
+# Link /cache/dalvik-cache to /data/dalvik-cache
+rm -r /cache/download
+ln -s /data/download /cache/download
+
+# Tweak filesystems if needed
 if mount | grep stl13 | grep data=ordered; then
 	/system/bin/mad2sd tweak
 fi

@@ -1,8 +1,5 @@
 on init
 
-# Put download cache on /data partition due to size limitations
-	export DOWNLOAD_CACHE /data/download
-
 # Insert modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
@@ -22,7 +19,7 @@ on boot
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
-# Put download cache on /data partition due to size limitations
+# Put download folder on /data partition due to size limitations
 	mkdir /data/download 0771 system cache
 
 # Set CPU frequency preferences
