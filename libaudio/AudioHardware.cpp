@@ -1174,8 +1174,8 @@ status_t AudioHardware::setMasterVolume(float v)
 #ifdef HAVE_FM_RADIO
 status_t AudioHardware::setFmVolume(float v)
 {
-    float ratio = 1.2;
-    int volume = (unsigned int)(AudioSystem::logToLinear(v) * ratio);
+    unsigned int VolValue = (unsigned int)(AudioSystem::logToLinear(v));
+    int volume = (unsigned int)(VolValue*VolValue/100);
 
     char volhex[10] = "";
     sprintf(volhex, "0x%x ", volume);
@@ -1216,15 +1216,7 @@ static status_t do_route_audio_rpc(uint32_t device,
      */
     struct msm_snd_device_config args;
     args.device = device;
-#ifdef HAVE_FM_RADIO
-    if(args.device == SND_DEVICE_FM_SPEAKER){
-           args.ear_mute = SND_MUTE_UNMUTED;
-    }else{
-	    args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
-    }
-#else
     args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
-#endif
     if((device != SND_DEVICE_CURRENT) && (!mic_mute)) {
         //Explicitly mute the mic to release DSP resources
         args.mic_mute = SND_MUTE_MUTED;
@@ -1268,7 +1260,7 @@ status_t AudioHardware::doAudioRouteOrMute(uint32_t device)
     }
 
 #ifdef HAVE_FM_RADIO
-    if(mFmRadioEnabled && (device == SND_DEVICE_FM_HEADSET)) {
+    if(mFmRadioEnabled && (device == SND_DEVICE_FM_HEADSET || device == SND_DEVICE_FM_SPEAKER)) {
       mute = 0;
       LOGI("unmute for radio");
     }
