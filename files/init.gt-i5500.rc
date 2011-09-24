@@ -15,7 +15,6 @@ on fs
 
 on boot
 
-
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
@@ -147,10 +146,6 @@ service dhcpcd_wlan0 /system/bin/dhcpcd -ABKL
 service iprenew_wlan0 /system/bin/dhcpcd -n
 	disabled
 	oneshot
-
-service netd /system/bin/netd
-	socket netd stream 0660 root system
-	socket dnsproxyd stream 0660 root inet
 
 service hostapd /system/bin/hostapd /data/misc/wifi/hostapd.conf
 	socket hostapd_athap0 dgram 660 wifi wifi
