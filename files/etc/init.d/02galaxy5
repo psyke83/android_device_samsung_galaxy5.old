@@ -46,13 +46,10 @@ fi
 #ln -s /data/download /cache/download
 
 # HACK: patch simple2ext's script to prevent filesystem corruption
-S2ECONFIG="/data/local/userinit.d/simple2ext"
+S2ECONFIG="/data/local/s2e_config/.mounts_ext4"
 if [ -f $S2ECONFIG ];
 then
-	# remove dangerous tune2fs tweaks
-
-	sed -i -e 's/ tune2fs -/ #tune2fs -/g' -e 's/ e2fsck/ #e2fsck/g' \
-	-e 's/-o commit=19,barrier=0,nobh,nouser_xattr,errors=continue,noatime,nodiratime,nosuid,nodev,data=writeback//g' $S2ECONFIG
+	rm $S2ECONFIG
 fi
 
 # Tweak filesystems if needed
