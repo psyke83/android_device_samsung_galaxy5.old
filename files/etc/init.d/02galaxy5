@@ -42,8 +42,8 @@ if [ "$COMPCACHE" -ne "0" ]; then
 fi
 
 # Link /cache/dalvik-cache to /data/dalvik-cache
-rm -r /cache/download
-ln -s /data/download /cache/download
+#rm -r /cache/download
+#ln -s /data/download /cache/download
 
 # HACK: patch simple2ext's script to prevent filesystem corruption
 S2ECONFIG="/data/local/userinit.d/simple2ext"
