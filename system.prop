@@ -25,7 +25,7 @@ persist.rild.nitz_short_ons_3=
 
 # WiFi
 wifi.interface=wlan0
-wifi.supplicant_scan_interval=45
+wifi.supplicant_scan_interval=60
 
 # Google
 DEVICE_PROVISIONED=1
