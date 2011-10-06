@@ -16,7 +16,8 @@ PRODUCT_PACKAGES += \
     gralloc.galaxy5 \
     copybit.galaxy5 \
     lights.msm7k \
-    screencap
+    screencap \
+    rzscontrol
 
 # Recovery tools
 PRODUCT_PACKAGES += \
@@ -60,7 +61,7 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
     device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
     device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
-    device/samsung/galaxy5/files/root/lib/modules/zram.ko:system/lib/modules/zram.ko
+    device/samsung/galaxy5/files/root/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko
 
 # Recovery kernel modules / files
 PRODUCT_COPY_FILES += \
