@@ -161,3 +161,8 @@ service memsicd /system/bin/memsicd
 
 on property:init.svc.ril-daemon=running
 	start get_macaddrs
+
+# HACK: we need to disable the hciattach service on boot to prevent
+# brcm_patchram_plus from hanging, or Bluetooth initialization fails.
+on property:dev.bootcomplete=1
+	stop hciattach
