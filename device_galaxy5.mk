@@ -49,7 +49,12 @@ PRODUCT_COPY_FILES += \
     frameworks/base/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/base/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
     frameworks/base/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
-    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml
+    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/android.hardware.touchscreen.xml
+
+# Hardware properties: keep dual touchscreen permissions available for madconfig script
+PRODUCT_COPY_FILES += \
+    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.xml \
+    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml
 
 # Publish that we support the live wallpaper feature.
 PRODUCT_COPY_FILES += \
