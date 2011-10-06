@@ -59,14 +59,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/fsr.ko:root/lib/modules/fsr.ko \
     device/samsung/galaxy5/files/root/lib/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
+    device/samsung/galaxy5/files/root/lib/modules/rfs_glue.ko:root/lib/modules/rfs_glue.ko \
+    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:root/lib/modules/rfs_fat.ko \
     device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
     device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
-    device/samsung/galaxy5/files/root/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko
+    device/samsung/galaxy5/files/root/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko \
 
-# Recovery kernel modules / files
+# Recovery files
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/files/root/lib/modules/rfs_glue.ko:recovery/root/lib/modules/rfs_glue.ko \
-    device/samsung/galaxy5/files/root/lib/modules/rfs_fat.ko:recovery/root/lib/modules/rfs_fat.ko \
     device/samsung/galaxy5/recovery.fstab_full:recovery/root/etc/recovery.fstab \
     device/samsung/galaxy5/files/bin/fat.format:recovery/root/sbin/fat.format
 
