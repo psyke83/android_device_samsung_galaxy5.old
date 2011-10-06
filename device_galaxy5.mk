@@ -69,6 +69,7 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
     device/samsung/galaxy5/files/root/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
     device/samsung/galaxy5/files/root/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko \
+    device/samsung/galaxy5/files/root/lib/modules/synaptics_i2c_rmi4.ko:system/lib/modules/synaptics_i2c_rmi4.ko
 
 # Recovery files
 PRODUCT_COPY_FILES += \
