@@ -25,26 +25,6 @@ do
 	echo 1 > /sys/block/$DRIVE/queue/iosched/fifo_batch;
 done;
 
-# Activate compcache (using new sysctl method; not supported officially by CyanogenMod?)
-if getprop | grep persist.service.compcache; then
-	COMPCACHE=`getprop persist.service.compcache`
-else
-	COMPCACHE=`getprop ro.compcache.default`
-fi
-
-if [ "$COMPCACHE" -ne "0" ]; then
-	COMPCACHERAM=$((184 * $COMPCACHE / 100))
-	insmod /system/lib/modules/zram.ko
-	echo 1 >/sys/block/ramz0/reset
-	echo $(($COMPCACHERAM*1024*1024)) > /sys/block/zram0/disksize
-	mkswap /dev/block/zram0
-	swapon /dev/block/zram0
-fi
-
-# Link /cache/dalvik-cache to /data/dalvik-cache
-#rm -r /cache/download
-#ln -s /data/download /cache/download
-
 # HACK: patch simple2ext's script to prevent filesystem corruption
 S2ECONFIG="/data/local/s2e_config/.mounts_ext4"
 if [ -f $S2ECONFIG ];
