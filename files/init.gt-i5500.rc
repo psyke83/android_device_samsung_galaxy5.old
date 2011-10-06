@@ -18,9 +18,6 @@ on boot
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
-# Put download folder on /data partition due to size limitations
-	mkdir /data/download 0771 system cache
-
 # Set CPU frequency preferences
 	#write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
 	write /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold 95
