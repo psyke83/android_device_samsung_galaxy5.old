@@ -69,7 +69,8 @@ if [ "$1" = "tweak" ]; then
 fi
 
 if [ "$1" = "dton" ]; then
-	echo "insmod /system/lib/modules/synaptics_i2c_rmi4.ko" >$dtfile
+	echo "if [ ! -f /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml ]; then madconfig dton; fi" >$dtfile
+	echo "insmod /system/lib/modules/synaptics_i2c_rmi4.ko" >>$dtfile
 	rm /system/etc/permissions/android.hardware.touchscreen*
 	cp /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml /system/etc/permissions/
 	chmod +x $dtfile
