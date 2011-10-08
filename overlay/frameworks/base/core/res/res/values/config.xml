@@ -21,15 +21,15 @@
      for different hardware and product builds. -->
 <resources>
 
-	<bool name="config_batterySdCardAccessibility">true</bool>
+    <!-- Indicate whether the SD card is accessible without removing the battery. -->
+    <bool name="config_batterySdCardAccessibility">true</bool>
 
     <!-- Use the new fancy screen off animation.
          Turn off to use new Gingerbread animation -->
     <bool name="config_animateScreenLights">false</bool>
-    
+
+    <!-- If this is true, the screen will come on when you unplug usb/power/whatever. -->
     <bool name="config_unplugTurnsOnScreen">true</bool>
-    
-<!--    <string name="default_wallpaper_component">com.android.wallpaper/.nexus.NexusWallpaper</string> -->
     
     <!-- crespo doesn't handle this blur effect very quickly. -->
     <bool name="config_sf_slowBlur">true</bool>
@@ -59,79 +59,13 @@
         <item>"athap0"</item>
     </string-array>
 
-    <!-- Boolean indicating if we require the use of DUN on mobile for tethering -->
-    <bool translatable="false" name="config_tether_dun_required">false</bool>
-
-    <!-- Specifies the amount of time to disable virtual keys after the screen is touched
-         in order to filter out accidental virtual key presses due to swiping gestures
-         or taps near the edge of the display.  May be 0 to disable the feature.
-         It is recommended that this value be no more than 250 ms.
-         This feature should be disabled for most devices. -->
-    <integer name="config_virtualKeyQuietTimeMillis">200</integer>
-
     <!-- Allow the menu hard key to be disabled in LockScreen on some devices -->
     <bool name="config_disableMenuKeyInLockScreen">true</bool>
 
     <bool name="config_automatic_brightness_available">false</bool>
 
-    <!-- Vibrator pattern for feedback about a long screen/key press -->
-    <integer-array name="config_longPressVibePattern">
-        <item>0</item>
-        <item>1</item>
-        <item>20</item>
-        <item>30</item>
-    </integer-array>
-    
-    <!-- Vibrator pattern for feedback about touching a virtual key -->
-    <integer-array name="config_virtualKeyVibePattern">
-        <item>0</item>
-        <item>10</item>
-        <item>20</item>
-        <item>30</item>
-    </integer-array>
-
-    <!-- Vibrator pattern for a very short but reliable vibration for soft keyboard tap -->
-    <integer-array name="config_keyboardTapVibePattern">
-        <item>50</item>
-    </integer-array>
-
-    <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
-    <integer-array name="config_safeModeDisabledVibePattern">
-        <item>0</item>
-        <item>1</item>
-        <item>20</item>
-        <item>31</item>
-    </integer-array>
-
-    <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
-    <integer-array name="config_safeModeEnabledVibePattern">
-        <item>0</item>
-        <item>1</item>
-        <item>20</item>
-        <item>21</item>
-        <item>500</item>
-        <item>600</item>
-    </integer-array>
-
-    <!-- Vibrator pattern for feedback about hitting a scroll barrier -->
-    <integer-array name="config_scrollBarrierVibePattern">
-        <item>0</item>
-        <item>45</item>
-        <item>20</item>
-        <item>20</item>
-    </integer-array>
-
-    <!-- Vibrator pattern for feedback about on a key release -->
-    <integer-array name="config_virtualKeyUpPattern">
-        <item>20</item>
-        <item>30</item>
-    </integer-array>
-
     <!-- Enables SIP on WIFI only -->
     <bool name="config_sip_wifi_only">false</bool>
-
-    <!-- Configure rotary bottom margin -->
-    <integer name="config_rotaryMarginBottomDIP">0</integer>
 
     <!-- Enable the screen-off animation -->
     <bool name="config_enableScreenOffAnimation">true</bool>
