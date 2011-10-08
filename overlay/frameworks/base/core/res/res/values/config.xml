@@ -32,7 +32,7 @@
     <bool name="config_unplugTurnsOnScreen">true</bool>
     
     <!-- crespo doesn't handle this blur effect very quickly. -->
-    <bool name="config_sf_slowBlur">true</bool>
+    <bool name="config_sf_slowBlur">false</bool>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          USB interfaces.  If the device doesn't want to support tething over USB this should
