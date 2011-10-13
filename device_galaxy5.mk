@@ -127,8 +127,6 @@ PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/bin/hostapd:system/bin/hostapd \
     vendor/samsung/galaxy5/proprietary/bin/hostapd_cli:system/bin/hostapd_cli \
     vendor/samsung/galaxy5/proprietary/bin/hostapd_wps:system/bin/hostapd_wps \
-    vendor/samsung/galaxy5/proprietary/bin/wpa_supplicant:system/bin/wpa_supplicant \
-    vendor/samsung/galaxy5/proprietary/lib/libwpa_client.so:system/lib/libwpa_client.so \
     device/samsung/galaxy5/files/etc/wifi/hostapd.conf:system/etc/wifi/hostapd.conf \
     device/samsung/galaxy5/files/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
     device/samsung/galaxy5/files/etc/dhcpd/dhcpcd.conf:system/etc/dhcpcd/dhcpcd.conf
