@@ -3,8 +3,8 @@ on init
 # Insert modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
-	#insmod /lib/modules/rfs_glue.ko
-	#insmod /lib/modules/rfs_fat.ko
+	insmod /lib/modules/rfs_glue.ko
+	insmod /lib/modules/rfs_fat.ko
 	insmod /lib/modules/sec_param.ko
 	insmod /lib/modules/acc_cal_param.ko
 
