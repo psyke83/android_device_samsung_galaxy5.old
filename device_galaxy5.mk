@@ -71,11 +71,6 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/files/root/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko \
     device/samsung/galaxy5/files/root/lib/modules/synaptics_i2c_rmi4.ko:system/lib/modules/synaptics_i2c_rmi4.ko
 
-# Recovery files
-PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/recovery.fstab_full:recovery/root/etc/recovery.fstab \
-    device/samsung/galaxy5/files/bin/fat.format:recovery/root/sbin/fat.format
-
 # Device-specific keymaps
 PRODUCT_COPY_FILES += \
     vendor/samsung/galaxy5/proprietary/usr/keylayout/europa_headset.kl:system/usr/keylayout/europa_headset.kl \
