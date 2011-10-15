@@ -131,7 +131,7 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --bau
 	group bluetooth net_bt_admin
 	disabled
 
-service wpa_supplicant /system/bin/wpa_supplicant -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
+service wpa_supplicant /system/bin/wpa_supplicant -Dwext -iwlan0 -W -c/data/misc/wifi/wpa_supplicant.conf
 	group wifi inet
 	socket wpa_wlan0 dgram 660 wifi wifi
 	disabled
