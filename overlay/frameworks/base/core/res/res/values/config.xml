@@ -73,10 +73,10 @@
     <bool name="config_enableScreenOffAnimation">true</bool>
 
     <!-- Configure rotary bottom margin -->
-    <integer name="config_rotaryMarginBottomDIP">10</integer>
+    <integer name="config_rotaryMarginBottomDIP">0</integer>
 
     <!-- Configure lense unlock time label offset -->
-    <integer name="config_lenseTimeLabelOffsetDIP">30</integer>
+    <integer name="config_lenseTimeLabelOffsetDIP">40</integer>
 
     <!-- Component name of the service providing network location support. -->
     <string name="config_networkLocationProvider">com.google.android.location.NetworkLocationProvider</string>
