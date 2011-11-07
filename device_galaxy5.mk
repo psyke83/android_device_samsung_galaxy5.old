@@ -27,6 +27,9 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     e2fsck
 
+# Service Mode Secret Code
+PRODUCT_PACKAGES += \
+	SamsungServiceMode
 
 # Live wallpaper packages
 PRODUCT_PACKAGES += \
