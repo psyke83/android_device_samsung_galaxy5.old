@@ -204,6 +204,60 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/ldpi
 PRODUCT_COPY_FILES += \
     vendor/cyanogen/prebuilt/ldpi/media/bootanimation.zip:system/media/bootanimation.zip
 
+# Enable Google-specific location features,
+# like NetworkLocationProvider and LocationCollector
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.com.google.locationfeatures=1 \
+	ro.com.google.networklocation=1
+
+# Extended JNI checks
+# The extended JNI checks will cause the system to run more slowly, but they can spot a variety of nasty bugs 
+# before they have a chance to cause problems.
+# Default=true for development builds, set by android buildsystem.
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.kernel.android.checkjni=0 \
+    dalvik.vm.checkjni=false
+
+# RIL properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    rild.libargs=-d/dev/smd0 \
+    rild.libpath=/system/lib/libsec-ril.so \
+    ro.telephony.ril_class=samsung \
+    ro.telephony.sends_barcount=1
+
+# Keymap properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    android.keychar.europa_keypad0=/system/usr/keychars/europa_keypad0.kcm.bin \
+    android.keylayout.europa_headset=/system/usr/keylayout/europa_headset.kl \
+    android.keylayout.europa_keypad0=/system/usr/keylayout/europa_keypad0.kl \
+    hw.keyboards.0.devname=europa_keypad0 \
+    hw.keyboards.65538.devname=europa_headset
+
+# Keep home launcher in memory
+#PRODUCT_PROPERTY_OVERRIDES += \
+#    ro.HOME_APP_ADJ=1 \
+#    ro.PERCEPTIBLE_APP_ADJ=0
+
+# Networking properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    mobiledata.interfaces=pdp0,wlan0,gprs,ppp0 \
+    wifi.interface=wlan0 \
+    wifi.supplicant_scan_interval=60
+
+# Performance & graphics properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.heapsize=24m \
+    persist.sys.purgeable_assets=1 \
+    persist.sys.use_dithering=0 \
+    ro.media.dec.jpeg.memcap=20000000 \
+    ro.opengles.version=131072 \
+    ro.sf.lcd_density=120
+
+# Compcache properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.compcache.default=18
+
+# Override product version
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.modversion=CyanogenMod-7.1.0-MADTEAM
 
