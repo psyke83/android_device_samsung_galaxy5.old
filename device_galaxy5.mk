@@ -27,10 +27,6 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     e2fsck
 
-# Boot screen
-#PRODUCT_COPY_FILES += \
-#    device/samsung/galaxy5/files/root/EUROPA.rle:root/EUROPA.rle \
-#    device/samsung/galaxy5/files/root/EUROPA.rle:recovery/root/EUROPA.rle
 
 # Live wallpaper packages
 PRODUCT_PACKAGES += \
