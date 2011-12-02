@@ -23,8 +23,7 @@ USE_CAMERA_STUB := false
 -include vendor/samsung/galaxy5/BoardConfigVendor.mk
 
 # Camera
-USE_CAMERA_STUB := false
-#BOARD_USE_FROYO_LIBCAMERA := true
+BOARD_USE_FROYO_LIBCAMERA := true
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
@@ -34,8 +33,8 @@ TARGET_CPU_ABI := armeabi-v6l
 TARGET_CPU_ABI2 := armeabi
 
 # Kernel
-#TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/galaxy5/recovery_kernel
-TARGET_PREBUILT_KERNEL := device/samsung/galaxy5/kernel
+TARGET_PREBUILT_KERNEL := device/samsung/galaxy5/prebuilt/kernel
+#TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/galaxy5/prebuilt/recovery_kernel
 BOARD_NAND_PAGE_SIZE := 4096 -s 128
 BOARD_KERNEL_CMDLINE := 
 BOARD_KERNEL_BASE := 0x00200000
@@ -43,12 +42,11 @@ BOARD_KERNEL_PAGESIZE := 4096
 BOARD_PAGE_SIZE := 0x00001000
 
 # Graphics
-BOARD_EGL_CFG := device/samsung/galaxy5/files/lib/egl/egl.cfg
+BOARD_EGL_CFG := device/samsung/galaxy5/prebuilt/lib/egl/egl.cfg
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true
 BOARD_USE_SCREENCAP := true
-#BOARD_NO_RGBX_8888 := true
-#TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
+BOARD_NO_RGBX_8888 := true
 
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
@@ -81,7 +79,7 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 10485760
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 186122240
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 203161600
 BOARD_FLASH_BLOCK_SIZE := 4096
-TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery.rc
+TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery/recovery.rc
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
 BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
 TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; sync"
@@ -91,7 +89,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_PROVIDES_LIBAUDIO := true 
 
 # Sensors
-TARGET_USES_OLD_LIBSENSORS_HAL:=true
+TARGET_USES_OLD_LIBSENSORS_HAL :=true
 
 # QCOM
 BOARD_USES_QCOM_HARDWARE := true
@@ -133,8 +131,5 @@ JS_ENGINE := v8
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
 BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
-# Should be bcm2049, but hardware is not yet supported
-BOARD_FM_DEVICE := bcm4325
+BOARD_FM_DEVICE := bcm2049
 #BOARD_USE_BROADCOM_FM_VOLUME_HACK := true
-HAS_BCM20780 := true
-BOARD_GLOBAL_CFLAGS += -DHAS_BCM20780
