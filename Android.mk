@@ -15,5 +15,13 @@
 #
 
 ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),galaxy5)
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := setup_fs.c
+LOCAL_MODULE := setup_fs
+LOCAL_MODULE_TAGS := optional
+#LOCAL_SHARED_LIBRARIES += libext4_utils libz
+include $(BUILD_EXECUTABLE)
+
 include $(call all-makefiles-under,$(LOCAL_PATH))
 endif
