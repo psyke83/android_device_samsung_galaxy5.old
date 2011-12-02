@@ -1,0 +1,39 @@
+#!/system/bin/sh
+
+# Tweak drives for better speed
+READ_AHEAD_KB="256";
+NR_REQUESTS="128";
+DRIVES="stl12
+stl13
+stl14"
+for DRIVE in $DRIVES;
+do
+	echo $NR_REQUESTS > /sys/block/$DRIVE/queue/nr_requests;
+	echo $READ_AHEAD_KB > /sys/block/$DRIVE/queue/read_ahead_kb;
+	echo 0 > /sys/block/$DRIVE/queue/rotational;
+done;
+
+READ_AHEAD_KB="256";
+NR_REQUESTS="128";
+DRIVES="mmcblk0"
+for DRIVE in $DRIVES;
+do
+	#echo deadline > /sys/block/$DRIVE/queue/scheduler;
+	echo $NR_REQUESTS > /sys/block/$DRIVE/queue/nr_requests;
+	echo $READ_AHEAD_KB > /sys/block/$DRIVE/queue/read_ahead_kb;
+	echo 0 > /sys/block/$DRIVE/queue/rotational;
+	echo 1 > /sys/block/$DRIVE/queue/iosched/fifo_batch;
+done;
+
+# HACK: patch simple2ext's script to prevent filesystem corruption
+S2ECONFIG="/data/local/s2e_config/.mounts_ext4"
+if [ -f $S2ECONFIG ];
+then
+	rm $S2ECONFIG
+fi
+
+# Tweak filesystems if needed
+if mount | grep stl13 | grep data=ordered; then
+	/system/bin/madconfig tweak
+fi
+
