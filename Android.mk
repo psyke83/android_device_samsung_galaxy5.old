@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+LOCAL_PATH := $(call my-dir)
+
 ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),galaxy5)
 
 include $(CLEAR_VARS)
