@@ -147,9 +147,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.compcache.default=18
 
 ifeq ($(TARGET_PREBUILT_KERNEL),)
-	LOCAL_KERNEL := device/samsung/galaxy5/prebuilt/kernel
+    LOCAL_KERNEL := device/samsung/galaxy5/prebuilt/kernel
 else
-	LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+    LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 endif
 
 PRODUCT_COPY_FILES += \
