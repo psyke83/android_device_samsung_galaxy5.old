@@ -20,10 +20,10 @@
 
 <resources>
     <!-- key_height + key_bottom_gap = popup_key_height -->
-    <dimen name="key_height">0.260in</dimen>
-    <dimen name="key_bottom_gap">0in</dimen>
-    <dimen name="popup_key_height">0.300in</dimen>
-    <dimen name="keyboard_bottom_padding">0.03in</dimen>
+    <dimen name="key_height">0.23in</dimen>
+    <dimen name="key_bottom_gap">0.0in</dimen>
+    <dimen name="popup_key_height">0.23in</dimen>
+    <dimen name="keyboard_bottom_padding">0.0in</dimen>
     <dimen name="bubble_pointer_offset">22dip</dimen>
     <dimen name="candidate_strip_height">42dip</dimen>
     <dimen name="candidate_strip_fading_edge_length">63dip</dimen>
@@ -39,9 +39,9 @@
     <dimen name="key_preview_height">80sp</dimen>
     <!-- Amount of allowance for selecting keys in a mini popup keyboard by sliding finger. -->
     <!-- popup_key_height x 1.7 -->
-    <dimen name="mini_keyboard_slide_allowance">0.553in</dimen>
+    <dimen name="mini_keyboard_slide_allowance">0.391in</dimen>
     <!-- popup_key_height x 1.0 -->
-    <dimen name="mini_keyboard_vertical_correction">-0.325in</dimen>
+    <dimen name="mini_keyboard_vertical_correction">-0.23in</dimen>
     <dimen name="key_hysteresis_distance">0.05in</dimen>
     <!-- We use "inch", not "dip" because this value tries dealing with physical distance related
          to user's finger. -->
