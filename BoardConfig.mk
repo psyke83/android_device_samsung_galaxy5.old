@@ -46,7 +46,7 @@ BOARD_EGL_CFG := device/samsung/galaxy5/prebuilt/lib/egl/egl.cfg
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true
 BOARD_USE_SCREENCAP := true
-BOARD_NO_RGBX_8888 := true
+#BOARD_NO_RGBX_8888 := true
 
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
