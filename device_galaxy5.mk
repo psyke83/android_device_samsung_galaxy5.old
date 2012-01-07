@@ -21,7 +21,6 @@ PRODUCT_PACKAGES += \
     gps.galaxy5 \
     gralloc.galaxy5 \
     libOmxCore \
-    libOmxVidEnc \
     lights.msm7k \
     rzscontrol \
     screencap \
