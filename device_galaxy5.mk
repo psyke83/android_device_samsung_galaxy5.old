@@ -147,7 +147,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Compcache properties
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.compcache.default=18
+    ro.compcache.default=10
 
 ifeq ($(TARGET_PREBUILT_KERNEL),)
     LOCAL_KERNEL := device/samsung/galaxy5/prebuilt/kernel
