@@ -18,6 +18,9 @@ on fs
 
 on boot
 
+# Tweak SD card cache
+	write /sys/block/mmcblk0/bdi/read_ahead_kb 256
+
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
