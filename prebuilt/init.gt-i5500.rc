@@ -21,6 +21,10 @@ on boot
 # Tweak SD card cache
 	write /sys/block/mmcblk0/bdi/read_ahead_kb 256
 
+# Tweak AR6003 TCP buffering
+	setprop net.tcp.buffersize.default 4096,87380,196608,4096,16384,110208
+	setprop net.tcp.buffersize.wifi    4095,87380,393216,4096,16384,110208
+
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
