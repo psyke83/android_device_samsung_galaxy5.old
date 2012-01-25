@@ -77,6 +77,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/bin/get_macaddrs:system/bin/get_macaddrs
 
+# Bluetooth
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/etc/bluetooth/audio.conf:system/etc/bluetooth/audio.conf
+
 # Wifi
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/etc/dhcpd/dhcpcd.conf:system/etc/dhcpcd/dhcpcd.conf \
