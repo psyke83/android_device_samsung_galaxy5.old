@@ -11,9 +11,10 @@ on init
 on fs
 
 # Mount partitions
-	mount ext4 /dev/block/stl12 /system wait noatime nodiratime noauto_da_alloc ro
-	mount ext4 /dev/block/stl13 /data wait nosuid nodev noatime nodiratime noauto_da_alloc
-	mount ext4 /dev/block/stl14 /cache wait nosuid nodev noatime nodiratime noauto_da_alloc
+	mount ext4 /dev/block/stl12 /system wait rw
+	mount ext4 /dev/block/stl12 /system wait ro remount
+	mount ext4 /dev/block/stl13 /data wait nosuid nodev
+	mount ext4 /dev/block/stl14 /cache wait nosuid nodev
 
 on boot
 
