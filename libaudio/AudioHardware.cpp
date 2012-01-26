@@ -139,6 +139,7 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(TTY_HCO);
                 CHECK_FOR(TTY_VCO);
                 CHECK_FOR(MEDIA_SPEAKER);
+                CHECK_FOR(NO_MIC_HEADSET);
 #ifdef HAVE_FM_RADIO
                 CHECK_FOR(FM_SPEAKER);
                 CHECK_FOR(FM_HEADSET);
