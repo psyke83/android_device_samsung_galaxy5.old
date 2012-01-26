@@ -92,7 +92,6 @@ static uint32_t SND_DEVICE_BT_EC_OFF=32; // really DEVICE_BT_NSEC_OFF
 static uint32_t SND_DEVICE_HEADSET=-1;
 static uint32_t SND_DEVICE_HEADSET_AND_SPEAKER=26; // really FORCE_SPEAKER
 static uint32_t SND_DEVICE_IN_S_SADC_OUT_HANDSET=-1;
-static uint32_t SND_DEVICE_IN_S_SADC_OUT_HEADSET=-1;
 static uint32_t SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE=-1;
 static uint32_t SND_DEVICE_TTY_HEADSET=-1;
 static uint32_t SND_DEVICE_TTY_HCO=-1;
@@ -131,7 +130,6 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(CURRENT);
                 CHECK_FOR(HANDSET);
                 CHECK_FOR(SPEAKER);
-                CHECK_FOR(MEDIA_SPEAKER);
                 CHECK_FOR(BT);
                 CHECK_FOR(BT_EC_OFF);
                 CHECK_FOR(HEADSET);
@@ -141,6 +139,8 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(TTY_HEADSET);
                 CHECK_FOR(TTY_HCO);
                 CHECK_FOR(TTY_VCO);
+                CHECK_FOR(MEDIA_SPEAKER);
+                CHECK_FOR(NO_MIC_HEADSET);
 #ifdef HAVE_FM_RADIO
                 CHECK_FOR(FM_SPEAKER);
                 CHECK_FOR(FM_HEADSET);
@@ -1155,12 +1155,13 @@ status_t AudioHardware::setMasterVolume(float v)
     int vol = ceil(v * 7.0);
     LOGI("Set master volume to %d.\n", vol);
     set_volume_rpc(SND_DEVICE_HANDSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
-    set_volume_rpc(SND_DEVICE_MEDIA_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_BT,      SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_HANDSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE, SND_METHOD_VOICE, vol, m7xsnddriverfd);
+    set_volume_rpc(SND_DEVICE_MEDIA_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
+    set_volume_rpc(SND_DEVICE_NO_MIC_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     // We return an error code here to let the audioflinger do in-software
     // volume on top of the maximum volume that we set through the SND API.
     // return error - software mixer will handle it
