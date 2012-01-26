@@ -306,8 +306,11 @@ private:
             msm_snd_endpoint *mSndEndpoints;
             int mNumSndEndpoints;
             int mCurSndDevice;
-            bool mFmRadioEnabled;
+	    int mFmRadioEnabled;
+	    int mFmPrev;
+	    int mFmVolume;
             int m7xsnddriverfd;
+            int fmfd;
             bool        mDualMicEnabled;
             int         mTtyMode;
 

@@ -1,6 +1,7 @@
 /*
 ** Copyright 2008, The Android Open-Source Project
 ** Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+** Copyright (c) 2011, The CyanogenMod Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -104,10 +105,8 @@ static uint32_t SND_DEVICE_NO_MIC_HEADSET=-1;
 
 AudioHardware::AudioHardware() :
     mInit(false), mMicMute(true), mBluetoothNrec(true), mBluetoothId(0),
-    mOutput(0), mSndEndpoints(NULL), mCurSndDevice(-1), mDualMicEnabled(false),  mBuiltinMicSelected(false)
-#ifdef HAVE_FM_RADIO
-	,mFmRadioEnabled(false)
-#endif
+    mOutput(0), mSndEndpoints(NULL), mCurSndDevice(-1), mDualMicEnabled(false), mBuiltinMicSelected(false),
+    mFmRadioEnabled(false),mFmPrev(false),mFmVolume(0),fmfd(-1)
 {
    if (get_audpp_filter() == 0) {
            audpp_filter_inited = true;
@@ -140,7 +139,6 @@ AudioHardware::AudioHardware() :
                 CHECK_FOR(TTY_HCO);
                 CHECK_FOR(TTY_VCO);
                 CHECK_FOR(MEDIA_SPEAKER);
-                CHECK_FOR(NO_MIC_HEADSET);
 #ifdef HAVE_FM_RADIO
                 CHECK_FOR(FM_SPEAKER);
                 CHECK_FOR(FM_HEADSET);
@@ -384,18 +382,6 @@ status_t AudioHardware::setParameters(const String8& keyValuePairs)
         }
     }
 
-#ifdef HAVE_FM_RADIO
-    key = String8(AudioParameter::keyFmOn);
-    int devices;
-    if (param.getInt(key, devices) == NO_ERROR) {
-       setFmOnOff(true);
-    }
-    key = String8(AudioParameter::keyFmOff);
-    if (param.getInt(key, devices) == NO_ERROR) {
-       setFmOnOff(false);
-    }
-#endif
-
     key = String8(DUALMIC_KEY);
     if (param.get(key, value) == NO_ERROR) {
         if (value == "true") {
@@ -420,8 +406,21 @@ status_t AudioHardware::setParameters(const String8& keyValuePairs)
             mTtyMode = TTY_OFF;
         }
     } else {
-        mTtyMode = TTY_OFF;
+	mTtyMode = TTY_OFF;
     }
+
+#ifdef HAVE_FM_RADIO
+    key = String8(AudioParameter::keyFmOn);
+    int devices;
+    if (param.getInt(key, devices) == NO_ERROR) {
+       setFmOnOff(true);
+    }
+    key = String8(AudioParameter::keyFmOff);
+    if (param.getInt(key, devices) == NO_ERROR) {
+       setFmOnOff(false);
+    }
+#endif
+
     doRouting(NULL);
 
     return NO_ERROR;
@@ -1073,21 +1072,6 @@ size_t AudioHardware::getInputBufferSize(uint32_t sampleRate, int format, int ch
        return 2048*channelCount;
 }
 
-#ifdef HAVE_FM_RADIO
-/*
- * This is a workaround to enable routing of analog audio to the headphones.
- * There might be a cleaner way to do this.
- */
-status_t AudioHardware::setFmOnOff(bool onoff)
-{
-    LOGE("setFmOnOff(%d) called", onoff);
-
-    mFmRadioEnabled = onoff;
-
-    return doRouting(NULL);
-}
-#endif
-
 static status_t set_volume_rpc(uint32_t device,
                                uint32_t method,
                                uint32_t volume,
@@ -1161,7 +1145,6 @@ status_t AudioHardware::setMasterVolume(float v)
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_HANDSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_MEDIA_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
-    set_volume_rpc(SND_DEVICE_NO_MIC_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     // We return an error code here to let the audioflinger do in-software
     // volume on top of the maximum volume that we set through the SND API.
     // return error - software mixer will handle it
@@ -1169,19 +1152,15 @@ status_t AudioHardware::setMasterVolume(float v)
 }
 
 #ifdef HAVE_FM_RADIO
-status_t AudioHardware::setFmVolume(float v)
+status_t AudioHardware::setFmOnOff(bool onoff)
 {
-    unsigned int VolValue = (unsigned int)(AudioSystem::logToLinear(v));
-    int volume = (unsigned int)(VolValue*VolValue/100);
+    int ret;
 
-    char volhex[10] = "";
-    sprintf(volhex, "0x%x ", volume);
-    char volreg[100] = "hcitool cmd 0x3f 0x15 0xf8 0x0 ";
-
-    strcat(volreg, volhex);
-    strcat(volreg, "0");
-
-    system(volreg);
+    if (onoff) {
+        mFmRadioEnabled = true;
+    } else {
+        mFmRadioEnabled = false;
+    }
 
     return NO_ERROR;
 }
@@ -1256,8 +1235,9 @@ status_t AudioHardware::doAudioRouteOrMute(uint32_t device)
         mute = !mBuiltinMicSelected;
     }
 
+    mFmPrev=mFmRadioEnabled;
 #ifdef HAVE_FM_RADIO
-    if(mFmRadioEnabled && (device == SND_DEVICE_FM_HEADSET || device == SND_DEVICE_FM_SPEAKER)) {
+    if(mFmRadioEnabled) {
       mute = 0;
       LOGI("unmute for radio");
     }
@@ -1295,28 +1275,12 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
                 LOGI("Routing audio to Bluetooth PCM\n");
                 new_snd_device = SND_DEVICE_BT;
             } else if (inputDevice & AudioSystem::DEVICE_IN_WIRED_HEADSET) {
-#ifdef HAVE_FM_RADIO
-	        if (mFmRadioEnabled) {
-                    LOGI("Routing audio to FM Headset\n");
-                    new_snd_device = SND_DEVICE_FM_HEADSET;
-                } else 
-#endif
-                {
                     LOGI("Routing audio to Wired Headset\n");
                     new_snd_device = SND_DEVICE_HEADSET;
-                }
             } else {
                 if (outputDevices & AudioSystem::DEVICE_OUT_SPEAKER) {
-#ifdef HAVE_FM_RADIO
-                    if (mFmRadioEnabled) {
-                        LOGI("Routing audio to FM Speakerphone\n");
-                        new_snd_device = SND_DEVICE_FM_SPEAKER;
-                    } else 
-#endif
-                    {
-                        LOGI("Routing audio to Speakerphone\n");
-                        new_snd_device = SND_DEVICE_SPEAKER;
-                    }
+                    LOGI("Routing audio to Speakerphone\n");
+                    new_snd_device = SND_DEVICE_SPEAKER;
                     new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
                 } else {
                     LOGI("Routing audio to Handset\n");
@@ -1325,9 +1289,7 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
             }
         }
     }
-#ifdef HAVE_FM_RADIO
-    LOGE("doRouting CALLED, outputDevices = 0x%x, mFmRadioEnabled = %d",outputDevices, mFmRadioEnabled);
-#endif
+
     // if inputDevice == 0, restore output routing
     if (new_snd_device == -1) {
         if (outputDevices & (outputDevices - 1)) {
@@ -1368,87 +1330,46 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
                 new_snd_device = SND_DEVICE_HEADSET_AND_SPEAKER;
                 new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
             } else {
-#ifdef HAVE_FM_RADIO
-                if (mFmRadioEnabled) {
-                    LOGI("Routing FM audio to No microphone Wired Headset (%d,%x)\n", mMode, outputDevices);
-                    new_snd_device = SND_DEVICE_FM_HEADSET;
-					new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-                } else {
-#endif
-                    LOGI("Routing audio to No microphone Wired Headset (%d,%x)\n", mMode, outputDevices);
-                    new_snd_device = SND_DEVICE_NO_MIC_HEADSET;
-					new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-                }
+                LOGI("Routing audio to No microphone Wired Headset (%d,%x)\n", mMode, outputDevices);
+                new_snd_device = SND_DEVICE_NO_MIC_HEADSET;
             }
 #endif
         } else if (outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) {
-#ifdef HAVE_FM_RADIO
             if (mFmRadioEnabled) {
-                LOGI("Routing audio to FM Headset\n");
+                LOGI("Routing FM audio to Wired Headset\n");
                 new_snd_device = SND_DEVICE_FM_HEADSET;
-            } else 
-#endif
-            {
-                LOGI("Routing audio to Wired Headset\n");
-                new_snd_device = SND_DEVICE_HEADSET;
-            }
-            new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-        } else if (outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE) {
-#ifdef HAVE_FM_RADIO
-            if (mFmRadioEnabled) {
-                LOGI("Routing audio to FM Headset\n");
-                new_snd_device = SND_DEVICE_FM_HEADSET;
-            } else 
-#endif
-            {
+            } else {
                 LOGI("Routing audio to Wired Headset\n");
                 new_snd_device = SND_DEVICE_HEADSET;
             }
             new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
         } else if (outputDevices & AudioSystem::DEVICE_OUT_SPEAKER) {
-#ifdef HAVE_FM_RADIO
             if (mFmRadioEnabled) {
                 LOGI("Routing audio to FM Speakerphone\n");
                 new_snd_device = SND_DEVICE_FM_SPEAKER;
-            } else 
-#endif
-            {
+            } else {
                 LOGI("Routing audio to Speakerphone\n");
                 new_snd_device = SND_DEVICE_MEDIA_SPEAKER;
             }
             new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-#ifdef HAVE_FM_RADIO
-        } else  if (outputDevices & AudioSystem::DEVICE_OUT_FM) {
-            LOGI("Routing audio to Headset\n");
-            new_snd_device = SND_DEVICE_FM_HEADSET;
-            new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-        } else if (outputDevices & AudioSystem::DEVICE_OUT_FM_SPEAKER) {
-            LOGI("Routing audio to FM Speakerphone\n");
-            new_snd_device = SND_DEVICE_FM_SPEAKER;
-            new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
-#endif
         } else {
             LOGI("Routing audio to Handset\n");
             new_snd_device = SND_DEVICE_HANDSET;
             new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
         }
-#ifdef HAVE_FM_RADIO
     }
-#endif
+
     if (mDualMicEnabled && mMode == AudioSystem::MODE_IN_CALL) {
         if (new_snd_device == SND_DEVICE_HANDSET) {
             LOGI("Routing audio to handset with DualMike enabled\n");
             new_snd_device = SND_DEVICE_IN_S_SADC_OUT_HANDSET;
-        } else if (new_snd_device == SND_DEVICE_HEADSET) {
-            LOGI("Routing audio to headset with DualMike enabled\n");
-            new_snd_device = SND_DEVICE_FM_HEADSET;
         } else if (new_snd_device == SND_DEVICE_SPEAKER) {
             LOGI("Routing audio to speakerphone with DualMike enabled\n");
             new_snd_device = SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE;
         }
     }
-    if (new_snd_device != -1 && new_snd_device != mCurSndDevice) {
-        LOGW("Routing to %d really (current: %d)", new_snd_device, mCurSndDevice);
+
+    if ((new_snd_device != -1 && new_snd_device != mCurSndDevice) || mFmRadioEnabled != mFmPrev) {
         ret = doAudioRouteOrMute(new_snd_device);
 
        //disable post proc first for previous session
@@ -1463,10 +1384,8 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
            msm72xx_enable_postproc(true);
 
        mCurSndDevice = new_snd_device;
-       if (new_snd_device == SND_DEVICE_BT) {
-           set_volume_rpc(SND_DEVICE_CURRENT, SND_METHOD_VOICE, 5, m7xsnddriverfd);
-       }
     }
+
     return ret;
 }
 
@@ -1725,7 +1644,7 @@ status_t AudioHardware::AudioStreamOutMSM72xx::setParameters(const String8& keyV
     if (param.getInt(key, device) == NO_ERROR) {
         mDevices = device;
         LOGV("set output routing %x", mDevices);
-        status = mHardware->setParameters(keyValuePairs);
+	status = mHardware->setParameters(keyValuePairs);
         status = mHardware->doRouting(NULL);
         param.remove(key);
     }
@@ -2240,6 +2159,25 @@ status_t AudioHardware::AudioStreamInMSM72xx::setParameters(const String8& keyVa
     }
     return status;
 }
+
+#ifdef HAVE_FM_RADIO
+status_t AudioHardware::setFmVolume(float v)
+{
+    unsigned int VolValue = (unsigned int)(AudioSystem::logToLinear(v));
+    int volume = (unsigned int)(VolValue*VolValue/100);
+
+    char volhex[10] = "";
+    sprintf(volhex, "0x%x ", volume);
+    char volreg[100] = "hcitool cmd 0x3f 0x15 0xf8 0x0 ";
+
+    strcat(volreg, volhex);
+    strcat(volreg, "0");
+
+    system(volreg);
+
+    return NO_ERROR;
+}
+#endif
 
 String8 AudioHardware::AudioStreamInMSM72xx::getParameters(const String8& keys)
 {
