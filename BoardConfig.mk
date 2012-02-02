@@ -22,6 +22,8 @@ USE_CAMERA_STUB := false
 # inherit from the proprietary version
 -include vendor/samsung/galaxy5/BoardConfigVendor.mk
 
+TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxy5/include
+
 # Camera
 BOARD_USE_FROYO_LIBCAMERA := true
 
@@ -86,7 +88,7 @@ TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 >
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # Audio
-TARGET_PROVIDES_LIBAUDIO := true 
+TARGET_PROVIDES_LIBAUDIO := true
 
 # Sensors
 TARGET_USES_OLD_LIBSENSORS_HAL :=true
