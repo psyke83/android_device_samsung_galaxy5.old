@@ -16,7 +16,7 @@
 DEVICE_PACKAGE_OVERLAYS += device/samsung/galaxy5/overlay
 
 PRODUCT_PACKAGES += \
-    copybit.galaxy5 \
+    copybit.msm7k \
     gps.galaxy5 \
     gralloc.galaxy5 \
     libOmxCore \
