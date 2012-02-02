@@ -336,20 +336,20 @@ struct outputCfg {
 #define CAMERA_BRIGTHNESS_5		5
 #define CAMERA_BRIGTHNESS_6		6
 
-#define CAMERA_WB_AUTO				1
-#define CAMERA_WB_INCANDESCENT		3
-#define CAMERA_WB_FLUORESCENT		4
-#define CAMERA_WB_DAYLIGHT			5
-#define CAMERA_WB_CLOUDY_DAYLIGHT	6
+//#define CAMERA_WB_AUTO				1
+//#define CAMERA_WB_INCANDESCENT		3
+//#define CAMERA_WB_FLUORESCENT		4
+//#define CAMERA_WB_DAYLIGHT			5
+//#define CAMERA_WB_CLOUDY_DAYLIGHT	6
 
 #define CAMERA_ISOValue_AUTO		0
 #define CAMERA_ISOValue_100		3
 #define CAMERA_ISOValue_200		4
 #define CAMERA_ISOValue_400		5
 
-#define CAMERA_AEC_FRAME_AVERAGE		0
-#define CAMERA_AEC_CENTER_WEIGHTED		1
-#define CAMERA_AEC_SPOT_METERING		2
+//#define CAMERA_AEC_FRAME_AVERAGE		0
+//#define CAMERA_AEC_CENTER_WEIGHTED		1
+//#define CAMERA_AEC_SPOT_METERING		2
 
  
 
@@ -491,12 +491,10 @@ struct sensor_cfg_data {
 	union {
 		int8_t effect;
 		
-#if defined(CONFIG_MACH_EUROPA)
 		int8_t brightness;
 		int8_t whitebalance;
 		int8_t iso;
 		int8_t metering;
-#endif
 		uint8_t lens_shading;
 		uint16_t prevl_pf;
 		uint16_t prevp_pl;
