@@ -16,7 +16,6 @@
 DEVICE_PACKAGE_OVERLAYS += device/samsung/galaxy5/overlay
 
 PRODUCT_PACKAGES += \
-    brcm_patchram_plus \
     copybit.galaxy5 \
     gps.galaxy5 \
     gralloc.galaxy5 \

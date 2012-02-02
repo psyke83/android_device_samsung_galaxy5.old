@@ -93,7 +93,6 @@ lib/libsecril-client.so
 usr/keychars/europa_keypad0.kcm.bin
 usr/keylayout/europa_headset.kl
 usr/keylayout/europa_keypad0.kl
-usr/keylayout/qwerty.kl
 
 wifi/ath6k/AR6003/hw2.0/athtcmd_ram.bin
 wifi/ath6k/AR6003/hw2.0/athwlan.bin.z77
@@ -190,8 +189,7 @@ PRODUCT_COPY_FILES += \\
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/usr/keychars/europa_keypad0.kcm.bin:system/usr/keychars/europa_keypad0.kcm.bin \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/usr/keylayout/europa_headset.kl:system/usr/keylayout/europa_headset.kl \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/usr/keylayout/europa_keypad0.kl:system/usr/keylayout/europa_keypad0.kl \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/usr/keylayout/qwerty.kl:system/usr/keylayout/qwerty.kl
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/usr/keylayout/europa_keypad0.kl:system/usr/keylayout/europa_keypad0.kl
 
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/wifi/ath6k/AR6003/hw2.0/athtcmd_ram.bin:system/wifi/ath6k/AR6003/hw2.0/athtcmd_ram.bin \\
