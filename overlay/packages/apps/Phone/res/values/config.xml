@@ -29,6 +29,11 @@
          so, we wouldn't need this flag at all.) -->
     <bool name="allow_in_call_touch_ui">false</bool>
 
+    <!-- Determine whether calls to mute the microphone in PhoneUtils
+         are routed through the android.media.AudioManager class (true) or through
+         the com.android.internal.telephony.Phone interface (false). -->
+    <bool name="send_mic_mute_to_AudioManager">true</bool>
+
     <!-- Determines if device implements a noise suppression device for in call audio-->
     <bool name="has_in_call_noise_suppression">true</bool>
 
