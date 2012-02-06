@@ -132,7 +132,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     mobiledata.interfaces=pdp0,wlan0,gprs,ppp0 \
     wifi.interface=wlan0 \
-    wifi.supplicant_scan_interval=60
+    wifi.supplicant_scan_interval=45
 
 # Performance & graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
