@@ -99,11 +99,15 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/etc/AudioFilter.csv:system/etc/AudioFilter.csv \
     device/samsung/galaxy5/prebuilt/etc/AutoVolumeControl.txt:system/etc/AutoVolumeControl.txt
 
+# Ensure that /cache is never used for deodexing
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.dexopt-data-only=1
+
 # Enable Google-specific location features,
 # like NetworkLocationProvider and LocationCollector
 PRODUCT_PROPERTY_OVERRIDES += \
-     ro.com.google.locationfeatures=1 \
-     ro.com.google.networklocation=1
+    ro.com.google.locationfeatures=1 \
+    ro.com.google.networklocation=1
 
 # Extended JNI checks
 # The extended JNI checks will cause the system to run more slowly, but they can spot a variety of nasty bugs 
