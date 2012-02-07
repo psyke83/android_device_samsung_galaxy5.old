@@ -90,7 +90,7 @@ static uint32_t SND_DEVICE_SPEAKER=-1;
 static uint32_t SND_DEVICE_MEDIA_SPEAKER=-1;
 static uint32_t SND_DEVICE_BT=-1;
 static uint32_t SND_DEVICE_BT_EC_OFF=32; // really DEVICE_BT_NSEC_OFF
-static uint32_t SND_DEVICE_HEADSET=31;  // really MEDIA_STEREO_HEADSET
+static uint32_t SND_DEVICE_HEADSET=-1;
 static uint32_t SND_DEVICE_HEADSET_AND_SPEAKER=26; // really FORCE_SPEAKER
 static uint32_t SND_DEVICE_IN_S_SADC_OUT_HANDSET=-1;
 static uint32_t SND_DEVICE_IN_S_SADC_OUT_SPEAKER_PHONE=-1;
@@ -422,7 +422,8 @@ status_t AudioHardware::setParameters(const String8& keyValuePairs)
         if(mMode != AudioSystem::MODE_IN_CALL){
            return NO_ERROR;
         }
-        doRouting(NULL);
+    } else {
+	mTtyMode = TTY_OFF;
     }
 
 #ifdef HAVE_FM_RADIO
@@ -1140,7 +1141,7 @@ status_t AudioHardware::setVoiceVolume(float v)
         v = 1.0;
     }
 
-    int vol = lrint(v * 6.0) + 1;
+    int vol = lrint(v * 7.0);
     LOGD("setVoiceVolume(%f)\n", v);
     LOGI("Setting in-call volume to %d (available range is 0 to 7)\n", vol);
 
