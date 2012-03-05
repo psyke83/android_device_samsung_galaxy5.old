@@ -23,7 +23,8 @@ PRODUCT_PACKAGES += \
     lights.msm7k \
     rzscontrol \
     screencap \
-    setup_fs
+    setup_fs \
+    sensors.galaxy5
 
 # Recovery tools
 PRODUCT_PACKAGES += \
