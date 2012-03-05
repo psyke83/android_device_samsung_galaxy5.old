@@ -85,7 +85,9 @@ on boot
 # SD card polling
 	chown system system /sys/module/g_android/parameters/product_id
 	chown system system /sys/devices/platform/msm_sdcc.1/polling
+	chown system system /sys/devices/platform/msm_sdcc.1/detect_change
 	chown system system /sys/devices/platform/msm_sdcc.2/polling
+	chown system system /sys/devices/platform/msm_sdcc.2/detect_change
 	chown system system /sys/devices/platform/android_usb/composition
 
 # anr mode chage
