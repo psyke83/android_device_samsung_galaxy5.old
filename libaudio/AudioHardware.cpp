@@ -37,7 +37,7 @@
 
 #define LOG_SND_RPC 0  // Set to 1 to log sound RPC's
 
-#undef COMBO_DEVICE_SUPPORTED // Headset speaker combo device not supported on this target
+#define COMBO_DEVICE_SUPPORTED 1 // Headset speaker combo device IS supported on this target
 #define DUALMIC_KEY "dualmic_enabled"
 #define TTY_MODE_KEY "tty_mode"
 
@@ -89,7 +89,7 @@ static uint32_t SND_DEVICE_HANDSET=-1;
 static uint32_t SND_DEVICE_SPEAKER=-1;
 static uint32_t SND_DEVICE_MEDIA_SPEAKER=-1;
 static uint32_t SND_DEVICE_BT=-1;
-static uint32_t SND_DEVICE_BT_EC_OFF=32; // really DEVICE_BT_NSEC_OFF
+static uint32_t SND_DEVICE_BT_EC_OFF=32; // really BT_NSEC_OFF
 static uint32_t SND_DEVICE_HEADSET=-1;
 static uint32_t SND_DEVICE_HEADSET_AND_SPEAKER=26; // really FORCE_SPEAKER
 static uint32_t SND_DEVICE_IN_S_SADC_OUT_HANDSET=-1;
