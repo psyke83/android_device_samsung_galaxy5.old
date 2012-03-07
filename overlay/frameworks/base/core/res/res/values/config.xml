@@ -57,9 +57,10 @@
          tethering on a new interface called "foo2" add <item>"foo\\d"</item> to the array -->
     <!-- Interfaces will be prioritized according to the order listed -->
     <string-array translatable="false" name="config_tether_upstream_regexs">
+        <item>"ppp\\d"</item>
+        <item>"wlan\\d"</item>
         <item>"pdp\\d"</item>
         <item>"rmnet\\d"</item>
-        <item>"wlan\\d"</item>
     </string-array>
 
     <!-- Flag indicating whether the we should enable the automatic brightness in Settings.
