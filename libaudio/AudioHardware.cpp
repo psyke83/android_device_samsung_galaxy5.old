@@ -1346,22 +1346,43 @@ status_t AudioHardware::doRouting(AudioStreamInMSM72xx *input)
 #ifdef COMBO_DEVICE_SUPPORTED
         } else if ((outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) &&
                    (outputDevices & AudioSystem::DEVICE_OUT_SPEAKER)) {
-            LOGI("Routing audio to Wired Headset and Speaker\n");
-            new_snd_device = SND_DEVICE_HEADSET_AND_SPEAKER;
-            new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
+                if (mFmRadioEnabled) {
+                    LOGI("Routing audio to FM Speakerphone\n");
+                    new_snd_device = SND_DEVICE_FM_SPEAKER;
+                    new_post_proc_feature_mask = (EQ_ENABLE | RX_IIR_ENABLE);
+                    new_post_proc_feature_mask &= (MBADRC_DISABLE | ADRC_DISABLE);
+                } else {
+                    LOGI("Routing audio to Wired Headset and Speaker\n");
+                    new_snd_device = SND_DEVICE_HEADSET_AND_SPEAKER;
+                    new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
+                }
         } else if (outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADPHONE) {
             if (outputDevices & AudioSystem::DEVICE_OUT_SPEAKER) {
-                LOGI("Routing audio to No microphone Wired Headset and Speaker (%d,%x)\n", mMode, outputDevices);
-                new_snd_device = SND_DEVICE_HEADSET_AND_SPEAKER;
-                new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
+                if (mFmRadioEnabled) {
+                    LOGI("Routing audio to FM Speakerphone\n");
+                    new_snd_device = SND_DEVICE_FM_SPEAKER;
+                    new_post_proc_feature_mask = (EQ_ENABLE | RX_IIR_ENABLE);
+                    new_post_proc_feature_mask &= (MBADRC_DISABLE | ADRC_DISABLE);
+                } else {
+                    LOGI("Routing audio to No microphone Wired Headset and Speaker (%d,%x)\n", mMode, outputDevices);
+                    new_snd_device = SND_DEVICE_HEADSET_AND_SPEAKER;
+                    new_post_proc_feature_mask = (ADRC_ENABLE | EQ_ENABLE | RX_IIR_ENABLE | MBADRC_ENABLE);
+                }
             } else {
-                LOGI("Routing audio to No microphone Wired Headset (%d,%x)\n", mMode, outputDevices);
-                new_snd_device = SND_DEVICE_NO_MIC_HEADSET;
+                if (mFmRadioEnabled) {
+                    LOGI("Routing audio to FM Headset\n");
+                    new_snd_device = SND_DEVICE_FM_HEADSET;
+                    new_post_proc_feature_mask = (EQ_ENABLE | RX_IIR_ENABLE);
+                    new_post_proc_feature_mask &= (MBADRC_DISABLE | ADRC_DISABLE);
+                } else {
+                    LOGI("Routing audio to No microphone Wired Headset (%d,%x)\n", mMode, outputDevices);
+                    new_snd_device = SND_DEVICE_NO_MIC_HEADSET;
+                }
             }
 #endif
         } else if (outputDevices & AudioSystem::DEVICE_OUT_WIRED_HEADSET) {
             if (mFmRadioEnabled) {
-                LOGI("Routing FM audio to Wired Headset\n");
+                LOGI("Routing audio to FM Headset\n");
                 new_snd_device = SND_DEVICE_FM_HEADSET;
                 new_post_proc_feature_mask = (EQ_ENABLE | RX_IIR_ENABLE);
                 new_post_proc_feature_mask &= (MBADRC_DISABLE | ADRC_DISABLE);
