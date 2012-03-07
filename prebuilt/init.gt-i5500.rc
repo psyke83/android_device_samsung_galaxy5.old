@@ -69,6 +69,11 @@ on boot
 	chown dhcp dhcp /data/misc/dhcp
 	mkdir /data/system 0775 system system
 
+# wpa_supplicant socket (unix socket mode) 
+	mkdir /data/system/wpa_supplicant 0771 wifi wifi 
+	chmod 0771 /data/system/wpa_supplicant 
+	chown wifi wifi /data/system/wpa_supplicant 
+
 # Permission for ril
 	mkdir /data/misc/radio 0774 radio radio
 	mkdir /data/local
@@ -142,8 +147,11 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --bau
 	group bluetooth net_bt_admin
 	disabled
 
-service wpa_supplicant /system/bin/wpa_supplicant -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
-	group wifi inet
+service wpa_supplicant /system/bin/wpa_supplicant -Dar6003 -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
+	#   we will start as root and wpa_supplicant will switch to user wifi
+	#   after setting up the capabilities required for WEXT
+	#   user wifi
+	#   group wifi inet keystore
 	socket wpa_wlan0 dgram 660 wifi wifi
 	disabled
 	oneshot

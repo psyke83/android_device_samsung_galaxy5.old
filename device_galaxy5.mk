@@ -87,6 +87,15 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
     device/samsung/galaxy5/prebuilt/modules/ar6000.ko:system/wifi/ar6000.ko
 
+# Atheros wpa_supplicant & hostapd 0.8.x binaries
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/bin/hostapd:system/bin/hostapd \
+    device/samsung/galaxy5/prebuilt/bin/hostapd_cli:system/bin/hostapd_cli \
+    device/samsung/galaxy5/prebuilt/bin/hostapd_wps:system/bin/hostapd_wps \
+    device/samsung/galaxy5/prebuilt/bin/wpa_cli:system/bin/wpa_cli \
+    device/samsung/galaxy5/prebuilt/bin/wpa_supplicant:system/bin/wpa_supplicant \
+    device/samsung/galaxy5/prebuilt/lib/libwpa.so:system/lib/libwpa.so
+
 # VOLD configuration
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/etc/vold.fstab:system/etc/vold.fstab
