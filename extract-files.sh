@@ -37,7 +37,6 @@ bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd
 bin/hostapd_cli
 bin/hostapd_wps
 bin/hostapd
-bin/memsicd
 bin/qmuxd
 bin/rild
 bin/wlan_tool
@@ -127,7 +126,6 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/hostapd_cli:system/bin/hostapd_cli \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/hostapd_wps:system/bin/hostapd_wps \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/hostapd:system/bin/hostapd \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/memsicd:system/bin/memsicd \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/qmuxd:system/bin/qmuxd \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/rild:system/bin/rild \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bin/wlan_tool:system/bin/wlan_tool \\

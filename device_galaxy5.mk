@@ -21,10 +21,11 @@ PRODUCT_PACKAGES += \
     gralloc.galaxy5 \
     libOmxCore \
     lights.msm7k \
+    memsicd \
     rzscontrol \
     screencap \
-    setup_fs \
-    sensors.galaxy5
+    sensors.galaxy5 \
+    setup_fs
 
 # Recovery tools
 PRODUCT_PACKAGES += \
