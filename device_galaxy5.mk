@@ -17,11 +17,11 @@ DEVICE_PACKAGE_OVERLAYS += device/samsung/galaxy5/overlay
 
 PRODUCT_PACKAGES += \
     copybit.msm7k \
+    g5sensord \
     gps.galaxy5 \
     gralloc.galaxy5 \
     libOmxCore \
     lights.msm7k \
-    memsicd \
     rzscontrol \
     screencap \
     sensors.galaxy5 \
