@@ -185,7 +185,7 @@ $(call inherit-product-if-exists, vendor/samsung/galaxy5/galaxy5-vendor.mk)
 $(call inherit-product, build/target/product/full_base.mk)
 
 # The gps config appropriate for this device
-$(call inherit-product, device/common/gps/gps_us_supl.mk)
+$(call inherit-product, device/common/gps/gps_ww_supl.mk)
 
 # LDPI assets
 PRODUCT_LOCALES += ldpi mdpi
