@@ -175,7 +175,8 @@ void eigensort(float **eigval, float **eigvec, int n);
 float pythag(float a, float b);
 void SVDcompute(float **mat, int m, int n, float **w, float **v);
 
-int aflag, mflag, oflag=0;
+int fd_bma, fd_mmc;
+int aflag, mflag, oflag, prev_aflag, prev_mflag, prev_oflag=0;
 int poll_delay=50;
 
 int main(int argc, char *argv[])
@@ -1079,15 +1080,15 @@ void f4x4matrixAeqInvB(float **A, float **B)
 void fSixDOFSensorDrivers(int k)
 {
 	// accelerometer
-	int fd, res;
+	int res;
 	int ioctl_msg=0;
 	if (aflag==1 || oflag==1)
 	{
+	if (prev_aflag==0 && prev_oflag==0) {
+		fd_bma = open("/dev/bma_accel", O_RDWR); }
 	short acc[3]={0};
 	ioctl_msg=BMA220_READ_ACCEL_XYZ;
-	fd = open("/dev/bma_accel", O_RDWR);
-	res = ioctl(fd, ioctl_msg, &acc);
-	close(fd);
+	res = ioctl(fd_bma, ioctl_msg, &acc);
 	fGpx = (float)acc[0]/256;
 	fGpy = (float)acc[1]/256;
 	fGpz = (float)acc[2]/256;
@@ -1096,21 +1097,34 @@ void fSixDOFSensorDrivers(int k)
 	// magnetometer
 	if (mflag==1 || oflag==1)
 	{
+	if (prev_mflag==0 && prev_oflag==0) {
+		fd_mmc = open("/dev/mmc31xx", O_RDWR); }
 	int tmag[3]={0};
 	int mag[3]={0};
 	ioctl_msg=MMC31XX_IOC_READXYZ;
-	fd = open("/dev/mmc31xx", O_RDWR);
-	res = ioctl(fd, ioctl_msg, &tmag);
+	res = ioctl(fd_mmc, ioctl_msg, &tmag);
 	mag[0]=tmag[0]-4096;
 	mag[1]=tmag[1]-4096;
 	mag[2]=tmag[2]-4096;
-	close(fd);
 	fBpx = (float)mag[0]/10;
 	fBpy = (float)mag[1]/10;
 	fBpz = (float)mag[2]/10;
 	}
 	//printf("fGpx %f, fGpy %f, fGpz %f, fBpx %f, fBpy %f, fBpz %f\n", fGpx, fGpy, fGpz, fBpx, fBpy, fBpz);
 	
+	// close sensors if possible
+	if (aflag==0 && prev_aflag==1) {
+		close(fd_bma);
+	}
+
+	if (mflag==0 && prev_mflag==1) {
+		close(fd_mmc);
+	}
+
+	// store current sensor state for next iteration
+	prev_aflag = aflag;
+	prev_mflag = mflag;
+	prev_oflag = oflag;
 	return;
 } 
 
