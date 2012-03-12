@@ -163,7 +163,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Compcache properties
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.compcache.default=26
+    ro.compcache.default=18
 
 # Goo updater app
 PRODUCT_PROPERTY_OVERRIDES += \
