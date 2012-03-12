@@ -1113,11 +1113,11 @@ void fSixDOFSensorDrivers(int k)
 	//printf("fGpx %f, fGpy %f, fGpz %f, fBpx %f, fBpy %f, fBpz %f\n", fGpx, fGpy, fGpz, fBpx, fBpy, fBpz);
 	
 	// close sensors if possible
-	if (aflag==0 && prev_aflag==1) {
+	if (aflag==0 && oflag==0 && prev_aflag==1) {
 		close(fd_bma);
 	}
 
-	if (mflag==0 && prev_mflag==1) {
+	if (mflag==0 && oflag==0 && prev_mflag==1) {
 		close(fd_mmc);
 	}
 
