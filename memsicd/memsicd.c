@@ -175,7 +175,8 @@ void eigensort(float **eigval, float **eigvec, int n);
 float pythag(float a, float b);
 void SVDcompute(float **mat, int m, int n, float **w, float **v);
 
-int aflag, mflag, oflag=0;
+int fd_bma, fd_mmc;
+int aflag, mflag, oflag,prev_aflag, prev_oflag=0;
 int poll_delay=50;
 
 int main(int argc, char *argv[])
@@ -267,7 +268,25 @@ int main(int argc, char *argv[])
 	  printf("eCompass ioctl error\n");
 	};
 	
-	
+	/* Open/close the BMA sensor only if needed */
+	if (aflag==1 && prev_aflag==0) {
+		fd_bma = open("/dev/bma_accel", O_RDWR);
+	}
+	else if (aflag==0 && prev_aflag==1) {
+		close(fd_bma);
+	}
+
+	/* Open/close the MMC sensor only if needed */
+	if (oflag==1 && prev_oflag==0) {
+		fd_bma = open("/dev/mmc31xx", O_RDWR);
+	}
+	else if (oflag==0 && prev_oflag==1) {
+		close(fd_bma);
+	}
+
+	/* store current sensor flags for next iteration */
+	prev_aflag = aflag;
+	prev_oflag = oflag;
 	
 	/* call sensor driver simulation to get float acc fGpxyz (g) and mag fBpxyz (uT) data */
 	//printf("\nIteration: %6d",  i);
@@ -1079,15 +1098,13 @@ void f4x4matrixAeqInvB(float **A, float **B)
 void fSixDOFSensorDrivers(int k)
 {
 	// accelerometer
-	int fd, res;
+	int res;
 	int ioctl_msg=0;
 	if (aflag==1 || oflag==1)
 	{
 	short acc[3]={0};
 	ioctl_msg=BMA220_READ_ACCEL_XYZ;
-	fd = open("/dev/bma_accel", O_RDWR);
-	res = ioctl(fd, ioctl_msg, &acc);
-	close(fd);
+	res = ioctl(fd_bma, ioctl_msg, &acc);
 	fGpx = (float)acc[0]/256;
 	fGpy = (float)acc[1]/256;
 	fGpz = (float)acc[2]/256;
@@ -1099,12 +1116,10 @@ void fSixDOFSensorDrivers(int k)
 	int tmag[3]={0};
 	int mag[3]={0};
 	ioctl_msg=MMC31XX_IOC_READXYZ;
-	fd = open("/dev/mmc31xx", O_RDWR);
-	res = ioctl(fd, ioctl_msg, &tmag);
+	res = ioctl(fd_mmc, ioctl_msg, &tmag);
 	mag[0]=tmag[0]-4096;
 	mag[1]=tmag[1]-4096;
 	mag[2]=tmag[2]-4096;
-	close(fd);
 	fBpx = (float)mag[0]/10;
 	fBpy = (float)mag[1]/10;
 	fBpz = (float)mag[2]/10;
