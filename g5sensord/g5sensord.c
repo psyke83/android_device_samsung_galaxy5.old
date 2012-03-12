@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 	srand((unsigned int) time(NULL));
 
 	/* control loop terminating with option 99 */
-	printf("\nOuNao mod - Freescale eCompass and Magnetic Calibration Software\n");
+	printf("\ng5sensord - Freescale eCompass and Magnetic Calibration Software (OuNao mod)\n");
 
 	// OuNao inclusions - start
 	ResetCalibrationFunc();
@@ -1113,12 +1113,11 @@ void fSixDOFSensorDrivers(int k)
 	//printf("fGpx %f, fGpy %f, fGpz %f, fBpx %f, fBpy %f, fBpz %f\n", fGpx, fGpy, fGpz, fBpx, fBpy, fBpz);
 	
 	// close sensors if possible
-	if (aflag==0 && oflag==0 && prev_aflag==1) {
-		close(fd_bma);
+	if (prev_aflag==1 || prev_oflag==1) {
+		if (aflag==0 && oflag==0) close(fd_bma);
 	}
-
-	if (mflag==0 && oflag==0 && prev_mflag==1) {
-		close(fd_mmc);
+	if (prev_mflag==1 || prev_oflag==1) {
+		if (mflag==0 && oflag==0) close(fd_mmc);
 	}
 
 	// store current sensor state for next iteration

@@ -201,8 +201,8 @@ int sensors_poll_context_t::activate(int handle, int enabled) {
     }
     if (mOrientationActive==true || mAccelActive==true || mMagnetActive==true) state=1;
     else state=0;
-    if (state==0 && prev_state==1) system("killall memsicd");
-    else if (state==1 && prev_state==0) system("start memsicd");
+    if (state==0 && prev_state==1) system("stop g5sensord");
+    else if (state==1 && prev_state==0) system("start g5sensord");
     return real_activate(handle, enabled);
 }
 
