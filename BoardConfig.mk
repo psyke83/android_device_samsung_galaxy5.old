@@ -111,6 +111,8 @@ TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
 BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 
 # WiFi
+BOARD_WLAN_ATHEROS_SDK      := true
+BOARD_WEXT_NO_COMBO_SCAN    := true
 PRODUCT_WIRELESS_TOOLS      := true
 WPA_SUPPLICANT_VERSION      := VER_0_6_X
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
