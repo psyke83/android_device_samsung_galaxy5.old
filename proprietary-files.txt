@@ -58,8 +58,5 @@ usr/keylayout/europa_keypad0.kl
 wifi/ath6k/AR6003/hw2.0/athtcmd_ram.bin
 wifi/ath6k/AR6003/hw2.0/athwlan.bin.z77
 wifi/ath6k/AR6003/hw2.0/bdata.SD31.bin
-wifi/ath6k/AR6003/hw2.0/data.patch.hw2_0.bin
-wifi/ath6k/AR6003/hw2.0/device.bin
-wifi/ath6k/AR6003/hw2.0/endpointping.bin
+wifi/ath6k/AR6003/hw2.0/data.patch.bin
 wifi/ath6k/AR6003/hw2.0/otp.bin.z77
-wifi/ath6k/AR6003/hw2.0/utf.bin
