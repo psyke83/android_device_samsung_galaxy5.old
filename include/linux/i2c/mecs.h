@@ -58,7 +58,7 @@
 
 #define ECOMPASS_IOC_SET_YPR		_IOW(ECOMPASS_IOM, 0x30, int[13])
 
-extern short gp2a_get_proximity_value(void);
+extern short taos_get_proximity_value(void);
 
 #endif /* __ECOMPASS_H__ */
 

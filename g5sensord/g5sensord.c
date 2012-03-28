@@ -44,15 +44,15 @@
 #include <errno.h>
 #include <linux/i2c/bma220.h>
 #include <linux/i2c/mmc31xx.h>
-#include <linux/i2c/mecs.h>>
+#include <linux/i2c/mecs.h>
 
 
 /* maximum calibration model size supported in this code */
 #define MAXCALELEMENTS 7
 
 /* mixing coefficient to permit vertical smartphone operation */
-#define FMU 0.00F						/* value of 0.0F used to verify correct operation in this code */
-//#define FMU 0.04F						/* stabilizes feCompass at high pitch with reduced accuracy */ 
+//#define FMU 0.00F						/* value of 0.0F used to verify correct operation in this code */
+#define FMU 0.04F						/* stabilizes feCompass at high pitch with reduced accuracy */ 
 
 /* constants to minimise numerical noise in the SVD algorithm */
 #define fSVDscaling 0.02F				/* approx normalises geomagnetic field 50uT */
@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
 	float ftmpx, ftmpy, ftmpz;				/* scratch variables */
 	int ypr[13]={0};					/* sensor events */
 	int tmpyaw, tmppitch, tmproll=0;			/* temporary orientation value */
+	FILE *fp;
 
 	/* apply the tweak for C's limitation on functions receiving variable size arrays */
 	/* slight overhead of additional storage since 2D arrays are replaced with 1D arrays */
@@ -250,6 +251,18 @@ int main(int argc, char *argv[])
 	ResetCalibrationFunc();
 	SOLUTIONSIZE=7;
 	
+	// save/get calibration values
+	if(( fp = fopen("/data/misc/sensors/g5s_calib", "rb+")) == NULL) {
+	  printf("Cannot open file. Creating new file...\n");
+	  fp = fopen("/data/misc/sensors/g5s_calib", "wb+");
+	}
+	if( fp != NULL) {
+	  fread(&fVx, sizeof(float), 1, fp);
+	  fread(&fVy, sizeof(float), 1, fp);
+	  fread(&fVz, sizeof(float), 1, fp);
+	}
+	fclose(fp);
+	//printf("\nfVx= %f, fVy= %f, fVz= %f", fVx, fVy, fVz);
 	
 	/* keyboard command interpreter */
 	for (;;)
@@ -267,8 +280,6 @@ int main(int argc, char *argv[])
 	{
 	  printf("eCompass ioctl error\n");
 	};
-	
-	
 	
 	/* call sensor driver simulation to get float acc fGpxyz (g) and mag fBpxyz (uT) data */
 	//printf("\nIteration: %6d",  i);
@@ -291,10 +302,10 @@ int main(int argc, char *argv[])
 	fGpz = ftmpz;
 
 	/* remove hard and soft iron terms from Bp (uT) to get calibrated data Bc (uT) */
+	fInvertHardandSoftIron();
+	
 	if (oflag==1)
 	{
-	fInvertHardandSoftIron();
-
 	/* pass the accel and calibrated mag data to the eCompass */
 	feCompass(fBcx, fBcy, fBcz, fGpx, fGpy, fGpz);
 	//printf("\nf6DOFOutp: Phi %6.2f The %6.2f Psi %6.2f delta %6.2f", fPhi, fThe, fPsi, fdelta);
@@ -334,6 +345,8 @@ int main(int argc, char *argv[])
 			//printf("\n%d entries in constellation is too few for calibration", ConstCount);
 		}
 	} /* end of test for active calibration flag */
+	
+	  //printf("\nfBpx= %f, fBcx= %f, fBpy= %f, fBcy= %f, fBpz= %f, fBcz= %f, ", fBpx, fBcx, fBpy, fBcy, fBpz, fBcz);
 	}
 	//tmpyaw=(int)fPsi;
 	//tmproll=(int)fThe;
@@ -343,9 +356,9 @@ int main(int argc, char *argv[])
 	ypr[0]=fGpy*-32768;
 	ypr[1]=fGpx*-32768;
 	ypr[2]=fGpz*32768;
-	ypr[4]=(fBpy*32768)/100;
-	ypr[5]=(fBpx*32768)/100;
-	ypr[6]=(fBpz*32768)/100;
+	ypr[4]=(fBcy*32768)/100;
+	ypr[5]=(fBcx*32768)/100;
+	ypr[6]=(fBcz*32768)/-100;
 	ypr[8]=(fPsi*65536)/360;
 	ypr[9]=(fThe*65536)/-360;
 	ypr[10]=(fPhi*65536)/-360;
@@ -531,6 +544,7 @@ void fUpdateCalibration7SVD(void)
 	int i, j, k, l;					       /* loop counters */
 	float fOffsetx, fOffsety, fOffsetz;    /* offset to remove large DC hard iron bias in matrix */
 	float ftmpBpx, ftmpBpy, ftmpBpz;       /* scratch variables */
+	FILE *fp;
 
 	//printf("\n\nCalculating 7 element SVD calibration at iteration %d with %d in Smart FIFO", loopcounter, ConstCount);
 
@@ -673,6 +687,15 @@ void fUpdateCalibration7SVD(void)
 
 	/* finally set the valid calibration flag to true */
 	validcal = 1;
+	if(( fp = fopen("/data/misc/sensors/g5s_calib", "rb+")) == NULL) {
+	  printf("Cannot open file.\n");
+	}
+	if( fp != NULL) {
+	  fwrite(&fVx, sizeof(float), 1, fp);
+	  fwrite(&fVy, sizeof(float), 1, fp);
+	  fwrite(&fVz, sizeof(float), 1, fp);
+	}
+	fclose(fp);
 	return;
 }
 

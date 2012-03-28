@@ -27,7 +27,7 @@
 
 #include "CompassSensor.h"
 
-#include "mecs.h"
+#include <linux/i2c/mecs.h>
 
 
 /*****************************************************************************/

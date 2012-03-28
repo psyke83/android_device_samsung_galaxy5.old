@@ -27,7 +27,7 @@
 
 #include "OrientationSensor.h"
 
-#include "mecs.h"
+#include <linux/i2c/mecs.h>
 
 
 /*****************************************************************************/

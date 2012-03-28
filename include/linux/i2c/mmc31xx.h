@@ -48,11 +48,19 @@
 /* MMC31XX register address */
 #define MMC31XX_REG_CTRL		0x00
 #define MMC31XX_REG_DATA		0x01
+/* [HSS][Cooper] Magnetic sensor change : MMC3140 -> MMC3280 (since REV0.1) */
+#define MMC32XX_REG_CTRL		0x07
+#define MMC32XX_REG_DATA		0x00
+#define MMC32XX_REG_DS			0x06
 
 /* MMC31XX control bit */
 #define MMC31XX_CTRL_TM			0x01
 #define MMC31XX_CTRL_SET		0x02
 #define MMC31XX_CTRL_RST		0x04
+/* [HSS][Cooper] Magnetic sensor change : MMC3140 -> MMC3280 (since REV0.1) */
+#define MMC32XX_CTRL_NOBOOST			0x10
+#define MMC32XX_CTRL_RM			0x20
+#define MMC32XX_CTRL_CHARGERST			0x40
 
 /* Use 'm' as magic number */
 #define MMC31XX_IOM			'm'
@@ -63,6 +71,6 @@
 #define MMC31XX_IOC_RESET		_IO (MMC31XX_IOM, 0x02)
 #define MMC31XX_IOC_READ		_IOR(MMC31XX_IOM, 0x03, int[3])
 #define MMC31XX_IOC_READXYZ		_IOR(MMC31XX_IOM, 0x04, int[3])
-
+#define MMC31XX_IOC_RM			_IO (MMC31XX_IOM, 0x05) /* [HSS][Cooper] Magnetic sensor change : MMC3140 -> MMC3280 (since REV0.1) */
 #endif /* __MMC31XX_H__ */
 
