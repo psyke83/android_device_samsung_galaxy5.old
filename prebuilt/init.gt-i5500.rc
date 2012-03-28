@@ -129,11 +129,10 @@ service g5sensord /system/bin/g5sensord
 	oneshot
 	disabled
 
-service setup_fs /system/bin/setup_fs /dev/block/stl13 /dev/block/stl14
+service setup_fs /system/bin/setup_fs stl13 stl14
 	user root
 	group root
 	oneshot
-	disabled
 
 on property:init.svc.ril-daemon=running
 	start get_macaddrs
