@@ -123,6 +123,12 @@ service get_macaddrs /system/bin/get_macaddrs
 	oneshot
 	disabled
 
+service memsicd /system/bin/memsicd
+	user system
+	group system
+	oneshot
+	disabled
+
 service g5sensord /system/bin/g5sensord
 	user system
 	group system
