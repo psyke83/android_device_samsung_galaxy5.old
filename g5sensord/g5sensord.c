@@ -252,17 +252,25 @@ int main(int argc, char *argv[])
 	SOLUTIONSIZE=7;
 	
 	// save/get calibration values
-	if(( fp = fopen("/data/misc/sensors/g5s_calib", "rb+")) == NULL) {
-	  printf("Cannot open file. Creating new file...\n");
-	  fp = fopen("/data/misc/sensors/g5s_calib", "wb+");
-	}
-	if( fp != NULL) {
+	if(( fp = fopen("/data/misc/sensors/g5s_calib", "rb+")) != NULL) {
 	  fread(&fVx, sizeof(float), 1, fp);
 	  fread(&fVy, sizeof(float), 1, fp);
 	  fread(&fVz, sizeof(float), 1, fp);
+	  fread(&ftmpx, sizeof(float), 1, fp);
+	  fread(&ftmpy, sizeof(float), 1, fp);
+	  fread(&ftmpz, sizeof(float), 1, fp);
+	  finvW[0][0]=ftmpx;
+	  finvW[1][1]=ftmpy;
+	  finvW[2][2]=ftmpz;
+	  finvW[0][1] = finvW[0][2] = finvW[1][0] = finvW[1][2] = finvW[2][0] = finvW[2][1] = 0.0F;
+	}
+	else {
+	  printf("Cannot open file. Creating new file...\n");
+	  fp = fopen("/data/misc/sensors/g5s_calib", "wb+");
 	}
 	fclose(fp);
-	//printf("\nfVx= %f, fVy= %f, fVz= %f", fVx, fVy, fVz);
+	//printf("\nfVx= %f, fVy= %f, fVz= %f\n", fVx, fVy, fVz);
+	//fmatrixPrintA(finvW, 0, 2, 0, 2);
 	
 	/* keyboard command interpreter */
 	for (;;)
@@ -541,9 +549,10 @@ void fUpdateConstellation(void)
 /* (FLOAT) 7 element calibration using SVD */
 void fUpdateCalibration7SVD(void)
 {
-	int i, j, k, l;					       /* loop counters */
-	float fOffsetx, fOffsety, fOffsetz;    /* offset to remove large DC hard iron bias in matrix */
-	float ftmpBpx, ftmpBpy, ftmpBpz;       /* scratch variables */
+	int i, j, k, l;				/* loop counters */
+	float fOffsetx, fOffsety, fOffsetz;    	/* offset to remove large DC hard iron bias in matrix */
+	float ftmpBpx, ftmpBpy, ftmpBpz;       	/* scratch variables */
+	float ftmpx, ftmpy, ftmpz;		/* scratch variables */
 	FILE *fp;
 
 	//printf("\n\nCalculating 7 element SVD calibration at iteration %d with %d in Smart FIFO", loopcounter, ConstCount);
@@ -694,6 +703,12 @@ void fUpdateCalibration7SVD(void)
 	  fwrite(&fVx, sizeof(float), 1, fp);
 	  fwrite(&fVy, sizeof(float), 1, fp);
 	  fwrite(&fVz, sizeof(float), 1, fp);
+	  ftmpx=finvW[0][0];
+	  ftmpy=finvW[1][1];
+	  ftmpz=finvW[2][2];
+	  fwrite(&ftmpx, sizeof(float), 1, fp);
+	  fwrite(&ftmpy, sizeof(float), 1, fp);
+	  fwrite(&ftmpz, sizeof(float), 1, fp);
 	}
 	fclose(fp);
 	return;
