@@ -434,11 +434,11 @@ void feCompass(float fBx, float fBy, float fBz, float fGx, float fGy, float fGz)
 	/* de-rotate by roll angle Phi */
 	fBfy = fBy * cosAngle - fBz * sinAngle;
 	fBz = fBy * sinAngle + fBz * cosAngle;
-	fGz = fGy * sinAngle + fGz * cosAngle;
+	fGz = fGy * sinAngle + fGz * fabs(cosAngle);
 
 	/* check for division by zero and calculate pitch angle Theta (-90deg, 90deg) */
 	if (fGz == 0.0F) fGz = 1E-10F;
-	fThe = atan(-fGx / fGz) * RadToDeg;
+	fThe = atan2(fGx, fGz) * RadToDeg * -1.0F;
 	/* calculate sin(Theta) and cos(Theta) */
 	sinAngle = sin(fThe * DegToRad);	/* sin(The) */
 	cosAngle = cos(fThe * DegToRad);	/* cos(The) */
