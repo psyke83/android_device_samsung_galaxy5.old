@@ -80,7 +80,8 @@ int CALINTERVAL = 40;					/* interval in samples between re-computation of the c
 int HARDCORRACTIVE = TRUE;				/* flag to enable subtraction of hard iron interference estimate */
 int SOFTCORRACTIVE = TRUE;				/* flag to enable removal of soft iron interference estimate */
 int TILTCORRACTIVE = TRUE;				/* flag for applying tilt correction */
-float ANGLE_LPF_FPU = 0.0625;			/* recip of angle LPF impulse response (16 samples here) */
+//float ANGLE_LPF_FPU = 0.0625;			/* recip of angle LPF impulse response (16 samples here) */
+float ANGLE_LPF_FPU = 0.25;			/* recip of angle LPF impulse response (4 samples here) */
 
 /* hardware abstraction layer parameters used to align sensor x, y, z axes together */
 /* accelerometer HAL coefficients set to default identity matrix */
@@ -318,7 +319,7 @@ int main(int argc, char *argv[])
 	{
 	/* pass the accel and calibrated mag data to the eCompass */
 	feCompass(fBcx, fBcy, fBcz, fGpx, fGpy, fGpz);
-	//printf("\nf6DOFOutp: Phi %6.2f The %6.2f Psi %6.2f delta %6.2f", fPhi, fThe, fPsi, fdelta);
+	//printf("\nf6DOFOutp: Phi   %6.2f   The %6.2f   Psi %6.2f   delta %6.2f", fPhi, fThe, fPsi, fdelta);
 	//printf("\nf6DOFOutp: LPPhi %6.2f LPThe %6.2f LPPsi %6.2f LPdelta %6.2f", fLPPhi, fLPThe, fLPPsi, fLPdelta);
 
 	/* update the constellation */
@@ -358,10 +359,7 @@ int main(int argc, char *argv[])
 	
 	  //printf("\nfBpx= %f, fBcx= %f, fBpy= %f, fBcy= %f, fBpz= %f, fBcz= %f, ", fBpx, fBcx, fBpy, fBcy, fBpz, fBcz);
 	}
-	//tmpyaw=(int)fPsi;
-	//tmproll=(int)fThe;
-	//tmppitch=(int)fPhi;
-	//if (tmpyaw<0) tmpyaw+=360;
+
 	if (fPsi<0) fPsi+=360;
 	ypr[0]=fGpy*-32768;
 	ypr[1]=fGpx*-32768;
@@ -369,11 +367,10 @@ int main(int argc, char *argv[])
 	ypr[4]=(fBcy*32768)/100;
 	ypr[5]=(fBcx*32768)/100;
 	ypr[6]=(fBcz*32768)/-100;
-	ypr[8]=(fPsi*65536)/360;
-	ypr[9]=(fThe*65536)/-360;
-	ypr[10]=(fPhi*65536)/-360;
+	ypr[8]=(fLPPsi*65536)/360;
+	ypr[9]=(fLPThe*65536)/-360;
+	ypr[10]=(fLPPhi*65536)/-360;
 	ioctl(fd_ecompass, ECOMPASS_IOC_SET_YPR, &ypr);
-	//printf("\nypr= %i, %i, %i, %i, %i, %i, %i, %i, %i", ypr[0], ypr[1], ypr[2], ypr[4], ypr[5], ypr[6], ypr[8], ypr[9], ypr[10]);
 	close(fd_ecompass);  
 	
 	if ( argc == 2 ) /* argc should be 2 for correct execution */
