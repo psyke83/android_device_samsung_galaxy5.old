@@ -259,10 +259,12 @@ int main(int argc, char *argv[])
 	  fread(&ftmpx, sizeof(float), 1, fp);
 	  fread(&ftmpy, sizeof(float), 1, fp);
 	  fread(&ftmpz, sizeof(float), 1, fp);
-	  finvW[0][0]=ftmpx;
-	  finvW[1][1]=ftmpy;
-	  finvW[2][2]=ftmpz;
-	  finvW[0][1] = finvW[0][2] = finvW[1][0] = finvW[1][2] = finvW[2][0] = finvW[2][1] = 0.0F;
+	  if ((ftmpx != 0) && (ftmpy != 0) && (ftmpz != 0)){
+	    finvW[0][0]=ftmpx;
+	    finvW[1][1]=ftmpy;
+	    finvW[2][2]=ftmpz;
+	    finvW[0][1] = finvW[0][2] = finvW[1][0] = finvW[1][2] = finvW[2][0] = finvW[2][1] = 0.0F;
+	  }
 	}
 	else {
 	  printf("Cannot open file. Creating new file...\n");
@@ -445,6 +447,12 @@ void feCompass(float fBx, float fBy, float fBz, float fGx, float fGy, float fGz)
 	/* de-rotate by pitch angle Theta */
 	fBfx = fBx * cosAngle + fBz * sinAngle;
 	fBfz = -fBx * sinAngle + fBz * cosAngle;
+	
+	/* try stabilizes the compass on high pitch */
+	if ((fThe>80.0F) && (fThe<120.0F) && (fBfy<0.0F)){
+	  fBfy = fBfy * -1.0F;
+	}
+	//printf("\nfBfx=%f, fBfy=%f, fBfz=%f, fGx=%f, fGy=%f, fGz=%f", fBfx, fBfy, fBfz, fGx, fGy, fGz);
 
 	/* calculate yaw = ecompass angle psi (-180deg, 180deg) with or without tilt compensation */
 	if (TILTCORRACTIVE)
