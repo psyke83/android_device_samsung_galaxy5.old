@@ -165,12 +165,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.compcache.default=18
 
-# Goo updater app
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.goo.developerid=psyke83 \
-    ro.goo.rom=cm7_$(TARGET_PRODUCT) \
-    ro.goo.version=$(shell date +%Y%m%d)
-
 ifeq ($(TARGET_PREBUILT_KERNEL),)
     LOCAL_KERNEL := device/samsung/galaxy5/prebuilt/kernel
 else
