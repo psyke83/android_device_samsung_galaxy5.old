@@ -51,6 +51,7 @@ const uint32_t AudioHardware::inputSamplingRates[] = {
 static int get_audpp_filter(void);
 static int msm72xx_enable_postproc(bool state);
 static int msm72xx_enable_preproc(bool state);
+static int prev_device_headset_like = 0;  //inclusion for extamp
 
 // Post processing paramters
 static struct rx_iir_filter iir_cfg[3];
@@ -1170,6 +1171,10 @@ status_t AudioHardware::setMasterVolume(float v)
     set_volume_rpc(SND_DEVICE_MEDIA_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_TTY_HEADSET, SND_METHOD_VOICE, 1, m7xsnddriverfd);
     set_volume_rpc(SND_DEVICE_TTY_VCO, SND_METHOD_VOICE, 1, m7xsnddriverfd);
+#ifdef HAVE_FM_RADIO
+    set_volume_rpc(SND_DEVICE_FM_HEADSET, SND_METHOD_VOICE, vol, m7xsnddriverfd);
+    set_volume_rpc(SND_DEVICE_FM_SPEAKER, SND_METHOD_VOICE, vol, m7xsnddriverfd);
+#endif
     // We return an error code here to let the audioflinger do in-software
     // volume on top of the maximum volume that we set through the SND API.
     // return error - software mixer will handle it
@@ -1215,7 +1220,37 @@ static status_t do_route_audio_rpc(uint32_t device,
      *                        # recording.
      *  )
      */
-    struct msm_snd_device_config args;
+    	
+	// Inclusion for extamp
+	struct msm_snd_extamp_config args2;
+	args2.device=device;
+	int cur_device_headset_like = 0;
+	if (device == SND_DEVICE_HEADSET || device == SND_DEVICE_FM_HEADSET || device == SND_DEVICE_NO_MIC_HEADSET) {
+		cur_device_headset_like = 1;
+	}
+	if (cur_device_headset_like != prev_device_headset_like) {
+		if (cur_device_headset_like == 1) {
+			args2.speaker_volume=0;
+			if (device == SND_DEVICE_NO_MIC_HEADSET) {
+				args2.headset_volume=26;
+			} else if (device == SND_DEVICE_FM_HEADSET) {
+				args2.headset_volume=20;
+			} else {
+				args2.headset_volume=18;
+			}
+		}
+		else {
+			args2.speaker_volume=26;
+			args2.headset_volume=0;
+		}
+		prev_device_headset_like = cur_device_headset_like;
+		if (ioctl(m7xsnddriverfd, SND_SET_EXTAMP, &args2) < 0) {
+			LOGE("snd_set_extamp error.");
+			return -EIO;
+		}
+	}
+	// End of extamp	
+	struct msm_snd_device_config args;
     args.device = device;
     args.ear_mute = ear_mute ? SND_MUTE_MUTED : SND_MUTE_UNMUTED;
     if((device != SND_DEVICE_CURRENT) && (!mic_mute)) {
@@ -1232,6 +1267,9 @@ static status_t do_route_audio_rpc(uint32_t device,
         LOGE("snd_set_device error.");
         return -EIO;
     }
+	// Inclusion for set_volume
+	set_volume_rpc(34, 0, 6, m7xsnddriverfd);
+	// End of extamp
 
     return NO_ERROR;
 }

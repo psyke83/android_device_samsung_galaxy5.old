@@ -165,6 +165,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.compcache.default=18
 
+# Audio attenuation
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.fm-attn=0 \
+    persist.sys.headset-attn=0 \
+    persist.sys.speaker-attn=6
+
 ifeq ($(TARGET_PREBUILT_KERNEL),)
     LOCAL_KERNEL := device/samsung/galaxy5/prebuilt/kernel
 else
