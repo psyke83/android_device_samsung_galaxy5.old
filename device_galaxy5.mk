@@ -19,7 +19,7 @@ PRODUCT_PACKAGES += \
     copybit.msm7k \
     g5sensord \
     gps.galaxy5 \
-    gralloc.galaxy5 \
+    gralloc.msm7k \
     libOmxCore \
     lights.msm7k \
     rzscontrol \

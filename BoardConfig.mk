@@ -50,6 +50,10 @@ TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true
 BOARD_USE_SCREENCAP := true
 #BOARD_NO_RGBX_8888 := true
 
+# Gralloc
+BOARD_USE_QCOM_PMEM := true
+BOARD_USE_FRAMEBUFFER_ALPHA_CHANNEL := true
+
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
 # minor       position           size     units       id
