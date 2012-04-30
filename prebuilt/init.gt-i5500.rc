@@ -32,6 +32,11 @@ on boot
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
 
+    # Enable KSM (Kernel SamePage Merging)
+    write /sys/kernel/mm/ksm/sleep_millisecs 4000
+    write /sys/kernel/mm/ksm/pages_to_scan 128
+    write /sys/kernel/mm/ksm/run 1
+
 # For sensors
 	mkdir /data/misc/sensors 0777 system misc
 	chmod 0666 /data/misc/sensors/ecs_nvm
