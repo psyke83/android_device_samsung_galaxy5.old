@@ -51,7 +51,6 @@ const uint32_t AudioHardware::inputSamplingRates[] = {
 static int get_audpp_filter(void);
 static int msm72xx_enable_postproc(bool state);
 static int msm72xx_enable_preproc(bool state);
-static int prev_device_headset_like = -1;  //inclusion for extamp
 
 // Post processing paramters
 static struct rx_iir_filter iir_cfg[3];
@@ -1224,26 +1223,19 @@ static status_t do_route_audio_rpc(uint32_t device,
     // Inclusion for extamp
     struct msm_snd_extamp_config args2;
     args2.device=device;
-    int cur_device_headset_like = 0;
     if (device == SND_DEVICE_HEADSET || device == SND_DEVICE_FM_HEADSET || device == SND_DEVICE_NO_MIC_HEADSET) {
-        cur_device_headset_like = 1;
+        args2.speaker_volume=0;
+        if (device == SND_DEVICE_NO_MIC_HEADSET) {
+            args2.headset_volume=26;
+        } else if (device == SND_DEVICE_FM_HEADSET) {
+            args2.headset_volume=20;
+        } else {
+            args2.headset_volume=18;
+        }
     }
-    if (cur_device_headset_like != prev_device_headset_like) {
-        if (cur_device_headset_like == 1) {
-            args2.speaker_volume=0;
-            if (device == SND_DEVICE_NO_MIC_HEADSET) {
-                args2.headset_volume=26;
-            } else if (device == SND_DEVICE_FM_HEADSET) {
-                args2.headset_volume=20;
-            } else {
-                args2.headset_volume=18;
-            }
-        }
-        else {
-            args2.speaker_volume=26;
-            args2.headset_volume=0;
-        }
-        prev_device_headset_like = cur_device_headset_like;
+    else {
+        args2.speaker_volume=26;
+        args2.headset_volume=0;
     }
     if (ioctl(m7xsnddriverfd, SND_SET_EXTAMP, &args2) < 0) {
         LOGE("snd_set_extamp error.");
