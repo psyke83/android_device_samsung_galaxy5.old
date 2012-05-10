@@ -1,9 +1,11 @@
 #!/system/bin/sh
 # madconfig (for CyanogenMod 7)
-# by subpsyke
+# by psyke83
 
 swapfile="/data/local/userinit.d/enableswap"
 dtfile="/data/local/userinit.d/enabledt"
+ksmfile="/data/local/userinit.d/enableksm"
+odexfile="/data/local/.enableodex"
 tweak="-o journal_data_writeback"
 drives="
 stl13
@@ -17,91 +19,133 @@ dotweak() {
 echo "Tweaking default partition options for speed."
 echo ""
 for drive in $drives; do
-	if ! tune2fs -l /dev/block/$drive | grep journal_data_writeback; then
-		tune2fs $tweak /dev/block/$drive
-	fi
+    if ! tune2fs -l /dev/block/$drive | grep journal_data_writeback; then
+        tune2fs $tweak /dev/block/$drive
+    fi
 done
 echo "Operation complete. You need to reboot for filesystem tweaks to take effect."
 }
 
 if [ "$1" = "" ]; then
-	echo ""
-	echo "Usage: madconfig [option]"
-	echo "Options:"
-	echo ""
-	echo " * dton    - enable dual-touch"
-	echo " * dtoff   - disable dual-touch"
-	echo " * swapon  - enable swap"
-	echo " * swapoff - disable swap"
-	echo ""
-	echo "MAD Team ROM status:"
-	echo ""
-if [ -f $swapfile ]; then
-	echo "Swap:         enabled"
-	echo "Swap size:   " `free | grep Swap | awk ' { print ($2) } '`"KB"
-else
-	echo "Swap:         disabled"
-fi
-if [ -f $dtfile ]; then
-	echo "Dual touch:   enabled"
-else
-	echo "Dual touch:   disabled"
-fi
-	echo ""
-	exit
+    echo ""
+    echo "Usage: madconfig [option]"
+    echo "Options:"
+    echo ""
+    echo " * dton    - enable dual-touch"
+    echo " * dtoff   - disable dual-touch"
+    echo " * ksmon   - enable Kernel Samepage Merging (KSM)"
+    echo " * ksmoff  - disable Kernel Samepage Merging (KSM)"
+    echo " * odexon  - enable automatic ROM re-odexing"
+    echo " * odexoff - disable automatic ROM re-odexing"
+    echo " * swapon  - enable swap"
+    echo " * swapoff - disable swap"
+    echo ""
+    echo "MAD Team ROM status:"
+    echo ""
+    echo -n "Dual touch:   "
+    if [ -f $dtfile ]; then
+        echo "enabled"
+    else
+        echo "disabled"
+    fi
+    echo -n "KSM:          "
+    if [ -f $ksmfile ]; then
+        echo "enabled"
+    else
+        echo "disabled"
+    fi
+    echo -n "Auto re-odex: "
+    if [ -f $odexfile ]; then
+        echo "enabled"
+    else
+        echo "disabled"
+    fi
+    echo -n "Swap:         "
+    if [ -f $swapfile ]; then
+        echo "enabled"
+        echo "Swap size:   " `free | grep Swap | awk ' { print ($2) } '`"KB"
+    else
+        echo "disabled"
+    fi
+    echo ""
+    exit
 fi
 
 if [ "$(id)" != "uid=0(root) gid=0(root)" ]; then
-	echo "You must run this script as superuser (su)!"
-	echo "Aborting."
-	echo ""
-	exit
+    echo "You must run this script as superuser (su)!"
+    echo "Aborting."
+    echo ""
+    exit
 fi
 
 # Create userinit.d folder if necessary
 if [ ! -d /data/local/userinit.d ]; then
-	mkdir -m 777 /data/local/userinit.d
-	chown system:system /data/local/userinit.d
+    mkdir -m 777 /data/local/userinit.d
+    chown system:system /data/local/userinit.d
 fi 
 
 if [ "$1" = "tweak" ]; then
-	dotweak
+    dotweak
 fi
 
 if [ "$1" = "dton" ]; then
-	echo "if [ ! -f /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml ]; then madconfig dton; fi" >$dtfile
-	echo "insmod /system/lib/modules/synaptics_i2c_rmi4.ko" >>$dtfile
-	rm /system/etc/permissions/android.hardware.touchscreen*
-	cp /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml /system/etc/permissions/
-	chmod +x $dtfile
-	$dtfile
-	echo "Dual-touch enabled! Setting will be kept on reboot."
-	echo "Note: some applications may not function properly until the next reboot."
+    echo "if [ ! -f /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml ]; then madconfig dton; fi" >$dtfile
+    echo "insmod /system/lib/modules/synaptics_i2c_rmi4.ko" >>$dtfile
+    rm /system/etc/permissions/android.hardware.touchscreen*
+    cp /system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml /system/etc/permissions/
+    chmod +x $dtfile
+    $dtfile
+    echo "Dual-touch enabled! Setting will be kept on reboot."
+    echo "Note: some applications may not function properly until the next reboot."
 fi
 
 if [ "$1" = "dtoff" ]; then
-	rm $dtfile
-	rm /system/etc/permissions/android.hardware.touchscreen*
-	cp /system/etc/permissions/touchscreen/android.hardware.touchscreen.xml /system/etc/permissions/
-	echo "Dual-touch disabled! You need to reboot for changes to take effect."
+    rm $dtfile
+    rm /system/etc/permissions/android.hardware.touchscreen*
+    cp /system/etc/permissions/touchscreen/android.hardware.touchscreen.xml /system/etc/permissions/
+    echo "Dual-touch disabled! You need to reboot for changes to take effect."
 fi
 
+if [ "$1" = "odexon" ]; then
+    touch $odexfile
+    reodexer reodex
+fi
+
+if [ "$1" = "odexoff" ]; then
+    rm $odexfile
+    reodexer deodex
+fi
+
+if [ "$1" = "ksmon" ]; then
+    echo "echo 1 > /sys/kernel/mm/ksm/run" >$ksmfile
+    chmod +x $ksmfile
+    $ksmfile
+    echo "KSM enabled! Setting will be kept on reboot."
+fi
+
+if [ "$1" = "ksmoff" ]; then
+    rm $ksmfile
+    echo 0 > /sys/kernel/mm/ksm/run
+    echo "KSM disabled! Setting will be kept on reboot."
+fi
+
+
 if [ "$1" = "swapon" ]; then
-	echo "swapon /dev/block/mmcblk0p3" >$swapfile
-	chmod +x $swapfile
-	$swapfile
-	echo "Swap enabled! Setting will be kept on reboot."
+    echo "swapon /dev/block/mmcblk0p3" >$swapfile
+    chmod +x $swapfile
+    $swapfile
+    echo "Swap enabled! Setting will be kept on reboot."
 fi
 
 if [ "$1" = "swapoff" ]; then
-	rm $swapfile
-	swapoff /dev/block/mmcblk0p3
-	echo "Swap disabled! Setting will be kept on reboot."
+    rm $swapfile
+    swapoff /dev/block/mmcblk0p3
+    echo "Swap disabled! Setting will be kept on reboot."
 fi
 
 echo ""
 
 # Remount /system as read-only
-mount -o remount,ro /system
+#mount -o remount,ro /system
 
 exit

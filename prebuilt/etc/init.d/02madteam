@@ -17,3 +17,9 @@ if [ -f $WPACONFIG ]; then
         rm -r /data/system/wpa_supplicant
     fi
 fi
+
+# Automatic ROM re-odexing
+ODEXCONFIG="/data/local/.enableodex"
+if [ -f $ODEXCONFIG ]; then
+    reodexer check
+fi

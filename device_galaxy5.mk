@@ -53,6 +53,7 @@ PRODUCT_COPY_FILES += \
 # MADTeam modifications
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/bin/madconfig:system/bin/madconfig \
+    device/samsung/galaxy5/prebuilt/bin/reodexer:system/bin/reodexer \
     device/samsung/galaxy5/prebuilt/etc/init.d/02madteam:system/etc/init.d/02madteam \
     device/samsung/galaxy5/prebuilt/etc/init.d/05mountsd:system/etc/init.d/05mountsd \
     device/samsung/galaxy5/prebuilt/modules/synaptics_i2c_rmi4.ko:system/lib/modules/synaptics_i2c_rmi4.ko \
