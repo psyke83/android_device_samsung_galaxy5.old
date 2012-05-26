@@ -1,0 +1,11 @@
+<resources>
+    <!-- resizing what is viewed in the recent apps' thumbnail -->
+    <dimen name="thumbnail_width">240dp</dimen>
+    <dimen name="thumbnail_height">240dp</dimen>
+
+    <!-- resizing the PIN unlock screen -->
+    <dimen name="password_keyboard_key_height_alpha">44dip</dimen> <!-- The default 56 -->
+    <dimen name="password_keyboard_key_height_numeric">44dip</dimen> <!-- The default 56 -->
+    <dimen name="password_keyboard_horizontalGap">2.0dip</dimen> <!-- default 3.0dip -->
+    <dimen name="password_keyboard_verticalGap">2.0dip</dimen> <!-- default 9.0dip -->
+</resources>

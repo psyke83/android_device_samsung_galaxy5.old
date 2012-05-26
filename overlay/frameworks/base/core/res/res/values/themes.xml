@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme">
+        <item name="listPreferredItemHeight">58dip</item>
+    </style>
+
+    <style name="Theme.Holo">
+        <item name="listPreferredItemHeight">58dip</item>
+    </style>
+
+    <style name="Theme.Holo.Light" parent="Theme.Light">
+        <item name="listPreferredItemHeight">58dip</item>
+    </style>
+</resources>

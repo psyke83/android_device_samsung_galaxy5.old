@@ -1,0 +1,118 @@
+#!/system/bin/sh
+# madconfig (for CyanogenMod 7)
+# by psyke83
+
+swapfile="/data/local/userinit.d/enableswap"
+dtfile="/data/local/userinit.d/enabledt"
+tweak="-o journal_data_writeback"
+drives="
+stl13
+stl14
+mmcblk0p2"
+
+# Remount /system as read-write
+mount -o remount,rw /system
+
+dotweak() {
+echo "Tweaking default partition options for speed."
+echo ""
+for drive in $drives; do
+    if ! tune2fs -l /dev/block/$drive | grep journal_data_writeback; then
+        tune2fs $tweak /dev/block/$drive
+    fi
+done
+echo "Operation complete. You need to reboot for filesystem tweaks to take effect."
+}
+
+if [ "$1" = "" ]; then
+    echo ""
+    echo "Usage: madconfig [option]"
+    echo "Options:"
+    echo ""
+    echo " * dton    - enable dual-touch"
+    echo " * dtoff   - disable dual-touch"
+    echo " * swapon  - enable swap"
+    echo " * swapoff - disable swap"
+    echo ""
+    echo "MAD Team ROM status:"
+    echo ""
+    echo -n "Dual touch:   "
+    if [ -f $dtfile ]; then
+        echo "enabled"
+    else
+        echo "disabled"
+    fi
+    echo -n "Swap:         "
+    if [ -f $swapfile ]; then
+        echo "enabled"
+        echo "Swap size:   " `free | grep Swap | awk ' { print ($2) } '`"KB"
+    else
+        echo "disabled"
+    fi
+    echo ""
+    exit
+fi
+
+if [ "$(id)" != "uid=0(root) gid=0(root)" ]; then
+    echo "You must run this script as superuser (su)!"
+    echo "Aborting."
+    echo ""
+    exit
+fi
+
+# Create userinit.d folder if necessary
+if [ ! -d /data/local/userinit.d ]; then
+    busybox mkdir -p -m 777 /data/local/userinit.d
+    busybox chown system:system /data/local/userinit.d
+fi 
+
+if [ "$1" = "tweak" ]; then
+    dotweak
+fi
+
+if [ "$1" = "dton" ]; then
+    echo "if [ ! -f /system/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml ]; then madconfig dton; fi" >$dtfile
+    rm /system/etc/permissions/android.hardware.touchscreen*
+    cp /system/madteam/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml /system/etc/permissions/
+    busybox chmod +x $dtfile
+    $dtfile
+    echo "Dual-touch enabled! Setting will be kept on reboot."
+    echo "Note: some applications may not function properly until the next reboot."
+fi
+
+if [ "$1" = "dtoff" ]; then
+    rm $dtfile
+    rm /system/etc/permissions/android.hardware.touchscreen*
+    cp /system/madteam/etc/permissions/android.hardware.touchscreen.xml /system/etc/permissions/
+    echo "Dual-touch disabled! You need to reboot for changes to take effect."
+fi
+
+if [ "$1" = "odexon" ]; then
+    touch $odexfile
+    reodexer reodex
+fi
+
+if [ "$1" = "odexoff" ]; then
+    rm $odexfile
+    reodexer deodex
+fi
+
+if [ "$1" = "swapon" ]; then
+    echo "swapon /dev/block/mmcblk0p3" >$swapfile
+    busybox chmod +x $swapfile
+    $swapfile
+    echo "Swap enabled! Setting will be kept on reboot."
+fi
+
+if [ "$1" = "swapoff" ]; then
+    rm $swapfile
+    swapoff /dev/block/mmcblk0p3
+    echo "Swap disabled! Setting will be kept on reboot."
+fi
+
+echo ""
+
+# Remount /system as read-only
+#mount -o remount,ro /system
+
+exit

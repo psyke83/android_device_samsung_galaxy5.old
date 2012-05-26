@@ -1,0 +1,9 @@
+# mount     fstype  device
+
+/boot       bml     boot
+/cache      ext4    /dev/block/stl14
+/data       ext4    /dev/block/stl13
+/recovery   bml     recovery
+/sdcard     vfat    /dev/block/mmcblk0p1    /dev/block/mmcblk0
+/system     ext4    /dev/block/stl12
+/sd-ext     ext4    /dev/block/mmcblk0p2

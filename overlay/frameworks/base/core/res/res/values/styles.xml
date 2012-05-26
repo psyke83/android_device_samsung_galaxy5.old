@@ -1,0 +1,9 @@
+<resources>
+    <style name="TextAppearance.Large">
+        <item name="android:textSize">21sp</item>
+    </style>
+
+    <style name="TextAppearance.Medium">
+        <item name="android:textSize">17sp</item>
+    </style>
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+    <bool name="config_hardwareAccelerated">false</bool>
+    <bool name="config_cyanogenmod">true</bool>
+    <integer name="config_workspaceRows">3</integer> 
+    <integer name="config_workspaceColumns">3</integer>
+
+<!-- AllApps/Customize/AppsCustomize -->
+    <!-- Which default transition effect to use on the AppsCustomize -->
+    <string name="config_drawerDefaultTransitionEffect">Standard</string>
+</resources>

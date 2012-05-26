@@ -1,0 +1,78 @@
+#!/system/bin/sh
+
+# reodexer
+# by psyke83
+
+BOOTCONFIG="/data/local/.enableodex"
+SOURCE="/data/dalvik-cache"
+DEST="/system/dalvik-cache"
+VER="0.1"
+
+check() {
+echo "Checking for broken links..."
+for i in `cd $SOURCE; find . -name "system*"`; do
+    if [ -h $SOURCE/$i ] && [ ! -f $DEST/$i ]; then
+        rm $SOURCE/$i
+        echo "Invalid link removed: $i"
+    fi
+done
+echo "Finished checking for broken links."
+}
+
+reodex() {
+echo "Re-odex operation starting..."
+for i in `cd $SOURCE; find . -name "system*"`; do
+    if [ ! -h $SOURCE/$i ]; then
+        echo "Linking: $i..."
+        mv $SOURCE/$i $DEST/$i
+        ln -s $DEST/$i $SOURCE/$i
+    fi
+done
+echo "Finished re-odexing ROM."
+}
+
+deodex() {
+echo "De-odex operation starting..."
+for i in `cd $SOURCE; find . -name "system*"`; do
+    if [ -h $SOURCE/$i ]; then
+        echo "Unlinking: $i..."
+        rm $SOURCE/$i
+        mv $DEST/$i $SOURCE/$i
+    fi
+done
+echo "Finished de-odexing ROM."
+}
+
+# This is used for automatic re-odexing
+auto() {
+if [ -f $BOOTCONFIG ]; then
+    mount -o remount,rw /system
+    echo "Starting automatic re-odex..."
+    reodex
+fi
+}
+
+echo ""
+echo "reodexer - version $VER"
+echo "----------------------"
+
+if [ "$1" = "auto" ]; then
+    $1
+    exit
+fi
+
+if [ "$1" != "" ]; then
+    mount -o remount,rw /system
+    if [ ! -d $DEST ] ; then
+        mkdir $DEST -m 0755
+        sleep 5
+    fi
+    $1
+    #mount -o remount,ro /system
+else
+    echo "Options:"
+    echo "* check  - check for invalid odex links"
+    echo "* reodex - link system odex files to /system"
+    echo "* deodex - move system odex files back to /data"
+    echo ""
+fi

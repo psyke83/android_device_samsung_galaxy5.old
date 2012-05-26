@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="dialpad_vertical_margin">4dip</dimen>
+    <dimen name="dialpad_digits_text_size">32sp</dimen>
+</resources>
