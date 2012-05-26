@@ -56,7 +56,6 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/bin/reodexer:system/bin/reodexer \
     device/samsung/galaxy5/prebuilt/etc/init.d/02madteam:system/etc/init.d/02madteam \
     device/samsung/galaxy5/prebuilt/etc/init.d/05mountsd:system/etc/init.d/05mountsd \
-    device/samsung/galaxy5/prebuilt/modules/synaptics_i2c_rmi4.ko:system/lib/modules/synaptics_i2c_rmi4.ko \
     frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.xml \
     frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml
 
