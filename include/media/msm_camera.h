@@ -96,10 +96,6 @@
 #define MSM_CAM_IOCTL_SENSOR_IO_CFG \
 	_IOW(MSM_CAM_IOCTL_MAGIC, 21, struct sensor_cfg_data *)
 
-#define MSM_CAMERA_LED_OFF  0
-#define MSM_CAMERA_LED_LOW  1
-#define MSM_CAMERA_LED_HIGH 2
-
 #define MSM_CAM_IOCTL_FLASH_LED_CFG \
 	_IOW(MSM_CAM_IOCTL_MAGIC, 22, unsigned *)
 
@@ -111,8 +107,34 @@
 
 #define MSM_CAM_IOCTL_AF_CTRL \
 	_IOR(MSM_CAM_IOCTL_MAGIC, 25, struct msm_ctrl_cmt_t *)
+
 #define MSM_CAM_IOCTL_AF_CTRL_DONE \
 	_IOW(MSM_CAM_IOCTL_MAGIC, 26, struct msm_ctrl_cmt_t *)
+
+#define MSM_CAM_IOCTL_CONFIG_VPE \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 27, struct msm_camera_vpe_cfg_cmd *)
+
+#define MSM_CAM_IOCTL_AXI_VPE_CONFIG \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 28, struct msm_camera_vpe_cfg_cmd *)
+
+#define MSM_CAM_IOCTL_STROBE_FLASH_CFG \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 29, uint32_t *)
+
+#define MSM_CAM_IOCTL_STROBE_FLASH_CHARGE \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 30, uint32_t *)
+
+#define MSM_CAM_IOCTL_STROBE_FLASH_RELEASE \
+	_IO(MSM_CAM_IOCTL_MAGIC, 31)
+
+#define MSM_CAM_IOCTL_ERROR_CONFIG \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 32, uint32_t *)
+
+#define MSM_CAMERA_LED_OFF  0
+#define MSM_CAMERA_LED_LOW  1
+#define MSM_CAMERA_LED_HIGH 2
+
+#define MSM_CAMERA_STROBE_FLASH_NONE 0
+#define MSM_CAMERA_STROBE_FLASH_XENON 1
 
 #define MAX_SENSOR_NUM  3
 #define MAX_SENSOR_NAME 32
@@ -327,7 +349,6 @@ struct outputCfg {
 #define OUTPUT_TYPE_S		3
 #define OUTPUT_TYPE_V		4
 
-/* have to sync with values in HAL layer*/
 #define CAMERA_BRIGTHNESS_0		0
 #define CAMERA_BRIGTHNESS_1		1
 #define CAMERA_BRIGTHNESS_2		2
@@ -336,21 +357,20 @@ struct outputCfg {
 #define CAMERA_BRIGTHNESS_5		5
 #define CAMERA_BRIGTHNESS_6		6
 
-//#define CAMERA_WB_AUTO				1
-//#define CAMERA_WB_INCANDESCENT		3
-//#define CAMERA_WB_FLUORESCENT		4
-//#define CAMERA_WB_DAYLIGHT			5
-//#define CAMERA_WB_CLOUDY_DAYLIGHT	6
+#define CAMERA_WB_AUTO				0
+#define CAMERA_WB_INCANDESCENT		1
+#define CAMERA_WB_FLUORESCENT		2
+#define CAMERA_WB_DAYLIGHT			3
+#define CAMERA_WB_CLOUDY_DAYLIGHT	4
 
 #define CAMERA_ISOValue_AUTO		0
-#define CAMERA_ISOValue_100		3
-#define CAMERA_ISOValue_200		4
-#define CAMERA_ISOValue_400		5
+#define CAMERA_ISOValue_100		1
+#define CAMERA_ISOValue_200		2
+#define CAMERA_ISOValue_400		3
 
-//#define CAMERA_AEC_FRAME_AVERAGE		0
 //#define CAMERA_AEC_CENTER_WEIGHTED		1
 //#define CAMERA_AEC_SPOT_METERING		2
-
+//#define CAMERA_AEC_FRAME_AVERAGE		0
  
 
 struct msm_frame {
@@ -363,7 +383,10 @@ struct msm_frame {
 
 	void *cropinfo;
 	int croplen;
+	uint32_t error_code;
 };
+
+#define MSM_CAMERA_ERR_MASK (0xFFFFFFFF & 1)
 
 struct msm_stats_buf {
 	int type;
@@ -455,7 +478,26 @@ struct msm_snapshot_pp_status {
 #define CAMERA_EFFECT_AQUA		8
 #define CAMERA_EFFECT_MAX		9
 
-
+enum {
+  CAMERA_BESTSHOT_OFF = 0,
+  CAMERA_BESTSHOT_LANDSCAPE = 1,
+  CAMERA_BESTSHOT_SNOW,
+  CAMERA_BESTSHOT_BEACH,
+  CAMERA_BESTSHOT_SUNSET,
+  CAMERA_BESTSHOT_NIGHT,
+  CAMERA_BESTSHOT_PORTRAIT,
+  CAMERA_BESTSHOT_BACKLIGHT,
+  CAMERA_BESTSHOT_SPORTS,
+  CAMERA_BESTSHOT_ANTISHAKE,
+  CAMERA_BESTSHOT_FLOWERS,
+  CAMERA_BESTSHOT_CANDLELIGHT,
+  CAMERA_BESTSHOT_FIREWORKS,
+  CAMERA_BESTSHOT_PARTY,
+  CAMERA_BESTSHOT_NIGHT_PORTRAIT,
+  CAMERA_BESTSHOT_THEATRE,
+  CAMERA_BESTSHOT_ACTION,
+  CAMERA_BESTSHOT_MAX
+} ;
 
 struct sensor_pict_fps {
 	uint16_t prevfps;
@@ -491,10 +533,12 @@ struct sensor_cfg_data {
 	union {
 		int8_t effect;
 		
+//#if defined(CONFIG_MACH_EUROPA)
 		int8_t brightness;
 		int8_t whitebalance;
 		int8_t iso;
 		int8_t metering;
+//#endif
 		uint8_t lens_shading;
 		uint16_t prevl_pf;
 		uint16_t prevp_pl;

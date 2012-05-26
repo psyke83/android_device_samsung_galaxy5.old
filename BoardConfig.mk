@@ -25,7 +25,7 @@ USE_CAMERA_STUB := false
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxy5/include
 
 # Camera
-BOARD_USE_FROYO_LIBCAMERA := true
+BOARD_USE_CAF_LIBCAMERA := true
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
