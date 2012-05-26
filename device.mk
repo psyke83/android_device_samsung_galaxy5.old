@@ -181,6 +181,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio attenuation
 PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.extamp-filter=1 \
     persist.sys.fm-attn=0 \
     persist.sys.headset-attn=0 \
     persist.sys.speaker-attn=0
