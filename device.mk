@@ -53,9 +53,10 @@ PRODUCT_PACKAGES += \
     g5sensord \
     gps.galaxy5 \
     lights.galaxy5 \
-    Music \
     sensors.galaxy5 \
-    setup_fs
+    setup_fs \
+    SoundRecoder \
+    VoiceDialer
 
 # Hardware permissions
 PRODUCT_COPY_FILES += \
