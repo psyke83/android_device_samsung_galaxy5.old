@@ -17,15 +17,9 @@
  */
 -->
 <resources>
-    <bool name="def_accelerometer_rotation">true</bool>
+    <!-- Set the automatic brightness mode on by default -->
     <bool name="def_screen_brightness_automatic_mode">false</bool>
-    <integer name="def_screen_off_timeout">45000</integer>
-    <integer name="def_lockscreen_sounds_enabled">0</integer>
-    <!-- Default for Settings.System.POINTER_SPEED -->
-    <integer name="def_pointer_speed">100</integer>
-    <!-- Default for UI touch sounds enabled -->
-    <bool name="def_sound_effects_enabled">true</bool>
     <fraction name="def_window_animation_scale">0%</fraction>
-    <fraction name="def_window_transition_scale">0%</fraction>
+    <fraction name="def_window_transition_scale">0%</fraction> 
     <bool name="def_install_non_market_apps">true</bool>
 </resources>
