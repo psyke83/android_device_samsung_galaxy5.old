@@ -1,11 +1,5 @@
 #!/system/bin/sh
 
-# HACK: patch simple2ext's script to prevent filesystem corruption
-S2ECONFIG="/data/local/s2e_config/.mounts_ext4"
-if [ -f $S2ECONFIG ]; then
-    rm $S2ECONFIG
-fi
-
 # Enable compcache
 handle_compcache
 
