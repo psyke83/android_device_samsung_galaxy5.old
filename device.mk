@@ -161,7 +161,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Performance & graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.heapsize=24m \
+    dalvik.vm.heapsize=32m \
     persist.sys.purgeable_assets=1 \
     persist.sys.use_dithering=1 \
     ro.media.dec.jpeg.memcap=20000000 \
@@ -185,7 +185,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.extamp-filter=1 \
     persist.sys.fm-attn=0 \
     persist.sys.headset-attn=0 \
-    persist.sys.speaker-attn=0
+    persist.sys.speaker-attn=6
 
 # NEW ICS properties (may need verification/testing)
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -195,7 +195,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.gprsclass=10 \
     ro.telephony.ril.v3=icccardstatus,datacall,signalstrength,facilitylock \
     mobiledata.interfaces=pdp0,rmnet0,rmnet1,rmnet2 \
-    net.qtaguid_enabled=0 \
     debug.gr.swapinterval=0 \
     persist.sys.usb.config=mass_storage,adb \
     sys.usb.config=mass_storage,adb \
