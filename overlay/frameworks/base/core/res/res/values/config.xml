@@ -27,23 +27,11 @@ for different hardware and product builds. -->
     <!-- Our device doesn't animate well. -->
     <bool name="config_animateScreenLights">true</bool>
 
-    <!-- Flag indicating whether the surface flinger is inefficient
-at performing a blur. Used by parts of the UI to turn off
-the blur effect where it isn't worth the performance hit. -->
-    <bool name="config_sf_slowBlur">true</bool>
-
     <!-- If true, the screen can be rotated via the accelerometer in all 4
          rotations as the default behavior. -->
     <bool name="config_allowAllRotations">true</bool>
 
     <string name="config_legacyUmsLunFile">/sys/devices/platform/msm_hsusb/gadget/lun0/file</string>
-
-    <!--
-The 2d accelerator can't do an alpha transformation of
-a surface with an alpha channel, so enable this special mode
-to avoid going into software rendering.
--->
-    <bool name="config_sf_limitedAlpha">true</bool>
 
     <!-- Flag indicating whether we should enable the automatic brightness in Settings.
 config_hardware_automatic_brightness_available is not set, so we will use software implementation -->
