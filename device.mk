@@ -110,6 +110,7 @@ PRODUCT_COPY_FILES += \
 
 # Touchscreen & keys
 PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/usr/idc/europa_keypad0.idc:system/usr/idc/europa_keypad0.idc \
     device/samsung/galaxy5/prebuilt/usr/idc/synaptics-rmi-touchscreen.idc:system/usr/idc/synaptics-rmi-touchscreen.idc \
     device/samsung/galaxy5/prebuilt/usr/keylayout/synaptics.kl:system/usr/keylayout/synaptics.kl
 
