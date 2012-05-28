@@ -30,6 +30,7 @@ USE_CAMERA_STUB := true
 
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxy5/include
 
+# Target chipset/platform
 TARGET_BOARD_PLATFORM := msm7k
 TARGET_ARCH_VARIANT := armv6-vfp
 TARGET_CPU_ABI := armeabi-v6l
@@ -38,6 +39,7 @@ TARGET_CPU_ABI2 := armeabi
 # Target properties
 TARGET_BOOTLOADER_BOARD_NAME := galaxy5
 TARGET_OTA_ASSERT_DEVICE := galaxy5,GT-I5500,GT-I5500M,GT-I5500L
+TARGET_USERIMAGES_USE_EXT4 := true
 
 # Target information
 TARGET_NO_BOOTLOADER := true
@@ -114,8 +116,11 @@ WIFI_DRIVER_MODULE_NAME     :=  "ar6000"
 WIFI_DRIVER_MODULE_ARG      :=  ""
 
 # Recovery
+BOARD_BML_BOOT := /dev/block/bml9
+BOARD_BML_RECOVERY := /dev/block/bml10
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/galaxy5/recovery/recovery_keys.c
 BOARD_USE_CUSTOM_RECOVERY_FONT := "<font_7x16.h>"
+TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery/recovery.rc
 
 # Kernel
 TARGET_KERNEL_SOURCE := kernel/samsung/codeaurora_gio2europa
@@ -126,6 +131,8 @@ BOARD_NAND_SPARE_SIZE := 128
 BOARD_KERNEL_BASE := 0x00200000
 BOARD_KERNEL_CMDLINE := 
 BOARD_KERNEL_PAGESIZE := 4096
+# (BOARD_KERNEL_PAGESIZE * 64) ???
+BOARD_FLASH_BLOCK_SIZE := 4096
 
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
@@ -150,9 +157,6 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 10485760
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 186122240
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 203161600
 
-# (BOARD_KERNEL_PAGESIZE * 64) ???
-BOARD_FLASH_BLOCK_SIZE := 4096
-
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
 BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
@@ -161,15 +165,3 @@ BOARD_FM_DEVICE := bcm2049
 
 # 3G
 BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"
-
-# NEEDS CHECKING (RECOVERY)
-BOARD_BML_BOOT := /dev/block/bml9
-BOARD_BML_RECOVERY := /dev/block/bml10
-#BOARD_RECOVERY_HANDLES_MOUNT := true
-#BOARD_HAS_DOWNLOAD_MODE := true
-#BOARD_LDPI_RECOVERY := true
-#TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery/recovery.rc
-#BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
-#BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
-#TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; sync"
-TARGET_USERIMAGES_USE_EXT4 := true
