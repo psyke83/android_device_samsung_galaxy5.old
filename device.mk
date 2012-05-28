@@ -89,7 +89,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/init.gt-i5500board.rc:root/init.gt-i5500board.rc \
     device/samsung/galaxy5/prebuilt/init.gt-i5500board.usb.rc:root/init.gt-i5500board.usb.rc \
-    device/samsung/galaxy5/prebuilt/initlogo.rle:root/initlogo.rle \
     device/samsung/galaxy5/prebuilt/ueventd.gt-i5500board.rc:root/ueventd.gt-i5500board.rc
 
 # Wi-Fi related
