@@ -1,5 +1,11 @@
 #!/system/bin/sh
 
+# Create userinit.d folder if necessary
+if [ ! -d /data/local/userinit.d ]; then
+    busybox mkdir -p -m 777 /data/local/userinit.d
+    busybox chown system:system /data/local/userinit.d
+fi
+
 # Enable compcache
 handle_compcache
 
