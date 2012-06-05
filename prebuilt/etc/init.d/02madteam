@@ -7,6 +7,6 @@ if [ ! -d /data/local/userinit.d ]; then
 fi
 
 # Enable compcache
-handle_compcache
+handle_compcache &
 
 
