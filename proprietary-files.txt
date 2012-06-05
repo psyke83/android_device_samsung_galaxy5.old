@@ -11,6 +11,7 @@ bin/wmiconfig
 etc/firmware/yamato_pfp.fw
 etc/firmware/yamato_pm4.fw
 
+lib/egl/eglsubAndroid.so
 lib/egl/libEGL_adreno200.so
 lib/egl/libGLESv1_CM_adreno200.so
 lib/egl/libGLESv2_adreno200.so
@@ -49,6 +50,7 @@ lib/libOmxWmaDec.so
 lib/libOmxWmvDec.so
 lib/libOmxVidEnc.so
 lib/libril.so
+lib/libsc-a2xx.so
 lib/libsec-ril.so
 lib/libsecril-client.so
 

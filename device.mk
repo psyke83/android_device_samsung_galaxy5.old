@@ -25,8 +25,14 @@ PRODUCT_LOCALES += mdpi
 
 # Graphics 
 PRODUCT_PACKAGES += \
-    copybit.galaxy5 \
-    gralloc.galaxy5
+    copybit.msm7x27 \
+    gralloc.msm7x27 \
+    hwcomposer.default \
+    hwcomposer.msm7x27 \
+    libgenlock \
+    liboverlay \
+    libQcomUI \
+    libtilerenderer
 
 # Audio
 PRODUCT_PACKAGES += \
@@ -52,7 +58,7 @@ PRODUCT_PACKAGES += \
     FileManager \
     g5sensord \
     gps.galaxy5 \
-    lights.galaxy5 \
+    lights.msm7x27 \
     sensors.galaxy5 \
     setup_fs \
     SoundRecoder \
@@ -163,8 +169,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.heapsize=32m \
     debug.camcorder.disablemeta=1 \
+    debug.enabletr=false \
+    hwui.render_dirty_regions=false \
     persist.sys.purgeable_assets=1 \
+    persist.sys.ui.hw=1 \
     persist.sys.use_dithering=1 \
+    ro.hwui.texture_cache_size=12 \
+    ro.hwui.layer_cache_size=8 \
+    ro.hwui.gradient_cache_size=0.25 \
+    ro.hwui.path_cache_size=2 \
+    ro.hwui.shape_cache_size=0.5 \
+    ro.hwui.drop_shadow_cache_size=1 \
+    ro.hwui.fbo_cache_size=8 \
     ro.media.dec.jpeg.memcap=20000000 \
     ro.opengles.version=131072 \
     ro.sf.lcd_density=120 \
