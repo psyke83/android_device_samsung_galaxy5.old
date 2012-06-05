@@ -189,9 +189,18 @@ be empty. An example would be "usb.*" -->
         <item>4</item>
     </integer-array>
 
+    <!-- Boolean indicating whether Softap rely only on one interface -->
+    <bool name="config_wifi_ap_use_single_interface">true</bool>
+
+    <!-- Indicate whether the SD card is accessible without removing the battery. -->
+    <bool name="config_batterySdCardAccessibility">true</bool>
+
     <!-- Boolean indicating if current platform supports quick switch-on/off of
          Bluetooth Module -->
     <bool name="config_bluetooth_adapter_quick_switch">false</bool>
+
+    <!-- The default iface on which to monitor data use -->
+    <string name="config_datause_iface" translatable="false">pdp0</string>
 
     <!-- Base "touch slop" value used by ViewConfiguration as a
          movement threshold where scrolling should begin. -->
