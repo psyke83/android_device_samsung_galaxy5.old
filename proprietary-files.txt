@@ -18,7 +18,6 @@ lib/egl/libq3dtools_adreno200.so
 
 lib/liba2dp.so
 lib/libaudioeq.so
-lib/libcamera.so
 lib/libdiag.so
 lib/libgsl.so
 lib/libmm-adspsvc.so
@@ -51,8 +50,6 @@ lib/libOmxWmvDec.so
 lib/libOmxVidEnc.so
 lib/libril.so
 lib/libsec-ril.so
-lib/libseccamera.so
-lib/libseccameraadaptor.so
 lib/libsecril-client.so
 
 usr/keychars/europa_keypad0.kcm.bin

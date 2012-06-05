@@ -86,7 +86,6 @@ BOARD_PROVIDES_LIBRIL := true
 BOARD_AVOID_DRAW_TEXTURE_EXTENSION := true # not sure
 BOARD_CACHE_BOOTANIM := true
 BOARD_EGL_CFG := device/samsung/galaxy5/prebuilt/lib/egl/egl.cfg
-BOARD_USE_FROYO_LIBCAMERA := true
 BOARD_USE_NASTY_PTHREAD_CREATE_HACK := true # not sure - maybe for proprietary libs
 BOARD_USE_SKIA_LCDTEXT := true # not sure
 COMMON_GLOBAL_CFLAGS += -DBINDER_COMPAT

@@ -28,11 +28,10 @@
 #include <dlfcn.h>
 
 #define NO_ERROR 0
-//#define LOGV LOGI
 #define GRALLOC_USAGE_PMEM_PRIVATE_ADSP GRALLOC_USAGE_PRIVATE_0
 #define MSM_COPY_HW 1
 #define HWA 1
-#if HWA
+#ifdef HWA
 #include "qcom/display/libgralloc/gralloc_priv.h"
 #else
 #include "libhardware/modules/gralloc/gralloc_priv.h"
@@ -40,36 +39,9 @@
 
 //#define LOGV LOGI
 
-struct qcom_mdp_rect {
-   uint32_t x;
-   uint32_t y;
-   uint32_t w;
-   uint32_t h;
-};
-
-struct qcom_mdp_img {
-   uint32_t width;
-   int32_t  height;
-   int32_t  format;
-   int32_t  offset;
-   int      memory_id; /* The file descriptor */
-   uint32_t priv; // CONFIG_ANDROID_PMEM
-};
-
-struct qcom_mdp_blit_req {
-   struct   qcom_mdp_img src;
-   struct   qcom_mdp_img dst;
-   struct   qcom_mdp_rect src_rect;
-   struct   qcom_mdp_rect dst_rect;
-   uint32_t alpha;
-   uint32_t transp_mask;
-   uint32_t flags;
-   int sharpening_strength;  /* -127 <--> 127, default 64 */
-};
-
 struct blitreq {
    unsigned int count;
-   struct qcom_mdp_blit_req req;
+   struct mdp_blit_req req;
 };
 
 /* Prototypes and extern functions. */
@@ -133,8 +105,8 @@ CameraHAL_CopyBuffers_Hw(int srcFd, int destFd,
     struct blitreq blit;
     bool   success = true;
     int    fb_fd = open("/dev/graphics/fb0", O_RDWR);
-    
-#if !MSM_COPY_HW
+
+#ifndef MSM_COPY_HW
     return false;
 #endif
 
@@ -153,7 +125,6 @@ CameraHAL_CopyBuffers_Hw(int srcFd, int destFd,
     blit.req.flags       = 0;
     blit.req.alpha       = 0xff;
     blit.req.transp_mask = 0xffffffff;
-    blit.req.sharpening_strength = 64;  /* -127 <--> 127, default 64 */
 
     blit.req.src.width     = w;
     blit.req.src.height    = h;
@@ -173,7 +144,7 @@ CameraHAL_CopyBuffers_Hw(int srcFd, int destFd,
     blit.req.src_rect.h = blit.req.dst_rect.h = h;
 
     if (ioctl(fb_fd, MSMFB_BLIT, &blit)) {
-       LOGE("CameraHAL_CopyBuffers_Hw: MSMFB_BLIT failed = %d %s\n",
+       LOGV("CameraHAL_CopyBuffers_Hw: MSMFB_BLIT failed = %d %s\n",
             errno, strerror(errno));
        success = false;
     }
@@ -213,6 +184,8 @@ CameraHal_Decode_Sw(unsigned int* rgb, char* yuv420sp, int width, int height)
    }
 }
 
+
+
 void
 CameraHAL_CopyBuffers_Sw(char *dest, char *src, int size)
 {
@@ -248,7 +221,7 @@ CameraHAL_HandlePreviewData(const android::sp<android::IMemory>& dataPtr,
       ssize_t  offset;
       size_t   size;
       int32_t  previewFormat = MDP_Y_CBCR_H2V2;
-#if HWA
+#ifdef HWA
       int32_t  destFormat    = MDP_RGBX_8888;
 #else
       int32_t  destFormat    = MDP_RGBA_8888;
@@ -263,14 +236,13 @@ CameraHAL_HandlePreviewData(const android::sp<android::IMemory>& dataPtr,
            (unsigned)offset, size, mHeap != NULL ? mHeap->base() : 0);
 
       mWindow->set_usage(mWindow,
-#if !HWA
+#ifndef HWA
                          GRALLOC_USAGE_PMEM_PRIVATE_ADSP |
 #endif
                          GRALLOC_USAGE_SW_READ_OFTEN);
-
       retVal = mWindow->set_buffers_geometry(mWindow,
-                                             previewWidth, previewHeight, 
-#if HWA
+                                             previewWidth, previewHeight,
+#ifdef HWA
                                              HAL_PIXEL_FORMAT_RGBX_8888
 #else
                                              HAL_PIXEL_FORMAT_RGBA_8888
@@ -360,9 +332,7 @@ CameraHAL_DataCb(int32_t msg_type, const android::sp<android::IMemory>& dataPtr,
       hwParameters.getPreviewSize(&previewWidth, &previewHeight);
       CameraHAL_HandlePreviewData(dataPtr, mWindow, origCamReqMemory,
                                   previewWidth, previewHeight);
-   }
-
-   if (origData_cb != NULL && origCamReqMemory != NULL) {
+   } else if (origData_cb != NULL && origCamReqMemory != NULL) {
       camera_memory_t *clientData = CameraHAL_GenClientData(dataPtr,
                                        origCamReqMemory, user);
       if (clientData != NULL) {
@@ -481,7 +451,7 @@ CameraHAL_FixupParams(android::CameraParameters &settings)
       settings.set(android::CameraParameters::KEY_SUPPORTED_PREVIEW_FRAME_RATES,
                    preview_frame_rates);
    }
-       
+
    if (!settings.get(android::CameraParameters::KEY_PREVIEW_FRAME_RATE)) {
       settings.set(android::CameraParameters::KEY_PREVIEW_FRAME_RATE,
                    preferred_frame_rate);
@@ -567,11 +537,9 @@ qcamera_start_preview(struct camera_device * device)
    LOGV("qcamera_start_preview: Preview enabled:%d msg enabled:%d\n",
         qCamera->previewEnabled(),
         qCamera->msgTypeEnabled(CAMERA_MSG_PREVIEW_FRAME));
-
    if (!qCamera->msgTypeEnabled(CAMERA_MSG_PREVIEW_FRAME)) {
       qCamera->enableMsgType(CAMERA_MSG_PREVIEW_FRAME);
    }
-
    return qCamera->startPreview();
 }
 
@@ -585,7 +553,6 @@ qcamera_stop_preview(struct camera_device * device)
    if (qCamera->msgTypeEnabled(CAMERA_MSG_PREVIEW_FRAME)) {
       qCamera->disableMsgType(CAMERA_MSG_PREVIEW_FRAME);
    }
-
    return qCamera->stopPreview();
 }
 
@@ -611,7 +578,6 @@ qcamera_start_recording(struct camera_device * device)
    /* TODO: Remove hack. */
    qCamera->enableMsgType(CAMERA_MSG_VIDEO_FRAME);
    qCamera->startRecording();
-
    return NO_ERROR;
 }
 
@@ -659,7 +625,7 @@ qcamera_cancel_auto_focus(struct camera_device * device)
    return NO_ERROR;
 }
 
-int 
+int
 qcamera_take_picture(struct camera_device * device)
 {
    LOGV("qcamera_take_picture:\n");
@@ -671,7 +637,6 @@ qcamera_take_picture(struct camera_device * device)
                          CAMERA_MSG_COMPRESSED_IMAGE);
 
    qCamera->takePicture();
-
    return NO_ERROR;
 }
 
@@ -732,7 +697,7 @@ qcamera_release(struct camera_device * device)
    qCamera->release();
 }
 
-int 
+int
 qcamera_dump(struct camera_device * device, int fd)
 {
    LOGV("qcamera_dump:\n");
@@ -836,4 +801,3 @@ qcamera_device_open(const hw_module_t* module, const char* name,
    *device = &camera_device->common;
    return NO_ERROR;
 }
-

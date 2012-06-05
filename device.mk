@@ -162,6 +162,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Performance & graphics properties
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.heapsize=32m \
+    debug.camcorder.disablemeta=1 \
     persist.sys.purgeable_assets=1 \
     persist.sys.use_dithering=1 \
     ro.media.dec.jpeg.memcap=20000000 \

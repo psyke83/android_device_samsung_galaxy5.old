@@ -15,5 +15,5 @@
 #
 
 ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),galaxy5)
-  include $(call all-named-subdir-makefiles, camerahal g5sensord libaudio libcopybit libgralloc liblights libopencorehw librpc libsensors libstagefrighthw recovery)
+  include $(call all-named-subdir-makefiles, g5sensord libaudio libcamera libcopybit libgralloc liblights libopencorehw librpc libsensors libstagefrighthw recovery)
 endif 
