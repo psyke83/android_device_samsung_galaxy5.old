@@ -21,6 +21,12 @@
 for different hardware and product builds. -->
 <resources>
 
+    <!-- Flag indicating whether the surface flinger is inefficient
+         at performing a blur.  Used by parts of the UI to turn off
+         the blur effect where it isn't worth the performance hit.
+         As of Honeycomb, blurring is not supported anymore. -->
+    <bool name="config_sf_slowBlur">false</bool>
+
     <!-- Enables or disables fading edges when marquee is enabled in TextView. -->
     <bool name="config_ui_enableFadingMarquee">false</bool>
 
