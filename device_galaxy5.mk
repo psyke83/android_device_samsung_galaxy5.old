@@ -64,8 +64,8 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/bin/reodexer:system/bin/reodexer \
     device/samsung/galaxy5/prebuilt/etc/init.d/02europaparts:system/etc/init.d/02europaparts \
     device/samsung/galaxy5/prebuilt/etc/init.europaparts.rc:system/etc/init.europaparts.rc \
-    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.xml \
-    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml
+    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/europaparts/etc/permissions/android.hardware.touchscreen.xml \
+    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/europaparts/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml
 
 # Hardware properties
 PRODUCT_COPY_FILES += \
