@@ -17,7 +17,7 @@ public class EuropaLog extends Activity {
 		super.onCreate(savedInstanceState);
 		Toast toast;
 		try {
-			Process p = Runtime.getRuntime().exec(new String[] {"su", "-c", "madconfig bugreport"});
+			Process p = Runtime.getRuntime().exec(new String[] {"su", "-c", "handle_europaparts bugreport"});
 			BufferedReader commandResult = new BufferedReader(
 					new InputStreamReader(new BufferedInputStream(
 							p.getInputStream())));

@@ -40,3 +40,11 @@ if [ $ODEXBOOT != $ODEXNOW ]; then
          echo 0 > /data/local/.odexboot
     fi
 fi
+
+if [ "$1" = "bugreport" ]; then
+    BUGFILE=bugreport_"`busybox date -u +%Y%m%d-%H%M`".log
+    if [ -f /sdcard/$BUGFILE ]; then rm /sdcard/$BUGFILE; fi
+    dumpstate >/sdcard/$BUGFILE
+    bzip2 -9 /sdcard/$BUGFILE
+    echo "Bug report saved to /sdcard/"$BUGFILE".bz2"
+fi
