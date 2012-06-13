@@ -18,6 +18,8 @@ on fs
 
 on boot
 
+    import /system/etc/init.europaparts.rc
+
 # Tweak SD card cache
     write /sys/block/mmcblk0/bdi/read_ahead_kb 128
 

@@ -1,0 +1,27 @@
+on boot
+
+# EuropaParts - helper script
+service europaparts /system/bin/sh /system/bin/handle_europaparts
+    user root
+    group root
+    oneshot
+
+on property:persist.sys.fakedt=1
+    write /sys/devices/virtual/touch/synaptics/fakedt 1
+    start europaparts
+
+on property:persist.sys.fakedt=0
+    write /sys/devices/virtual/touch/synaptics/fakedt 0
+    start europaparts
+
+on property:persist.sys.reodex=0
+    write /data/local/.odexnow 0
+
+on property:persist.sys.reodex=1
+    write /data/local/.odexnow 1
+
+on property:persist.sys.swap=0
+    exec /system/xbin/swapoff /dev/block/mmcblk0p3
+
+on property:persist.sys.swap=1
+    exec /system/xbin/swapon /dev/block/mmcblk0p3

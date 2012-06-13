@@ -40,6 +40,7 @@ for i in `cd $SOURCE; find . -name "system*"`; do
         mv $DEST/$i $SOURCE/$i
     fi
 done
+rm -r /system/dalvik-cache
 echo "Finished de-odexing ROM."
 }
 

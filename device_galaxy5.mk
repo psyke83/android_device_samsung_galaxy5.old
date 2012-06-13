@@ -35,6 +35,10 @@ PRODUCT_PACKAGES += \
     flash_image \
     make_ext4fs
 
+# EuropaParts
+PRODUCT_PACKAGES += \
+    EuropaParts
+
 # Service Mode Secret Code
 PRODUCT_PACKAGES += \
     SamsungServiceMode
@@ -52,10 +56,14 @@ PRODUCT_COPY_FILES += \
 
 # MADTeam modifications
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/prebuilt/bin/madconfig:system/bin/madconfig \
+    device/samsung/galaxy5/prebuilt/etc/init.d/05mountsd:system/etc/init.d/05mountsd
+
+# EuropaParts support files
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/bin/handle_europaparts:system/bin/handle_europaparts \
     device/samsung/galaxy5/prebuilt/bin/reodexer:system/bin/reodexer \
-    device/samsung/galaxy5/prebuilt/etc/init.d/02madteam:system/etc/init.d/02madteam \
-    device/samsung/galaxy5/prebuilt/etc/init.d/05mountsd:system/etc/init.d/05mountsd \
+    device/samsung/galaxy5/prebuilt/etc/init.d/02europaparts:system/etc/init.d/02europaparts \
+    device/samsung/galaxy5/prebuilt/etc/init.europaparts.rc:system/etc/init.europaparts.rc \
     frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.xml \
     frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string name="app_name">Samsung Galaxy 5 (GT-I5500) Settings</string>
+        <string name="bugreport_title_head">Generate bug report</string>
+        <string name="bugreport_summary_head">This dumps system logs to /sdcard for bug reporting purposes</string>
+        <string name="toast_error">Error:</string>
+        <string name="reodex_title_head">Automatic ROM re-odexing</string>
+        <string name="reodex_summary_head">Enable/disable automatic ROM re-odexing. NOT RECOMMENDED IF YOU USE AN APP2SD METHOD.</string>
+        <string name="fake_dt_title_head">Fake dual-touch</string>
+        <string name="fake_dt_summary_head">Enable/disable fake dual-touch (requires reboot)</string>
+        <string name="ksm_title_head">KSM</string>
+        <string name="ksm_summary_head">Enable/disable Kernel Samepage Merging</string>
+        <string name="extamp_title_head">Samsung extamp filter</string>
+        <string name="extamp_summary_head">Enable/disable Samsung extamp audio filter</string>
+        <string name="swap_title_head">Swap</string>
+        <string name="swap_summary_head">Enable/disable swap partition</string>
+</resources>

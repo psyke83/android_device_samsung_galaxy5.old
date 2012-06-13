@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<!-- Bug Report -->
+	<PreferenceScreen android:key="bugreport"
+		android:title="@string/bugreport_title_head" android:summary="@string/bugreport_summary_head">
+
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="com.cyanogenmod.EuropaParts"
+			android:targetClass="com.cyanogenmod.EuropaParts.EuropaLog" />
+	</PreferenceScreen>
+
+	<!-- Automatic Re-Odex -->
+	<CheckBoxPreference
+		android:key="reodex"
+		android:title="@string/reodex_title_head"
+		android:summary="@string/reodex_summary_head"
+		android:defaultValue="false" />
+
+
+	<!-- Fake Dual-Touch -->
+	<CheckBoxPreference
+		android:key="fake_dt"
+		android:title="@string/fake_dt_title_head"
+		android:summary="@string/fake_dt_summary_head"
+		android:defaultValue="false" />
+
+	<!-- KSM -->
+	<CheckBoxPreference
+		android:key="ksm"
+		android:title="@string/ksm_title_head"
+		android:summary="@string/ksm_summary_head"
+		android:defaultValue="false" />
+
+	<!-- Samsung Extamp Filter -->
+	<CheckBoxPreference
+		android:key="extamp"
+		android:title="@string/extamp_title_head"
+		android:summary="@string/extamp_summary_head"
+		android:defaultValue="true" />
+
+	<!-- Swap -->
+	<CheckBoxPreference
+		android:key="swap"
+		android:title="@string/swap_title_head"
+		android:summary="@string/swap_summary_head"
+		android:defaultValue="false" />
+
+</PreferenceScreen>
