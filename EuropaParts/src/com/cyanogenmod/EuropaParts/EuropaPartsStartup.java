@@ -33,33 +33,34 @@ public class EuropaPartsStartup extends BroadcastReceiver
 
    @Override
    public void onReceive(final Context context, final Intent bootintent) {
+      PreferenceManager.setDefaultValues(context, R.xml.europaparts, false);
       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
       // Automatic Re-Odex
-      if(prefs.getBoolean("reodex", true))
+      if(prefs.getBoolean("reodex", false))
          SystemProperties.set(PROP_REODEX, (String) "1");
       else
          SystemProperties.set(PROP_REODEX, (String) "0");
 
       // Fake Dual-Touch
-      if(prefs.getBoolean("fake_dt", true))
+      if(prefs.getBoolean("fake_dt", false))
          SystemProperties.set(PROP_FAKE_DT, (String) "1");
       else
          SystemProperties.set(PROP_FAKE_DT, (String) "0");
 
       // KSM
-      if(prefs.getBoolean("ksm", true))
+      if(prefs.getBoolean("ksm", false))
          writeValue("/sys/kernel/mm/ksm/run", 1);
       else
          writeValue("/sys/kernel/mm/ksm/run", 0);
 
       // Samsung extamp filter
-      if(prefs.getBoolean("extamp", true))
+      if(prefs.getBoolean("extamp", false))
          SystemProperties.set(PROP_SAMSUNG_EXTAMP_FILTER, (String) "1");
       else
          SystemProperties.set(PROP_SAMSUNG_EXTAMP_FILTER, (String) "0");
 
       // Swap
-      if(prefs.getBoolean("swap", true))
+      if(prefs.getBoolean("swap", false))
          SystemProperties.set(PROP_SWAP, (String) "1");
       else
          SystemProperties.set(PROP_SWAP, (String) "0");
