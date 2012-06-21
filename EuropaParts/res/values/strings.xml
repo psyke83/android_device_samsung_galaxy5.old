@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string name="app_name">Samsung Galaxy 5 (GT-I5500) Settings</string>
-        <string name="bugreport_title_head">Generate bug report</string>
-        <string name="bugreport_summary_head">This dumps system logs to /sdcard for bug reporting purposes</string>
-        <string name="toast_error">Error:</string>
-        <string name="reodex_title_head">Automatic ROM re-odexing</string>
-        <string name="reodex_summary_head">Enable/disable automatic ROM re-odexing. NOT RECOMMENDED IF YOU USE AN APP2SD METHOD.</string>
-        <string name="fake_dt_title_head">Fake dual-touch</string>
-        <string name="fake_dt_summary_head">Enable/disable fake dual-touch (requires reboot)</string>
-        <string name="ksm_title_head">KSM</string>
-        <string name="ksm_summary_head">Enable/disable Kernel Samepage Merging</string>
-        <string name="extamp_title_head">Samsung extamp filter</string>
-        <string name="extamp_summary_head">Enable/disable Samsung extamp audio filter</string>
-        <string name="swap_title_head">Swap</string>
-        <string name="swap_summary_head">Enable/disable swap partition</string>
+
+    <string name="app_name">Samsung GT-I5500 device settings</string>
+    <string name="processing">Processing…</string>
+    <string name="gen_bug_report">Generate bug report</string>
+    <string name="gen_bug_report_summary">Dumps system logs to SD card for bug reporting purposes</string>
+    <string name="bug_report_success">Bug report generated to</string>
+    <string name="sd_not_mounted">SD card is not mounted</string>
+    <string name="audio_cat">Audio attenuation</string>
+    <string name="cancel">Cancel</string>
+    <string name="attn_speaker">Attenuation - speaker</string>
+    <string name="attn_fm">Attenuation - FM radio</string>
+    <string name="attn_headset">Attenuation - headset</string>
+    <string name="disabled">disabled</string>
+    <string name="extamp">Samsung extamp filter</string>
+    <string name="extamp_sum_off">Enable Samsung extamp audio filter</string>
+    <string name="extamp_sum_on">Disable Samsung extamp audio filter</string>
+    <string name="current_setting">Current setting:</string>
+    <string name="memory_man">Memory management</string>
+    <string name="ksm_sum">KSM merges anonymous memory pages, optimizing memory usage for applications</string>
+    <string name="swap_sum">Use swap partition of SD card as virtual memory, allowing more applications to remain in memory</string>
+    <string name="swap_cce">Compcache is enabled. You\'ll need to disable it first</string>
+    <string name="fake_dt">Fake dual-touch</string>
+    <string name="fake_dt_sum">Use circular gestures to activate dual-touch for pinch-to-zoom (requires reboot)</string>
+    <string name="reodex">ROM re-odexing</string>
+    <string name="reodex_sum">Move system apps\' dalvik-cache to system partition.\nNOT RECOMMENDED IF YOU USE AN APP2SD METHOD</string>
+    <string name="log_cat">Report bug</string>
+    <string name="rom_cat">ROM settings</string>
+    
 </resources>

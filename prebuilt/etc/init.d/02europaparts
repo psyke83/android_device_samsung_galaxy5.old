@@ -1,0 +1,31 @@
+#!/system/bin/sh
+# Helper script for EuropaParts
+
+# Create local/userinit.d folder if necessary
+if [ ! -d /data/local/userinit.d ]; then
+    mkdir -m 777 /data/local/userinit.d
+    chown system:system /data/local/userinit.d
+fi
+
+# Remove legacy scripts
+legacyscripts="
+enableksm
+enabledt
+enableswap
+"
+
+for i in $legacyscripts; do
+   if [ -f /data/local/userinit.d/$i ]; then rm /data/local/userinit.d/$i; fi
+done
+
+# Automatic ROM re-odexing
+if [ ! -f /data/local/.odexnow ]; then
+    echo "0" > /data/local/.odexboot
+    echo "0" > /data/local/.odexnow
+fi
+
+ODEXNOW=`cat /data/local/.odexnow`
+cat /data/local/.odexnow > /data/local/.odexboot
+if [ $ODEXNOW = "1" ]; then
+    reodexer check
+fi
