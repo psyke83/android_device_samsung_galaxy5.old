@@ -242,26 +242,28 @@ status_t AudioPolicyManager::checkAndSetVolume(int stream, int index, audio_io_h
         volume *= volumeFactor;
     }
 
-    // apply optional volume attenuation (default 6dB) to headset/headphone
+    // apply optional volume attenuation (default 0dB) to headset/headphone
     if (device == AudioSystem::DEVICE_OUT_WIRED_HEADSET ||
         device == AudioSystem::DEVICE_OUT_WIRED_HEADPHONE) {
         char headsetBuf[PROPERTY_VALUE_MAX];
-        property_get("persist.sys.headset-attn", headsetBuf, "6");
+        property_get("persist.sys.headset-attn", headsetBuf, "0");
         LOGI("setStreamVolume() attenuation [%s]", headsetBuf);
         float volumeFactor = pow(10.0, -atof(headsetBuf)/20.0);
         LOGV("setStreamVolume() applied volume factor %f to device %d", volumeFactor, device);
         volume *= volumeFactor;
     }
 
-    // apply optional volume attenuation (default 6dB) to FM audio
+#ifdef HAVE_FM_RADIO
+    // apply optional volume attenuation (default 0dB) to FM audio
     if (stream == AudioSystem::FM) {
         char fmBuf[PROPERTY_VALUE_MAX];
-        property_get("persist.sys.fm-attn", fmBuf, "6");
+        property_get("persist.sys.fm-attn", fmBuf, "0");
         LOGI("setStreamVolume() attenuation [%s]", fmBuf);
         float volumeFactor = pow(10.0, -atof(fmBuf)/20.0);
         LOGV("setStreamVolume() applied volume factor %f to device %d", volumeFactor, device);
         volume *= volumeFactor;
     }
+#endif
 
     // We actually change the volume if:
     // - the float value returned by computeVolume() changed

@@ -15,6 +15,7 @@
 ** limitations under the License.
 */
 
+#include <cutils/properties.h>
 #include <math.h>
 
 //#define LOG_NDEBUG  0
@@ -856,12 +857,18 @@ int AudioHardware::msm72xx_enable_postproc(bool state)
     if (mCurSndDevice == SND_DEVICE_SPEAKER) {
         device_id = 0;
         LOGI("set device to SND_DEVICE_SPEAKER device_id=0");
+    } else if (mCurSndDevice == SND_DEVICE_MEDIA_SPEAKER) {
+        device_id = 0;
+        LOGI("set device to SND_DEVICE_MEDIA_SPEAKER device_id=0");
     } else if (mCurSndDevice == SND_DEVICE_HANDSET) {
         device_id = 1;
         LOGI("set device to SND_DEVICE_HANDSET device_id=1");
     } else if (mCurSndDevice == SND_DEVICE_HEADSET) {
         device_id = 2;
         LOGI("set device to SND_DEVICE_HEADSET device_id=2");
+    } else if (mCurSndDevice == SND_DEVICE_NO_MIC_HEADSET) {
+        device_id = 2;
+        LOGI("set device to SND_DEVICE_NO_MIC_HEADSET device_id=2");
     } else {
 		LOGE("Invalid sound device (%d)", mCurSndDevice);
 		return -EINVAL;
@@ -1459,9 +1466,13 @@ status_t AudioHardware::do_route_audio_rpc(int32_t device,
         args2.speaker_volume=29;
         args2.headset_volume=0;
     }
-    if (ioctl(m7xsnddriverfd, SND_SET_EXTAMP, &args2) < 0) {
-        LOGE("snd_set_extamp error.");
-        return -EIO;
+    char extampOn[PROPERTY_VALUE_MAX];
+    property_get("persist.sys.extamp-filter", extampOn, "0");
+    if (strcmp(extampOn, "1") == 0) {
+        if (ioctl(m7xsnddriverfd, SND_SET_EXTAMP, &args2) < 0) {
+            LOGE("snd_set_extamp error.");
+            return -EIO;
+        }
     }
     // End of extamp    
     struct msm_snd_device_config args;
@@ -1483,7 +1494,7 @@ status_t AudioHardware::do_route_audio_rpc(int32_t device,
         return -EIO;
     }
     // Inclusion for set_volume
-    set_volume_rpc(SND_DEVICE_CURRENT, 0, 6);
+    //set_volume_rpc(SND_DEVICE_CURRENT, 0, 6);
     // End of extamp
 
     return NO_ERROR;
