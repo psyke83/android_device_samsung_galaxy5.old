@@ -37,35 +37,48 @@ UsbController::~UsbController() {
 }
 
 int UsbController::startRNDIS() {
-	LOGD("Usb RNDIS start");
-	return enableRNDIS(true);
+    LOGD("Usb RNDIS start");
+    return enableRNDIS(true);
 }
 
 int UsbController::stopRNDIS() {
-	LOGD("Usb RNDIS stop");
-	return enableRNDIS(false);
+    LOGD("Usb RNDIS stop");
+    return enableRNDIS(false);
 }
 
 int UsbController::enableRNDIS(bool enable) {
 	char ums;
-	int fdums = open("/sys/devices/platform/msm_hsusb/gadget/lun0/file", O_RDWR);
+	int fdums = open("/sys/devices/platform/usb_mass_storage/lun0", O_RDWR);
 	read(fdums, &ums, 1);
 	close(fdums);
 	if (ums == '/')
 		return 0;
 
-	char value[20];
-	int fd = open("/sys/devices/platform/android_usb/composition", O_RDWR);
-	int count = snprintf(value, sizeof(value), "%s\n", (enable ? "6881" : "689e"));
-	write(fd, value, count);
-	close(fd);
-	return 0;
+    char value[20];
+#ifdef USE_HTC_USB_FUNCTION_SWITCH
+    int fd = open("/sys/devices/platform/msm_hsusb/usb_function_switch", O_RDWR);
+    int count = snprintf(value, sizeof(value), "%d\n", (enable ? 4 : 3));
+#else
+    int fd = open("/sys/class/usb_composite/rndis/enable", O_RDWR);
+    int count = snprintf(value, sizeof(value), "%d\n", (enable ? 1 : 0));
+#endif
+    write(fd, value, count);
+    close(fd);
+    return 0;
 }
 
 bool UsbController::isRNDISStarted() {
-    char value[5];
-    int fd = open("/sys/module/g_android/parameters/product_id", O_RDONLY);
-    read(fd, &value, 5);
+    char value=0;
+#ifdef USE_HTC_USB_FUNCTION_SWITCH
+    int fd = open("/sys/devices/platform/msm_hsusb/usb_function_switch", O_RDWR);
+#else
+    int fd = open("/sys/class/usb_composite/rndis/enable", O_RDWR);
+#endif
+    read(fd, &value, 1);
     close(fd);
-    return (!strncmp(value,"6881",4) ? true : false);
+#ifdef USE_HTC_USB_FUNCTION_SWITCH
+    return (value == '4' ? true : false);
+#else
+    return (value == '1' ? true : false);
+#endif
 }

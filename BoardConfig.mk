@@ -25,7 +25,7 @@ USE_CAMERA_STUB := false
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxy5/include
 
 # Camera
-BOARD_USE_CAF_LIBCAMERA := true
+#BOARD_USE_CAF_LIBCAMERA := true
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
@@ -45,14 +45,11 @@ BOARD_PAGE_SIZE := 0x00001000
 
 # Graphics
 BOARD_EGL_CFG := device/samsung/galaxy5/prebuilt/lib/egl/egl.cfg
+#BOARD_NO_RGBX_8888 := true
+BOARD_USE_SCREENCAP := true
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true
-BOARD_USE_SCREENCAP := true
-#BOARD_NO_RGBX_8888 := true
-
-# Gralloc
-BOARD_USE_QCOM_PMEM := true
-BOARD_USE_FRAMEBUFFER_ALPHA_CHANNEL := true
+TARGET_DO_NOT_SETS_CAN_DRAW := true
 
 # cat /proc/LinuStoreIII/bmlinfo
 # FSR VERSION: FSR_1.2.1p1_b139_RTM
@@ -87,8 +84,8 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 203161600
 BOARD_FLASH_BLOCK_SIZE := 4096
 TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery/recovery.rc
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
-BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
-TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; sync"
+#BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
+#TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; sync"
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # Audio
@@ -111,15 +108,13 @@ BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
 # USB
 BOARD_CUSTOM_USB_CONTROLLER := ../../device/samsung/galaxy5/UsbController.cpp
 BOARD_USE_USB_MASS_STORAGE_SWITCH := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
-BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 
 # WiFi
 BOARD_WLAN_ATHEROS_SDK      := true
-BOARD_WEXT_NO_COMBO_SCAN    := true
+#BOARD_WEXT_NO_COMBO_SCAN    := true
 PRODUCT_WIRELESS_TOOLS      := true
-WPA_SUPPLICANT_VERSION      := VER_0_5_X
-BOARD_WPA_SUPPLICANT_DRIVER := AWEXT
+WPA_SUPPLICANT_VERSION      := VER_0_6_X
+BOARD_WPA_SUPPLICANT_DRIVER := WEXT
 BOARD_WLAN_DEVICE           := ar6000
 WIFI_DRIVER_MODULE_PATH     := "/system/wifi/ar6000.ko"
 WIFI_DRIVER_MODULE_ARG      := ""

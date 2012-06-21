@@ -1,19 +1,34 @@
-/* Copyright (c) 2009, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, and the entire permission notice in its entirety,
+ *    including the disclaimer of warranties.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote
+ *    products derived from this software without specific prior
+ *    written permission.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * ALTERNATIVELY, this product may be distributed under the terms of
+ * the GNU General Public License, version 2, in which case the provisions
+ * of the GPL version 2 are required INSTEAD OF the BSD license.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+ * WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+ * USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+ * DAMAGE.
  */
 
 #ifndef __LINUX_MSM_CAMERA_H
@@ -23,7 +38,6 @@
 #include <sys/types.h>
 #endif
 #include <linux/types.h>
-#include <asm/sizes.h>
 #include <linux/ioctl.h>
 #ifdef MSM_CAMERA_GCC
 #include <time.h>
@@ -96,6 +110,10 @@
 #define MSM_CAM_IOCTL_SENSOR_IO_CFG \
 	_IOW(MSM_CAM_IOCTL_MAGIC, 21, struct sensor_cfg_data *)
 
+#define MSM_CAMERA_LED_OFF  0
+#define MSM_CAMERA_LED_LOW  1
+#define MSM_CAMERA_LED_HIGH 2
+
 #define MSM_CAM_IOCTL_FLASH_LED_CFG \
 	_IOW(MSM_CAM_IOCTL_MAGIC, 22, unsigned *)
 
@@ -126,17 +144,29 @@
 #define MSM_CAM_IOCTL_STROBE_FLASH_RELEASE \
 	_IO(MSM_CAM_IOCTL_MAGIC, 31)
 
+#define MSM_CAM_IOCTL_FLASH_CTRL \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 32, struct flash_ctrl_data *)
+
 #define MSM_CAM_IOCTL_ERROR_CONFIG \
-	_IOW(MSM_CAM_IOCTL_MAGIC, 32, uint32_t *)
+	_IOW(MSM_CAM_IOCTL_MAGIC, 33, uint32_t *)
+
+#define MSM_CAM_IOCTL_ABORT_CAPTURE \
+	_IO(MSM_CAM_IOCTL_MAGIC, 34)
+
+#define MSM_CAM_IOCTL_SET_FD_ROI \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 35, struct fd_roi_info *)
+
+#define MSM_CAM_IOCTL_GET_CAMERA_INFO \
+	_IOR(MSM_CAM_IOCTL_MAGIC, 36, struct msm_camera_info *)
 
 #define MSM_CAMERA_LED_OFF  0
 #define MSM_CAMERA_LED_LOW  1
 #define MSM_CAMERA_LED_HIGH 2
-
+  
 #define MSM_CAMERA_STROBE_FLASH_NONE 0
 #define MSM_CAMERA_STROBE_FLASH_XENON 1
 
-#define MAX_SENSOR_NUM  3
+#define MSM_MAX_CAMERA_SENSORS  5
 #define MAX_SENSOR_NAME 32
 
 #define PP_SNAP  0x01
@@ -184,7 +214,32 @@ struct msm_vfe_evt_msg {
 	unsigned short type;	/* 1 == event (RPC), 0 == message (adsp) */
 	unsigned short msg_id;
 	unsigned int len;	/* size in, number of bytes out */
+	uint32_t frame_id;
 	void *data;
+};
+
+struct msm_isp_evt_msg {
+	unsigned short type;	/* 1 == event (RPC), 0 == message (adsp) */
+	unsigned short msg_id;
+	unsigned int len;	/* size in, number of bytes out */
+	/* maximum possible data size that can be
+i	  sent to user space as v4l2 data structure
+	  is only of 64 bytes */
+	uint8_t data[48];
+};
+struct msm_vpe_evt_msg {
+	unsigned short type; /* 1 == event (RPC), 0 == message (adsp) */
+	unsigned short msg_id;
+	unsigned int len; /* size in, number of bytes out */
+	uint32_t frame_id;
+	void *data;
+};
+struct msm_isp_stats_event_ctrl {
+	unsigned short resptype;
+	union {
+		struct msm_isp_evt_msg isp_msg;
+		struct msm_ctrl_cmd ctrl;
+	} isp_data;
 };
 
 #define MSM_CAM_RESP_CTRL         0
@@ -263,9 +318,17 @@ struct msm_camera_cfg_cmd {
 #define CMD_STATS_IHIST_ENABLE 38
 #define CMD_STATS_RS_ENABLE 39
 #define CMD_STATS_CS_ENABLE 40
+#define CMD_VPE 41
+#define CMD_AXI_CFG_VPE 42
 
 /* vfe config command: config command(from config thread)*/
 struct msm_vfe_cfg_cmd {
+	int cmd_type;
+	uint16_t length;
+	void *value;
+};
+
+struct msm_vpe_cfg_cmd {
 	int cmd_type;
 	uint16_t length;
 	void *value;
@@ -292,8 +355,8 @@ struct camera_enable_cmd {
 #define MSM_PMEM_SKIN			13
 #define MSM_PMEM_VIDEO			14
 #define MSM_PMEM_PREVIEW		15
-#define MSM_PMEM_MAX			16
-
+#define MSM_PMEM_VIDEO_VPE		16
+#define MSM_PMEM_MAX			17
 
 #define STAT_AEAW			0
 #define STAT_AEC			1
@@ -344,10 +407,11 @@ struct outputCfg {
 #define MSM_FRAME_PREV_2	1
 #define MSM_FRAME_ENC		2
 
-#define OUTPUT_TYPE_P		1
-#define OUTPUT_TYPE_T		2
-#define OUTPUT_TYPE_S		3
-#define OUTPUT_TYPE_V		4
+#define OUTPUT_TYPE_P		(1<<0)
+#define OUTPUT_TYPE_T		(1<<1)
+#define OUTPUT_TYPE_S		(1<<2)
+#define OUTPUT_TYPE_V		(1<<3)
+#define OUTPUT_TYPE_L		(1<<4)
 
 #define CAMERA_BRIGTHNESS_0		0
 #define CAMERA_BRIGTHNESS_1		1
@@ -368,10 +432,16 @@ struct outputCfg {
 #define CAMERA_ISOValue_200		2
 #define CAMERA_ISOValue_400		3
 
-//#define CAMERA_AEC_CENTER_WEIGHTED		1
-//#define CAMERA_AEC_SPOT_METERING		2
-//#define CAMERA_AEC_FRAME_AVERAGE		0
- 
+#if 0
+#define CAMERA_AEC_CENTER_WEIGHTED		1
+#define CAMERA_AEC_SPOT_METERING		2
+#define CAMERA_AEC_FRAME_AVERAGE		0
+#endif
+
+struct fd_roi_info {
+	void *info;
+	int info_len;
+};
 
 struct msm_frame {
 	struct timespec ts;
@@ -384,6 +454,7 @@ struct msm_frame {
 	void *cropinfo;
 	int croplen;
 	uint32_t error_code;
+	struct fd_roi_info roi_info;
 };
 
 #define MSM_CAMERA_ERR_MASK (0xFFFFFFFF & 1)
@@ -462,10 +533,12 @@ struct msm_snapshot_pp_status {
 #define SENSOR_PREVIEW_MODE		0
 #define SENSOR_SNAPSHOT_MODE		1
 #define SENSOR_RAW_SNAPSHOT_MODE	2
+#define SENSOR_VIDEO_120FPS_MODE	3
 
 #define SENSOR_QTR_SIZE			0
 #define SENSOR_FULL_SIZE		1
-#define SENSOR_INVALID_SIZE		2
+#define SENSOR_QVGA_SIZE		2
+#define SENSOR_INVALID_SIZE		3
 
 #define CAMERA_EFFECT_OFF		0
 #define CAMERA_EFFECT_MONO		1
@@ -533,12 +606,12 @@ struct sensor_cfg_data {
 	union {
 		int8_t effect;
 		
-//#if defined(CONFIG_MACH_EUROPA)
+#if defined(CONFIG_MACH_EUROPA)
 		int8_t brightness;
 		int8_t whitebalance;
 		int8_t iso;
 		int8_t metering;
-//#endif
+#endif
 		uint8_t lens_shading;
 		uint16_t prevl_pf;
 		uint16_t prevp_pl;
@@ -554,6 +627,37 @@ struct sensor_cfg_data {
 	} cfg;
 };
 
+enum flash_type {
+	LED_FLASH,
+	STROBE_FLASH,
+};
+
+enum strobe_flash_ctrl_type {
+	STROBE_FLASH_CTRL_INIT,
+	STROBE_FLASH_CTRL_CHARGE,
+	STROBE_FLASH_CTRL_RELEASE
+};
+
+struct strobe_flash_ctrl_data {
+	enum strobe_flash_ctrl_type type;
+	int charge_en;
+};
+
+struct msm_camera_info {
+	int num_cameras;
+	uint8_t has_3d_support[MSM_MAX_CAMERA_SENSORS];
+	uint8_t is_internal_cam[MSM_MAX_CAMERA_SENSORS];
+	uint32_t s_mount_angle[MSM_MAX_CAMERA_SENSORS];
+};
+
+struct flash_ctrl_data {
+	int flashtype;
+	union {
+		int led_state;
+		struct strobe_flash_ctrl_data strobe_ctrl;
+	} ctrl_data;
+};
+
 #define GET_NAME			0
 #define GET_PREVIEW_LINE_PER_FRAME	1
 #define GET_PREVIEW_PIXELS_PER_LINE	2
@@ -567,4 +671,175 @@ struct msm_camsensor_info {
 	uint8_t flash_enabled;
 	int8_t total_steps;
 };
+
+#define EXT_CFG_AUTO_TUNNING               0
+#define EXT_CFG_SDCARD_DETECT              1
+#define EXT_CFG_GET_INFO		        2
+#define EXT_CFG_FRAME_CONTROL              3
+#define EXT_CFG_AF_CONTROL                 4
+#define EXT_CFG_EFFECT_CONTROL             5
+#define EXT_CFG_WB_CONTROL                 6
+#define EXT_CFG_BR_CONTROL                 7
+#define EXT_CFG_ISO_CONTROL                8
+#define EXT_CFG_METERING_CONTROL           9
+#define EXT_CFG_SCENE_CONTROL		10
+#define EXT_CFG_AE_AWB_CONTROL		11
+#define EXT_CFG_CR_CONTROL                 12
+#define EXT_CFG_SA_CONTROL                 13
+#define EXT_CFG_SP_CONTROL                 14
+#define EXT_CFG_CPU_CONTROL                15
+#define EXT_CFG_DTP_CONTROL                16
+#define EXT_CFG_SNAPSHOT_SIZE_CONTROL		17
+#define EXT_CFG_SET_CAPTURE_MODE 18
+#define EXT_CFG_SET_FLASH_MODE 19
+#define EXT_CFG_AUTO_CONTRAST_CONTROL 20
+#define EXT_CFG_JPEG_QUALITY_CONTROL 21
+#define EXT_CFG_ZOOM_CONTROL 22
+#define EXT_CFG_CAM_MODE_CONTROL 23
+#define EXT_CFG_PREVIEW_SIZE_CONTROL		24
+#define EXT_CFG_FLASH_INFO		        25
+#define EXT_CFG_LUX_INFO		        26
+#define EXT_CFG_SENSOR_RESET		        27
+
+#define EXT_CFG_CAM_MODE_CAMERA 0
+#define EXT_CFG_CAM_MODE_CAMCORDER 1
+#define EXT_CFG_CAM_MODE_FACTORY_TEST 2
+
+#define EXT_CFG_JPEG_QUALITY_SUPERFINE 0
+#define EXT_CFG_JPEG_QUALITY_FINE 1
+#define EXT_CFG_JPEG_QUALITY_NORMAL 2
+
+#define EXT_CFG_AUTO_CONTRAST_ON 0
+#define EXT_CFG_AUTO_CONTRAST_OFF 1
+
+#define EXT_CFG_FRAME_AUTO			0
+#define EXT_CFG_FRAME_FIX_15		15
+#define EXT_CFG_FRAME_FIX_20		20
+#define EXT_CFG_FRAME_FIX_24		24
+#define EXT_CFG_FRAME_FIX_25		25
+#define EXT_CFG_FRAME_FIX_30		30
+
+#define EXT_CFG_EFFECT_NORMAL		0
+#define EXT_CFG_EFFECT_NEGATIVE		1
+#define EXT_CFG_EFFECT_MONO		2
+#define EXT_CFG_EFFECT_SEPIA		3	
+
+#define EXT_CFG_WB_AUTO                    0
+#define EXT_CFG_WB_DAYLIGHT                1
+#define EXT_CFG_WB_CLOUDY                  2
+#define EXT_CFG_WB_FLUORESCENT             3
+#define EXT_CFG_WB_INCANDESCENT            4
+
+#define EXT_CFG_BR_STEP_P_4                8
+#define EXT_CFG_BR_STEP_P_3                7
+#define EXT_CFG_BR_STEP_P_2                6
+#define EXT_CFG_BR_STEP_P_1                5
+#define EXT_CFG_BR_STEP_0                  4
+#define EXT_CFG_BR_STEP_M_1                3
+#define EXT_CFG_BR_STEP_M_2                2
+#define EXT_CFG_BR_STEP_M_3                1
+#define EXT_CFG_BR_STEP_M_4                0
+
+#define EXT_CFG_CR_STEP_P_2                4
+#define EXT_CFG_CR_STEP_P_1                3
+#define EXT_CFG_CR_STEP_0                  2
+#define EXT_CFG_CR_STEP_M_1                1
+#define EXT_CFG_CR_STEP_M_2                0
+
+#define EXT_CFG_SA_STEP_P_2                4
+#define EXT_CFG_SA_STEP_P_1                3
+#define EXT_CFG_SA_STEP_0                  2
+#define EXT_CFG_SA_STEP_M_1                1
+#define EXT_CFG_SA_STEP_M_2                0
+
+#define EXT_CFG_SP_STEP_P_2                4
+#define EXT_CFG_SP_STEP_P_1                3
+#define EXT_CFG_SP_STEP_0                  2
+#define EXT_CFG_SP_STEP_M_1                1
+#define EXT_CFG_SP_STEP_M_2                0
+
+#define EXT_CFG_ISO_AUTO			0
+#define EXT_CFG_ISO_50			1
+#define EXT_CFG_ISO_100			2
+#define EXT_CFG_ISO_200			3
+#define EXT_CFG_ISO_400			4
+
+#define EXT_CFG_METERING_NORMAL		0 //CENTER?
+#define EXT_CFG_METERING_SPOT		1
+#define EXT_CFG_METERING_CENTER		2
+
+#define EXT_CFG_SCENE_OFF			0
+#define EXT_CFG_SCENE_PORTRAIT		1
+#define EXT_CFG_SCENE_LANDSCAPE		2
+#define EXT_CFG_SCENE_SPORTS		3
+#define EXT_CFG_SCENE_PARTY		4
+#define EXT_CFG_SCENE_BEACH		5
+#define EXT_CFG_SCENE_SUNSET		6
+#define EXT_CFG_SCENE_DAWN			7
+#define EXT_CFG_SCENE_FALL			8
+#define EXT_CFG_SCENE_NIGHTSHOT		9
+#define EXT_CFG_SCENE_BACKLIGHT		10
+#define EXT_CFG_SCENE_FIREWORK		11
+#define EXT_CFG_SCENE_TEXT			12
+#define EXT_CFG_SCENE_CANDLE		13
+
+#define EXT_CFG_AF_CHECK_STATUS		0
+#define EXT_CFG_AF_OFF			1
+#define EXT_CFG_AF_SET_NORMAL		2
+#define EXT_CFG_AF_SET_MACRO		3
+#define EXT_CFG_AF_DO			4
+#define EXT_CFG_AF_SET_MANUAL	5
+#define EXT_CFG_AF_CHECK_2nd_STATUS	6
+#define EXT_CFG_AF_SET_AE_FOR_FLASH	7
+#define EXT_CFG_AF_BACK_AE_FOR_FLASH	8
+#define EXT_CFG_AF_CHECK_AE_STATUS	9
+#define EXT_CFG_AF_POWEROFF 	10
+
+#define EXT_CFG_AF_PROGRESS                1
+#define EXT_CFG_AF_SUCCESS                 2
+#define EXT_CFG_AF_LOWCONF                 3 //Fail
+#define EXT_CFG_AF_CANCELED                4
+#define EXT_CFG_AF_TIMEOUT                 5
+#define EXT_CFG_AE_STABLE               6
+#define EXT_CFG_AE_UNSTABLE                 7
+
+#define EXT_CFG_AE_LOCK		0
+#define EXT_CFG_AE_UNLOCK		1
+#define EXT_CFG_AWB_LOCK		2
+#define EXT_CFG_AWB_UNLOCK		3
+
+#define EXT_CFG_CPU_CONSERVATIVE		0
+#define EXT_CFG_CPU_ONDEMAND		1
+#define EXT_CFG_CPU_PERFORMANCE		2
+
+#define EXT_CFG_DTP_OFF			0
+#define EXT_CFG_DTP_ON			1
+
+#define EXT_CFG_ZOOM_STEP_0	0
+#define EXT_CFG_ZOOM_STEP_1	1
+#define EXT_CFG_ZOOM_STEP_2	2
+#define EXT_CFG_ZOOM_STEP_3	3
+#define EXT_CFG_ZOOM_STEP_4	4
+#define EXT_CFG_ZOOM_STEP_5	5
+#define EXT_CFG_ZOOM_STEP_6	6
+#define EXT_CFG_ZOOM_STEP_7	7
+#define EXT_CFG_ZOOM_STEP_8	8
+
+#define EXT_CFG_SNAPSHOT_SIZE_2560x1920_5M	0
+#define EXT_CFG_SNAPSHOT_SIZE_2048x1536_3M	1
+#define EXT_CFG_SNAPSHOT_SIZE_1600x1200_2M	2
+#define EXT_CFG_SNAPSHOT_SIZE_1280x960_1M		3
+#define EXT_CFG_SNAPSHOT_SIZE_640x480_VGA		4
+#define EXT_CFG_SNAPSHOT_SIZE_320x240_QVGA		5
+
+#define EXT_CFG_PREVIEW_SIZE_720x480_D1	0
+#define EXT_CFG_PREVIEW_SIZE_640x480_VGA	1
+#define EXT_CFG_PREVIEW_SIZE_320x240_QVGA	2
+#define EXT_CFG_PREVIEW_SIZE_176x144_QCIF	3
+
+#define EXT_CFG_FLASH_ON		0
+#define EXT_CFG_FLASH_OFF	1
+#define EXT_CFG_FLASH_AUTO	2
+#define EXT_CFG_FLASH_TURN_ON 3
+#define EXT_CFG_FLASH_TURN_OFF 4
 #endif /* __LINUX_MSM_CAMERA_H */

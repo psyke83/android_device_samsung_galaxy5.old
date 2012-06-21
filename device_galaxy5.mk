@@ -19,7 +19,7 @@ PRODUCT_PACKAGES += \
     copybit.msm7k \
     g5sensord \
     gps.galaxy5 \
-    gralloc.msm7k \
+    gralloc.galaxy5 \
     libOmxCore \
     lights.msm7k \
     rzscontrol \
@@ -80,11 +80,8 @@ PRODUCT_COPY_FILES += \
 
 # Kernel modules
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/prebuilt/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
     device/samsung/galaxy5/prebuilt/modules/fsr.ko:root/lib/modules/fsr.ko \
     device/samsung/galaxy5/prebuilt/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
-    device/samsung/galaxy5/prebuilt/modules/rfs_glue.ko:root/lib/modules/rfs_glue.ko \
-    device/samsung/galaxy5/prebuilt/modules/rfs_fat.ko:root/lib/modules/rfs_fat.ko \
     device/samsung/galaxy5/prebuilt/modules/sec_param.ko:root/lib/modules/sec_param.ko
 
 # Board-specific init & scripts

@@ -3,10 +3,7 @@ on init
 # Insert modules
     insmod /lib/modules/fsr.ko
     insmod /lib/modules/fsr_stl.ko
-    insmod /lib/modules/rfs_glue.ko
-    insmod /lib/modules/rfs_fat.ko
     insmod /lib/modules/sec_param.ko
-    insmod /lib/modules/acc_cal_param.ko
 
 on fs
 
@@ -37,6 +34,8 @@ on boot
 # Configure KSM (Kernel SamePage Merging)
     write /sys/kernel/mm/ksm/sleep_millisecs 4000
     write /sys/kernel/mm/ksm/pages_to_scan 128
+    chmod 0666 /sys/kernel/mm/ksm/run
+    chown system system /sys/kernel/mm/ksm/run
     write /sys/kernel/mm/ksm/run 0
 
 # For sensors
@@ -105,7 +104,7 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --bau
     group bluetooth net_bt_admin
     disabled
 
-service wpa_supplicant /system/bin/wpa_supplicant -Dawext -W -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
+service wpa_supplicant /system/bin/wpa_supplicant -Dwext -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf
     group wifi inet
     socket wpa_wlan0 dgram 660 wifi wifi
     disabled
