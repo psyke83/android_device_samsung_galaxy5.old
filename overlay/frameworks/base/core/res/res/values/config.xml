@@ -125,4 +125,10 @@
 
     <!-- Configure lense unlock time label offset -->
     <integer name="config_lenseTimeLabelOffsetDIP">40</integer>
+
+    <!-- The orientation in which case volume keys should be swapped.
+         See ROTATION_0, ROTATION_90, ROTATION_180, ROTATION_270 in android.view.Surface
+         for more details about values -->
+    <add-resource type="integer" name="swap_volume_keys_orientation"></add-resource>
+    <integer name="swap_volume_keys_orientation">1</integer>
 </resources>
