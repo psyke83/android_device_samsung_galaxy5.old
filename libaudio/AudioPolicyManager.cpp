@@ -20,6 +20,9 @@
 #include "AudioPolicyManager.h"
 #include <media/mediarecorder.h>
 #include <fcntl.h>
+#include <cutils/properties.h>
+#include <math.h>
+
 
 namespace android {
 
@@ -225,12 +228,51 @@ status_t AudioPolicyManager::checkAndSetVolume(int stream, int index, audio_io_h
         return INVALID_OPERATION;
     }
 
+    // get volume level
     float volume = computeVolume(stream, index, output, device);
+
+    // when the output device is the speaker it's necessary to apply an extra volume attenuation (default 6dB) to prevent audio distortion
+    if (device == AudioSystem::DEVICE_OUT_SPEAKER) {
+        char speakerBuf[PROPERTY_VALUE_MAX];
+        property_get("persist.sys.speaker-attn", speakerBuf, "6");
+        LOGI("setStreamVolume() attenuation [%s]", speakerBuf);
+        float volumeFactor = pow(10.0, -atof(speakerBuf)/20.0);
+        LOGV("setStreamVolume() applied volume factor %f to device %d", volumeFactor, device);
+        volume *= volumeFactor;
+    }
+
+    // apply optional volume attenuation (default 0dB) to headset/headphone
+    if (device == AudioSystem::DEVICE_OUT_WIRED_HEADSET ||
+        device == AudioSystem::DEVICE_OUT_WIRED_HEADPHONE) {
+        char headsetBuf[PROPERTY_VALUE_MAX];
+        property_get("persist.sys.headset-attn", headsetBuf, "0");
+        LOGI("setStreamVolume() attenuation [%s]", headsetBuf);
+        float volumeFactor = pow(10.0, -atof(headsetBuf)/20.0);
+        LOGV("setStreamVolume() applied volume factor %f to device %d", volumeFactor, device);
+        volume *= volumeFactor;
+    }
+
+#ifdef HAVE_FM_RADIO
+    // apply optional volume attenuation (default 0dB) to FM audio
+    if (stream == AudioSystem::FM) {
+        char fmBuf[PROPERTY_VALUE_MAX];
+        property_get("persist.sys.fm-attn", fmBuf, "0");
+        LOGI("setStreamVolume() attenuation [%s]", fmBuf);
+        float volumeFactor = pow(10.0, -atof(fmBuf)/20.0);
+        LOGV("setStreamVolume() applied volume factor %f to device %d", volumeFactor, device);
+        volume *= volumeFactor;
+    }
+#endif
+
     // We actually change the volume if:
     // - the float value returned by computeVolume() changed
     // - the force flag is set
     if (volume != mOutputs.valueFor(output)->mCurVolume[stream] ||
-        (stream == AudioSystem::VOICE_CALL) || force) {
+        (stream == AudioSystem::VOICE_CALL) ||
+#ifdef HAVE_FM_RADIO
+            (stream == AudioSystem::FM) ||
+#endif
+            force) {
         mOutputs.valueFor(output)->mCurVolume[stream] = volume;
         LOGV("setStreamVolume() for output %d stream %d, volume %f, delay %d", output, stream, volume, delayMs);
         if (stream == AudioSystem::VOICE_CALL ||
@@ -239,7 +281,17 @@ status_t AudioPolicyManager::checkAndSetVolume(int stream, int index, audio_io_h
             // offset value to reflect actual hardware volume that never reaches 0
             // 1% corresponds roughly to first step in VOICE_CALL stream volume setting (see AudioService.java)
             volume = 0.01 + 0.99 * volume;
+#ifdef HAVE_FM_RADIO
+        } else if (stream == AudioSystem::FM) {
+            float fmVolume = -1.0;
+            fmVolume = volume;
+            if (fmVolume >= 0 && output == mHardwareOutput) {
+                mpClientInterface->setFmVolume(fmVolume, delayMs);
+            }
+            return NO_ERROR;
+#endif
         }
+
         mpClientInterface->setStreamVolume((AudioSystem::stream_type)stream, volume, output, delayMs);
     }
 
