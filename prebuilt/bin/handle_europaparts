@@ -1,0 +1,28 @@
+#!/system/bin/sh
+# handle_europaparts
+# by psyke83
+
+DTSTATUS=`getprop persist.sys.fakedt`
+STPERMISSIONS="android.hardware.touchscreen.xml"
+MTPERMISSIONS="android.hardware.touchscreen.multitouch.distinct.xml"
+
+remount() {
+mount -o remount,$1 /system
+}
+
+if [ $DTSTATUS = "1" ] && [ -f /system/etc/permissions/$STPERMISSIONS ]; then
+    echo "Fake dual-touch is enabled, but ST permissions file is present!"
+    remount rw
+    rm /system/etc/permissions/$STPERMISSIONS
+    cp /system/europaparts/etc/permissions/$MTPERMISSIONS /system/etc/permissions/
+    remount ro
+fi
+
+if [ $DTSTATUS = "0" ] && [ -f /system/etc/permissions/$MTPERMISSIONS ]; then
+    echo "Fake dual-touch is enabled, but MT permissions file is present!"
+    remount rw
+    rm /system/etc/permissions/$MTPERMISSIONS
+    cp /system/europaparts/etc/permissions/$STPERMISSIONS /system/etc/permissions/
+    remount ro
+fi
+

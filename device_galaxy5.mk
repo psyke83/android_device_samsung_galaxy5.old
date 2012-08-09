@@ -35,6 +35,10 @@ PRODUCT_PACKAGES += \
     flash_image \
     make_ext4fs
 
+# EuropaParts
+PRODUCT_PACKAGES += \
+    EuropaParts
+
 # Service Mode Secret Code
 PRODUCT_PACKAGES += \
     SamsungServiceMode
@@ -50,12 +54,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:/system/etc/permissions/android.software.live_wallpaper.xml
 
-# MADTeam modifications
+# EuropaParts support files
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/prebuilt/bin/madconfig:system/bin/madconfig \
-    device/samsung/galaxy5/prebuilt/modules/synaptics_i2c_rmi4.ko:system/lib/modules/synaptics_i2c_rmi4.ko \
-    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.xml \
-    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/etc/permissions/touchscreen/android.hardware.touchscreen.multitouch.distinct.xml
+    device/samsung/galaxy5/prebuilt/bin/handle_europaparts:system/bin/handle_europaparts \
+    device/samsung/galaxy5/prebuilt/etc/init.europaparts.rc:system/etc/init.europaparts.rc \
+    frameworks/base/data/etc/android.hardware.touchscreen.xml:system/europaparts/etc/permissions/android.hardware.touchscreen.xml \
+    frameworks/base/data/etc/android.hardware.touchscreen.multitouch.distinct.xml:system/europaparts/etc/permissions/android.hardware.touchscreen.multitouch.distinct.xml
 
 # Hardware properties
 PRODUCT_COPY_FILES += \

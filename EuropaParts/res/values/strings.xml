@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Samsung GT-I5500 device settings</string>
+	<string name="attn_fm">Attenuation - FM radio</string>
+	<string name="attn_headset">Attenuation - headset</string>
+	<string name="attn_speaker">Attenuation - speaker</string>
+	<string name="audio_cat">Audio attenuation</string>
+	<string name="bug_report_success">Bug report generated to</string>
+	<string name="cancel">Cancel</string>
+	<string name="current_setting">Current setting:</string>
+	<string name="disabled">disabled</string>
+	<string name="extamp">Samsung extamp filter</string>
+	<string name="extamp_sum_off">External amplifier filter is off</string>
+	<string name="extamp_sum_on">External amplifier filter is on</string>
+	<string name="fake_dt">Fake dual-touch</string>
+	<string name="fake_dt_sum">Use circular gestures to activate dual-touch for pinch-to-zoom (requires reboot)</string>
+	<string name="gen_bug_report">Generate bug report</string>
+	<string name="gen_bug_report_summary">Dumps system logs to SD card for bug reporting purposes</string>
+	<string name="ksm_sum">KSM merges anonymous memory pages, optimizing memory usage for applications</string>
+	<string name="log_cat">Report bug</string>
+	<string name="memory_man">Memory management</string>
+	<string name="processing">Processing…</string>
+	<string name="rom_cat">ROM settings</string>
+	<string name="sd_not_mounted">SD card is not mounted</string>
+	<string name="swap_cce">Compcache is enabled. You\'ll need to disable it first</string>
+	<string name="swap_sum">Use swap partition of SD card as virtual memory, allowing more applications to remain in memory</string>
+</resources>
