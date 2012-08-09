@@ -42,7 +42,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <linux/i2c/bma220.h>
+#include <linux/i2c/bma222.h>
 #include <linux/i2c/mmc31xx.h>
 #include <linux/i2c/mecs.h>
 
@@ -1130,7 +1130,7 @@ void fSixDOFSensorDrivers(int k)
 	if (prev_aflag==0 && prev_oflag==0) {
 		fd_bma = open("/dev/bma_accel", O_RDWR); }
 	short acc[3]={0};
-	ioctl_msg=BMA220_READ_ACCEL_XYZ;
+	ioctl_msg=BMA222_READ_ACCEL_XYZ;
 	res = ioctl(fd_bma, ioctl_msg, &acc);
 	fGpx = (float)acc[0]/256;
 	fGpy = (float)acc[1]/256;

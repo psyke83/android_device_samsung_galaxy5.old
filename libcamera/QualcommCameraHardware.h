@@ -35,7 +35,7 @@
 
 extern "C" {
 #include <linux/android_pmem.h>
-#include <linux/msm_camera.h>
+#include <media/msm_camera.h>
 }
 
 struct str_map {
@@ -71,11 +71,11 @@ struct board_property{
 #define CAMERA_MIN_CONTRAST 0
 #define CAMERA_MAX_CONTRAST 4
 #define CAMERA_MIN_SHARPNESS 0
-#define CAMERA_MIN_EXPOSURE_COMPENSATION -2
+#define CAMERA_MIN_EXPOSURE_COMPENSATION -4
 #define CAMERA_MAX_SHARPNESS 4
 #define CAMERA_MIN_SATURATION 0
 #define CAMERA_MAX_SATURATION 4
-#define CAMERA_MAX_EXPOSURE_COMPENSATION 2
+#define CAMERA_MAX_EXPOSURE_COMPENSATION 4
 #define CAMERA_DEF_SHARPNESS 2
 #define CAMERA_DEF_CONTRAST 2
 #define CAMERA_DEF_SATURATION 2
@@ -133,6 +133,7 @@ typedef struct {
 } camera_position_type;
 typedef uint8_t jpeg_event_t;
 
+#if 0
 typedef enum {
 	CAMERA_WB_MIN_MINUS_1,
 	CAMERA_WB_AUTO = 1,  /* This list must match aeecamera.h */
@@ -145,6 +146,7 @@ typedef enum {
 	CAMERA_WB_SHADE,
 	CAMERA_WB_MAX_PLUS_1
 } camera_wb_type;
+#endif
 
 typedef enum {
     CAMERA_ANTIBANDING_OFF,
@@ -160,11 +162,13 @@ typedef enum {
 	AF_MODE_AUTO,
 } isp3a_af_mode_t;
 
+#if 0
 enum {
 	CAMERA_AEC_FRAME_AVERAGE,
 	CAMERA_AEC_CENTER_WEIGHTED,
 	CAMERA_AEC_SPOT_METERING,
 };
+#endif
 
 enum {
 	LED_MODE_OFF,

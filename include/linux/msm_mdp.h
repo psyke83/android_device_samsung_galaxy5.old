@@ -1,7 +1,7 @@
 /* include/linux/msm_mdp.h
  *
  * Copyright (C) 2007 Google Incorporated
- * Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -41,6 +41,14 @@
 #define MSMFB_OVERLAY_GET      _IOR(MSMFB_IOCTL_MAGIC, 140, \
 						struct mdp_overlay)
 #define MSMFB_OVERLAY_PLAY_ENABLE     _IOW(MSMFB_IOCTL_MAGIC, 141, unsigned int)
+#define MSMFB_OVERLAY_BLT       _IOWR(MSMFB_IOCTL_MAGIC, 142, \
+						struct msmfb_overlay_blt)
+#define MSMFB_OVERLAY_BLT_OFFSET     _IOW(MSMFB_IOCTL_MAGIC, 143, unsigned int)
+#define MSMFB_HISTOGRAM_START	_IO(MSMFB_IOCTL_MAGIC, 144)
+#define MSMFB_HISTOGRAM_STOP	_IO(MSMFB_IOCTL_MAGIC, 145)
+
+#define MSMFB_OVERLAY_3D       _IOWR(MSMFB_IOCTL_MAGIC, 146, \
+						struct msmfb_overlay_3d)
 
 #define MDP_IMGTYPE2_START 0x10000
 
@@ -59,6 +67,8 @@ enum {
 	MDP_RGBX_8888,	  /* RGBX 888 */
 	MDP_Y_CRCB_H2V2_TILE,  /* Y and CrCb, pseudo planer tile */
 	MDP_Y_CBCR_H2V2_TILE,  /* Y and CbCr, pseudo planer tile */
+	MDP_Y_CR_CB_H2V2,  /* Y, Cr and Cb, planar */
+	MDP_Y_CB_CR_H2V2,  /* Y, Cb and Cr, planar */
 	MDP_IMGTYPE_LIMIT,
 	MDP_BGR_565 = MDP_IMGTYPE2_START,      /* BGR 565 planer */
 	MDP_FB_FORMAT,    /* framebuffer format */
@@ -91,6 +101,10 @@ enum {
 #define MDP_BLIT_SRC_GEM                0x04000000
 #define MDP_BLIT_DST_GEM                0x02000000
 #define MDP_BLIT_NON_CACHED		0x01000000
+#define MDP_OV_PIPE_SHARE		0x00800000
+#define MDP_DEINTERLACE_ODD		0x00400000
+#define MDP_OV_PLAY_NOWAIT		0x00200000
+
 #define MDP_TRANSP_NOP 0xffffffff
 #define MDP_ALPHA_NOP 0xff
 
@@ -117,6 +131,7 @@ struct mdp_img {
 	uint32_t format;
 	uint32_t offset;
 	int memory_id;		/* the file descriptor */
+	uint32_t priv;
 };
 
 /*
@@ -135,6 +150,13 @@ struct mdp_ccs {
 	uint16_t bv[MDP_BV_SIZE];	/* 1x3 bias vector */
 };
 
+/* The version of the mdp_blit_req structure so that
+ * user applications can selectively decide which functionality
+ * to include
+ */
+
+#define MDP_BLIT_REQ_VERSION 2
+
 struct mdp_blit_req {
 	struct mdp_img src;
 	struct mdp_img dst;
@@ -151,10 +173,14 @@ struct mdp_blit_req_list {
 	struct mdp_blit_req req[];
 };
 
+#define MSMFB_DATA_VERSION 2
+
 struct msmfb_data {
 	uint32_t offset;
 	int memory_id;
 	int id;
+	uint32_t flags;
+	uint32_t priv;
 };
 
 #define MSMFB_NEW_REQUEST -1
@@ -181,6 +207,18 @@ struct mdp_overlay {
 	uint32_t flags;
 	uint32_t id;
 	uint32_t user_data[8];
+};
+
+struct msmfb_overlay_3d {
+	uint32_t is_3d;
+	uint32_t width;
+	uint32_t height;
+};
+
+
+struct msmfb_overlay_blt {
+	uint32_t enable;
+	struct msmfb_data data;
 };
 
 struct mdp_histogram {

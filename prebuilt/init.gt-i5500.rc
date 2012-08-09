@@ -3,18 +3,17 @@ on init
 # Insert modules
 	insmod /lib/modules/fsr.ko
 	insmod /lib/modules/fsr_stl.ko
-	insmod /lib/modules/rfs_glue.ko
-	insmod /lib/modules/rfs_fat.ko
+	#insmod /lib/modules/rfs_glue.ko
+	#insmod /lib/modules/rfs_fat.ko
 	insmod /lib/modules/sec_param.ko
-	insmod /lib/modules/acc_cal_param.ko
 
 on fs
 
 # Mount partitions
-	mount ext4 /dev/block/stl12 /system wait rw
-	mount ext4 /dev/block/stl12 /system wait ro remount
-	mount ext4 /dev/block/stl13 /data wait nosuid nodev
-	mount ext4 /dev/block/stl14 /cache wait nosuid nodev
+	mount ext4 /dev/block/stl12 /system wait rw barrier=0
+	mount ext4 /dev/block/stl12 /system wait ro remount barrier=0
+	mount ext4 /dev/block/stl13 /data wait nosuid nodev barrier=0
+	mount ext4 /dev/block/stl14 /cache wait nosuid nodev barrier=0
 
 on boot
 
@@ -33,6 +32,12 @@ on boot
 
 # Set up WiFi and Bluetooth as soon as possible
 	setprop ro.bt.bdaddr_path "/data/.nvmac_bt.info"
+
+# Configure KSM (Kernel SamePage Merging)
+	write /sys/kernel/mm/ksm/sleep_millisecs 4000
+	write /sys/kernel/mm/ksm/pages_to_scan 128
+	chmod 0666 /sys/kernel/mm/ksm/run
+	chown system system /sys/kernel/mm/ksm/run
 
 # For sensors
 	mkdir /data/misc/sensors 0777 system misc
@@ -88,10 +93,14 @@ on boot
 # DHCP
 	mkdir /data/misc/dhcp 0770 dhcp dhcp
 
+# TRP/TIS
+	write /data/.psm.info 1
+	chown system root /data/.psm.info
+	chmod 0660 /data/.psm.info
+
 service qmuxd /system/bin/qmuxd
 	user radio
 	group system radio inet
-	disabled
 
 service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 \
 	--patchram /system/bin/BCM2049B0_BCM20780B0_002.001.022.0170.0174.hcd \
@@ -141,6 +150,7 @@ service setup_fs /system/bin/setup_fs stl13 stl14
 	user root
 	group root
 	oneshot
+	disabled
 
 on property:init.svc.ril-daemon=running
 	start get_macaddrs

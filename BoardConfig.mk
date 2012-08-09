@@ -84,7 +84,6 @@ BOARD_FLASH_BLOCK_SIZE := 4096
 TARGET_RECOVERY_INITRC := device/samsung/galaxy5/recovery/recovery.rc
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxy5/recovery/graphics.c
 BOARD_CUSTOM_RECOVERY_KEYMAPPING:= ../../device/samsung/galaxy5/recovery/recovery_ui.c
-TARGET_RECOVERY_PRE_COMMAND := "echo 3 > /proc/sys/vm/drop_caches; echo 604800 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq; sync"
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # Audio
@@ -107,8 +106,6 @@ BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
 # USB
 BOARD_CUSTOM_USB_CONTROLLER := ../../device/samsung/galaxy5/UsbController.cpp
 BOARD_USE_USB_MASS_STORAGE_SWITCH := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
-BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 
 # WiFi
 BOARD_WLAN_ATHEROS_SDK      := true

@@ -58,7 +58,10 @@
 
 #define ECOMPASS_IOC_SET_YPR		_IOW(ECOMPASS_IOM, 0x30, int[13])
 
+#if defined (CONFIG_MACH_CALLISTO)
+extern short gp2a_get_proximity_value(void);
+#else
 extern short taos_get_proximity_value(void);
-
+#endif
 #endif /* __ECOMPASS_H__ */
 

@@ -70,7 +70,7 @@ extern "C" {
 #include <sys/time.h>
 #include <stdlib.h>
 
-#include <linux/msm_camera.h>
+#include <media/msm_camera.h>
 
 #define DEFAULT_PICTURE_WIDTH  1024
 #define DEFAULT_PICTURE_HEIGHT 768
@@ -162,7 +162,7 @@ union zoomimage
     struct mdp_blit_req_list list;
 } zoomImage;
 
-//Default to VGA
+//Default to QVGA
 #define DEFAULT_PREVIEW_WIDTH 320
 #define DEFAULT_PREVIEW_HEIGHT 240
 
@@ -207,15 +207,15 @@ board_property boardProperties[] = {
  */
 //sorted on column basis
 static const camera_size_type picture_sizes[] = {
-//    { 2592, 1944 }, // 5MP
-//    { 2560, 1920 }, // 5MP (slightly reduced)
-//    { 2048, 1536 }, // 3MP QXGA
-//    { 1920, 1080 }, //HD1080
+    //{ 2592, 1944 }, // 5MP
+    //{ 2560, 1920 }, // 5MP (slightly reduced)
+    //{ 2048, 1536 }, // 3MP QXGA
+    //{ 1920, 1080 }, //HD1080
     { 1600, 1200 }, // 2MP UXGA
     { 1280, 768 }, //WXGA
     { 1280, 720 }, //HD720
     { 1024, 768}, // 1MP XGA
-//    { 800, 600 }, //SVGA
+    //{ 800, 600 }, //SVGA
     { 800, 480 }, // WVGA
     { 640, 480 }, // VGA
     { 352, 288 }, //CIF
@@ -300,10 +300,10 @@ static const int PICTURE_FORMAT_RAW = 2;
 // from aeecamera.h
 static const str_map whitebalance[] = {
     { CameraParameters::WHITE_BALANCE_AUTO,            CAMERA_WB_AUTO },
-    { CameraParameters::WHITE_BALANCE_INCANDESCENT,    CAMERA_WB_INCANDESCENT },
-    { CameraParameters::WHITE_BALANCE_FLUORESCENT,     CAMERA_WB_FLUORESCENT },
     { CameraParameters::WHITE_BALANCE_DAYLIGHT,        CAMERA_WB_DAYLIGHT },
-    { CameraParameters::WHITE_BALANCE_CLOUDY_DAYLIGHT, CAMERA_WB_CLOUDY_DAYLIGHT }
+    { CameraParameters::WHITE_BALANCE_CLOUDY_DAYLIGHT, CAMERA_WB_CLOUDY_DAYLIGHT },
+    { CameraParameters::WHITE_BALANCE_FLUORESCENT,     CAMERA_WB_FLUORESCENT },
+    { CameraParameters::WHITE_BALANCE_INCANDESCENT,    CAMERA_WB_INCANDESCENT }
 };
 
 // from camera_effect_t. This list must match aeecamera.h
@@ -1173,7 +1173,6 @@ void QualcommCameraHardware::findSensorType(){
         }
     }
     //default to 5 mp
-    LOGD("Failed to find a match for %d x %d, using 5M default",mDimension.raw_picture_width,mDimension.raw_picture_height);
     sensorType = sensorTypes;
     return;
 }
@@ -3056,7 +3055,7 @@ status_t QualcommCameraHardware::setParameters(const CameraParameters& params)
     if ((rc = setAutoExposure(params))) final_rc = rc;
     if ((rc = setWhiteBalance(params))) final_rc = rc;
     if ((rc = setEffect(params)))       final_rc = rc;
-    if ((rc = setFlash(params)))        final_rc = rc;
+    //if ((rc = setFlash(params)))        final_rc = rc;
     if ((rc = setGpsLocation(params)))  final_rc = rc;
     if ((rc = setRotation(params)))     final_rc = rc;
     if ((rc = setZoom(params)))         final_rc = rc;
@@ -4527,8 +4526,8 @@ static bool register_buf(int camfd,
 
     pmemBuf.active   = vfe_can_write;
 
-    LOGV("register_buf: camfd = %d, reg = %d buffer = %p can_write = %d",
-         camfd, !register_buffer, buf, pmemBuf.active);
+    LOGV("register_buf: camfd = %d, reg = %d buffer = %p",
+         camfd, !register_buffer, buf);
     if (ioctl(camfd,
               register_buffer ?
               MSM_CAM_IOCTL_REGISTER_PMEM :

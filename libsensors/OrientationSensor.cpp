@@ -32,7 +32,7 @@
 
 /*****************************************************************************/
 OrientationSensor::OrientationSensor()
-    : SensorBase(NULL, "ecompass_data"),
+    : SensorBase(NULL, "magnetic_sensor"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false)

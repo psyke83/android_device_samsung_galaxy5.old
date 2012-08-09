@@ -74,17 +74,27 @@ PRODUCT_COPY_FILES += \
 
 # Kernel modules
 PRODUCT_COPY_FILES += \
-    device/samsung/galaxy5/prebuilt/modules/acc_cal_param.ko:root/lib/modules/acc_cal_param.ko \
-    device/samsung/galaxy5/prebuilt/modules/fsr.ko:root/lib/modules/fsr.ko \
-    device/samsung/galaxy5/prebuilt/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
-    device/samsung/galaxy5/prebuilt/modules/rfs_glue.ko:root/lib/modules/rfs_glue.ko \
-    device/samsung/galaxy5/prebuilt/modules/rfs_fat.ko:root/lib/modules/rfs_fat.ko \
-    device/samsung/galaxy5/prebuilt/modules/sec_param.ko:root/lib/modules/sec_param.ko
+    device/samsung/galaxy5/prebuilt/lib/modules/ar6000.ko:system/wifi/ar6000.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/cifs.ko:system/lib/modules/cifs.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/fsr.ko:root/lib/modules/fsr.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/fsr_stl.ko:root/lib/modules/fsr_stl.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/rfs_fat.ko:system/lib/modules/rfs_fat.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/rfs_glue.ko:system/lib/modules/rfs_glue.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/ramzswap.ko:system/lib/modules/ramzswap.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/sec_param.ko:root/lib/modules/sec_param.ko \
+    device/samsung/galaxy5/prebuilt/lib/modules/tun.ko:system/lib/modules/tun.ko
+
+# Keymaps
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/usr/keylayout/europa_keypad0.kl:system/usr/keylayout/europa_keypad0.kl \
+    device/samsung/galaxy5/prebuilt/usr/keylayout/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
 
 # Board-specific init & scripts
 PRODUCT_COPY_FILES += \
+    device/samsung/galaxy5/prebuilt/etc/init.d/05mountsd:system/etc/init.d/05mountsd \
     device/samsung/galaxy5/prebuilt/init.gt-i5500.rc:root/init.gt-i5500.rc \
-    device/samsung/galaxy5/prebuilt/ueventd.gt-i5500.rc:root/ueventd.gt-i5500.rc
+    device/samsung/galaxy5/prebuilt/ueventd.gt-i5500.rc:root/ueventd.gt-i5500.rc \
+    device/samsung/galaxy5/prebuilt/etc/sysctl.conf:system/etc/sysctl.conf
 
 # Workaround for wifi & bluetooth mac addresses
 PRODUCT_COPY_FILES += \
@@ -98,8 +108,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxy5/prebuilt/etc/dhcpd/dhcpcd.conf:system/etc/dhcpcd/dhcpcd.conf \
     device/samsung/galaxy5/prebuilt/etc/wifi/hostapd.conf:system/etc/wifi/hostapd.conf \
-    device/samsung/galaxy5/prebuilt/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
-    device/samsung/galaxy5/prebuilt/modules/ar6000.ko:system/wifi/ar6000.ko
+    device/samsung/galaxy5/prebuilt/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf
 
 # VOLD configuration
 PRODUCT_COPY_FILES += \
